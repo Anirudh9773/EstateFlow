@@ -25,26 +25,26 @@ export default function PageHero({
     : 'bg-slate-900';
 
   return (
-    <section className={`relative ${bgClass} text-white py-20 md:py-28 ${className}`}>
+    <section className={`relative ${bgClass} text-white py-16 md:py-20 lg:py-28 ${className}`}>
       <div className="container mx-auto px-4 max-w-4xl text-center">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 px-4">
           {title}
         </h1>
         
         {description && (
-          <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
+          <p className="text-lg md:text-xl lg:text-2xl text-slate-300 mb-6 md:mb-8 leading-relaxed px-4">
             {description}
           </p>
         )}
 
         {stats && stats.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-8 text-center">
+          <div className="flex flex-wrap justify-center gap-6 md:gap-8 text-center px-4">
             {stats.map((stat, index) => (
               <div key={index}>
-                <div className="text-3xl md:text-4xl font-bold text-amber-400">
+                <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">
                   {stat.value}
                 </div>
-                <div className="text-slate-400 mt-1">{stat.label}</div>
+                <div className="text-sm md:text-base text-slate-400 mt-1">{stat.label}</div>
               </div>
             ))}
           </div>

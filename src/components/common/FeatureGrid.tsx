@@ -47,22 +47,22 @@ export default function FeatureGrid({
     : 'p-6';
 
   return (
-    <div className={`grid ${gridCols[columns]} gap-8 ${className}`}>
+    <div className={`grid ${gridCols[columns]} gap-6 md:gap-8 ${className}`}>
       {features.map((feature, index) => {
         const Icon = feature.icon;
         return (
           <div key={index} className={cardClass}>
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3 md:gap-4">
               <div className="flex-shrink-0">
-                <div className={`w-12 h-12 ${iconColors[iconColor].bg} rounded-lg flex items-center justify-center`}>
-                  <Icon className={`w-6 h-6 ${iconColors[iconColor].text}`} />
+                <div className={`w-10 h-10 md:w-12 md:h-12 ${iconColors[iconColor].bg} rounded-lg flex items-center justify-center`}>
+                  <Icon className={`w-5 h-5 md:w-6 md:h-6 ${iconColors[iconColor].text}`} />
                 </div>
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-slate-600 leading-relaxed">
+                <p className="text-sm md:text-base text-slate-600 leading-relaxed">
                   {feature.description}
                 </p>
               </div>

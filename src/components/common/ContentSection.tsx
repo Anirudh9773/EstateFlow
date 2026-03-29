@@ -4,7 +4,6 @@ interface ContentSectionProps {
   children: ReactNode;
   variant?: 'white' | 'gray' | 'navy';
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
-  padding?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
@@ -12,7 +11,6 @@ export default function ContentSection({
   children,
   variant = 'white',
   maxWidth = 'lg',
-  padding = 'md',
   className = '',
 }: ContentSectionProps) {
   const bgColors = {
@@ -37,7 +35,7 @@ export default function ContentSection({
   };
 
   return (
-    <section className={`${bgColors[variant]} ${paddings[padding]} ${className}`}>
+    <section className={`py-12 md:py-16 lg:py-24 ${bgColors[variant]} ${className}`}>
       <div className={`container mx-auto px-4 ${maxWidths[maxWidth]}`}>
         {children}
       </div>

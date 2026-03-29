@@ -10,7 +10,7 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <FileText className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">1. Introduction & Acceptance of Terms</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">1. Introduction & Acceptance of Terms</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed">
@@ -32,7 +32,7 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <Building2 className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">2. Who We Are</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">2. Who We Are</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-4">
@@ -61,17 +61,17 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <Users className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">3. Using Our Platform</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">3. Using Our Platform</h2>
             </div>
           </div>
           
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Eligibility</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Eligibility</h3>
           <p className="text-slate-700 leading-relaxed mb-4">
             You must be at least 18 years old to use our Platform. By using our services, you represent and warrant 
             that you meet this age requirement and have the legal capacity to enter into these Terms.
           </p>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Account Registration</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Account Registration</h3>
           <p className="text-slate-700 leading-relaxed mb-3">
             Estate agents must register an account to receive leads. When registering, you agree to:
           </p>
@@ -83,7 +83,7 @@ export default function TermsContent() {
             <li>Accept responsibility for all activities under your account</li>
           </ul>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Acceptable Use</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Acceptable Use</h3>
           <p className="text-slate-700 leading-relaxed mb-3">
             You agree not to:
           </p>
@@ -104,18 +104,18 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <Shield className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">4. For Property Owners</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">4. For Property Owners</h2>
             </div>
           </div>
           
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Our Service</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Our Service</h3>
           <p className="text-slate-700 leading-relaxed mb-4">
             When you submit your property details, we use our matching algorithm to connect you with suitable 
             verified estate agents in your area. Our service is free for property owners, with no hidden fees 
             or obligations.
           </p>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Your Responsibilities</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Your Responsibilities</h3>
           <p className="text-slate-700 leading-relaxed mb-3">
             When submitting property information, you agree to:
           </p>
@@ -126,7 +126,7 @@ export default function TermsContent() {
             <li>Understand that EstateFlow does not guarantee any specific outcome</li>
           </ul>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">No Guarantee</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">No Guarantee</h3>
           <p className="text-slate-700 leading-relaxed mb-4">
             While we strive to match you with suitable agents, we do not guarantee that you will find an agent, 
             sell your property, or achieve any particular result. All agreements and transactions are between you 
@@ -139,11 +139,11 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <CreditCard className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">5. For Estate Agents</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">5. For Estate Agents</h2>
             </div>
           </div>
           
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Verification Requirements</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Verification Requirements</h3>
           <p className="text-slate-700 leading-relaxed mb-3">
             To join EstateFlow as an agent, you must:
           </p>
@@ -155,14 +155,14 @@ export default function TermsContent() {
             <li>Pass our verification and background checks</li>
           </ul>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Lead Delivery & Payment</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Lead Delivery & Payment</h3>
           <p className="text-slate-700 leading-relaxed mb-4">
             Agents receive qualified leads based on their coverage areas and subscription plan. Payment terms, 
             lead pricing, and subscription fees are outlined in your agent agreement. All fees are non-refundable 
             unless otherwise stated.
           </p>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Professional Conduct</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Professional Conduct</h3>
           <p className="text-slate-700 leading-relaxed mb-3">
             As a registered agent, you agree to:
           </p>
@@ -174,7 +174,7 @@ export default function TermsContent() {
             <li>Provide accurate information about your services and fees</li>
           </ul>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Suspension & Termination</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Suspension & Termination</h3>
           <p className="text-slate-700 leading-relaxed mb-4">
             We reserve the right to suspend or terminate your account if you breach these Terms, engage in 
             unprofessional conduct, receive consistent negative feedback, or if your professional credentials 
@@ -187,7 +187,7 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <Copyright className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">6. Intellectual Property</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">6. Intellectual Property</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-4">
@@ -206,7 +206,7 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <Scale className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">7. Limitation of Liability</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">7. Limitation of Liability</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-4">
@@ -243,7 +243,7 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <Shield className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">8. Indemnification</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">8. Indemnification</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-4">
@@ -264,7 +264,7 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <Scale className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">9. Governing Law & Disputes</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">9. Governing Law & Disputes</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-4">
@@ -283,7 +283,7 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <FileText className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">10. Changes to These Terms</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">10. Changes to These Terms</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-4">
@@ -302,7 +302,7 @@ export default function TermsContent() {
           <div className="flex items-start gap-3 mb-4">
             <Mail className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">11. Contact Us</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">11. Contact Us</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-3">

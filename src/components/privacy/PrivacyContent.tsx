@@ -10,7 +10,7 @@ export default function PrivacyContent() {
           <div className="flex items-start gap-3 mb-4">
             <Shield className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">1. Introduction & Who We Are</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">1. Introduction & Who We Are</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed">
@@ -36,11 +36,11 @@ export default function PrivacyContent() {
           <div className="flex items-start gap-3 mb-4">
             <FileText className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">2. What Data We Collect</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">2. What Data We Collect</h2>
             </div>
           </div>
           
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">From Property Owners (Sellers & Buyers)</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">From Property Owners (Sellers & Buyers)</h3>
           <p className="text-slate-700 leading-relaxed mb-3">
             When you submit your property details to find an estate agent, we collect:
           </p>
@@ -52,7 +52,7 @@ export default function PrivacyContent() {
             <li>Any additional information you choose to provide in your submission</li>
           </ul>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">From Estate Agents</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">From Estate Agents</h3>
           <p className="text-slate-700 leading-relaxed mb-3">
             When you register as an estate agent on our platform, we collect:
           </p>
@@ -65,7 +65,7 @@ export default function PrivacyContent() {
             <li>Payment and billing information (for subscription services)</li>
           </ul>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Automatically Collected Data</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Automatically Collected Data</h3>
           <p className="text-slate-700 leading-relaxed mb-3">
             When you use our website, we automatically collect:
           </p>
@@ -82,7 +82,7 @@ export default function PrivacyContent() {
           <div className="flex items-start gap-3 mb-4">
             <CheckCircle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">3. How We Use Your Data</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">3. How We Use Your Data</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-3">
@@ -127,7 +127,7 @@ export default function PrivacyContent() {
           <div className="flex items-start gap-3 mb-4">
             <Users className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">4. Who We Share Your Data With</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">4. Who We Share Your Data With</h2>
             </div>
           </div>
           
@@ -140,13 +140,13 @@ export default function PrivacyContent() {
             </div>
           </div>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Matched Estate Agents</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Matched Estate Agents</h3>
           <p className="text-slate-700 leading-relaxed mb-6">
             When you submit your property details, we share your information ONLY with the verified estate agents 
             you explicitly choose to connect with. You remain in control of which agents receive your details.
           </p>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Service Providers</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Service Providers</h3>
           <p className="text-slate-700 leading-relaxed mb-3">
             We work with trusted third-party service providers who help us operate our platform:
           </p>
@@ -162,7 +162,7 @@ export default function PrivacyContent() {
             services they provide to us.
           </p>
 
-          <h3 className="text-xl font-semibold text-slate-900 mb-3">Legal Requirements</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-3">Legal Requirements</h3>
           <p className="text-slate-700 leading-relaxed">
             We may disclose your data if required by law, court order, or to protect our legal rights, prevent 
             fraud, or ensure the safety of our users.
@@ -174,7 +174,7 @@ export default function PrivacyContent() {
           <div className="flex items-start gap-3 mb-4">
             <AlertCircle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">5. Cookies and Tracking</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">5. Cookies and Tracking</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-3">
@@ -198,7 +198,7 @@ export default function PrivacyContent() {
           <div className="flex items-start gap-3 mb-4">
             <Clock className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">6. Data Retention Policy</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">6. Data Retention Policy</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-3">
@@ -233,7 +233,7 @@ export default function PrivacyContent() {
           <div className="flex items-start gap-3 mb-4">
             <Shield className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">7. Your Rights Under UK GDPR</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">7. Your Rights Under UK GDPR</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-3">
@@ -283,7 +283,7 @@ export default function PrivacyContent() {
           <div className="flex items-start gap-3 mb-4">
             <Mail className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">8. How to Contact Us</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">8. How to Contact Us</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-3">
@@ -316,7 +316,7 @@ export default function PrivacyContent() {
           <div className="flex items-start gap-3 mb-4">
             <FileText className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0 mb-3">9. Changes to This Policy</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-900 mt-0 mb-3">9. Changes to This Policy</h2>
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-4">

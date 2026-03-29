@@ -177,36 +177,36 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+    <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 lg:p-12">
       {/* Role Selector */}
-      <div className="mb-8">
-        <p className="text-sm font-medium text-slate-700 mb-3">Who are you contacting us as?</p>
-        <div className="inline-flex bg-slate-100 rounded-lg p-1">
+      <div className="mb-6 md:mb-8">
+        <p className="text-xs md:text-sm font-medium text-slate-700 mb-3">Who are you contacting us as?</p>
+        <div className="inline-flex bg-slate-100 rounded-lg p-1 w-full sm:w-auto">
           <Button
             type="button"
             variant={userRole === 'client' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => handleRoleChange('client')}
-            className={`gap-2 ${userRole === 'client' ? 'bg-white text-slate-900 shadow-sm hover:bg-white' : ''}`}
+            className={`gap-2 flex-1 sm:flex-initial ${userRole === 'client' ? 'bg-white text-slate-900 shadow-sm hover:bg-white' : ''}`}
           >
             <User className="w-4 h-4" />
-            I'm a Client
+            <span className="text-xs sm:text-sm">I'm a Client</span>
           </Button>
           <Button
             type="button"
             variant={userRole === 'agent' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => handleRoleChange('agent')}
-            className={`gap-2 ${userRole === 'agent' ? 'bg-white text-slate-900 shadow-sm hover:bg-white' : ''}`}
+            className={`gap-2 flex-1 sm:flex-initial ${userRole === 'agent' ? 'bg-white text-slate-900 shadow-sm hover:bg-white' : ''}`}
           >
             <Building2 className="w-4 h-4" />
-            I'm an Agent
+            <span className="text-xs sm:text-sm">I'm an Agent</span>
           </Button>
         </div>
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
         {/* Full Name */}
         <div>
           <Label htmlFor="fullName">
@@ -248,7 +248,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
         )}
 
         {/* Email and Phone */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid sm:grid-cols-2 gap-5 md:gap-6">
           <div>
             <Label htmlFor="email">
               Email Address <span className="text-red-500">*</span>
