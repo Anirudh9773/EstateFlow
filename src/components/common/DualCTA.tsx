@@ -42,12 +42,12 @@ export default function DualCTA({
               <p className="text-slate-600 mb-6 leading-relaxed">
                 {leftSection.description}
               </p>
-              <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white h-11">
-                <Link href={leftSection.buttonHref}>
+              <Link href={leftSection.buttonHref}>
+                <Button className="bg-amber-500 hover:bg-amber-600 text-white h-11">
                   {leftSection.buttonText}
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
 
             {/* Right Section */}
@@ -63,12 +63,12 @@ export default function DualCTA({
               <p className="text-slate-600 mb-6 leading-relaxed">
                 {rightSection.description}
               </p>
-              <Button asChild variant="outline" className="h-11">
-                <Link href={rightSection.buttonHref}>
+              <Link href={rightSection.buttonHref}>
+                <Button variant="outline" className="h-11">
                   {rightSection.buttonText}
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

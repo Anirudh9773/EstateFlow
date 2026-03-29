@@ -307,7 +307,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
           <Label htmlFor="subject">
             Subject <span className="text-red-500">*</span>
           </Label>
-          <Select value={formData.subject} onValueChange={(value) => handleChange('subject', value)}>
+          <Select value={formData.subject} onValueChange={(value) => handleChange('subject', value || '')}>
             <SelectTrigger className={`w-full mt-2 ${errors.subject ? 'border-red-500' : ''}`}>
               <SelectValue placeholder="Select a subject..." />
             </SelectTrigger>
