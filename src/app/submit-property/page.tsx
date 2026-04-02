@@ -573,7 +573,7 @@ function Step8({ formData, update, handleSubmit, isPending, setCurrentStep }: an
 
       <Button 
         variant="outline" 
-        onClick={() => setCurrentStep(s => Math.max(s - 1, 1))}
+        onClick={() => setCurrentStep((s: number) => Math.max(s - 1, 1))}
         className="mt-4"
       >
         Back
