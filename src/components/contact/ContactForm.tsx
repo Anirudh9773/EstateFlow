@@ -177,9 +177,9 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 lg:p-12">
+    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 lg:p-12">
       {/* Role Selector */}
-      <div className="mb-6 md:mb-8">
+      <div className="mb-4 sm:mb-6 md:mb-8">
         <p className="text-xs md:text-sm font-medium text-slate-700 mb-3">Who are you contacting us as?</p>
         <div className="inline-flex bg-slate-100 rounded-lg p-1 w-full sm:w-auto">
           <Button
@@ -206,7 +206,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
         {/* Full Name */}
         <div>
           <Label htmlFor="fullName">
@@ -248,7 +248,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
         )}
 
         {/* Email and Phone */}
-        <div className="grid sm:grid-cols-2 gap-5 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
           <div>
             <Label htmlFor="email">
               Email Address <span className="text-red-500">*</span>

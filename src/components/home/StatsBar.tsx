@@ -15,16 +15,16 @@ export default function StatsBar({ stats }: StatsBarProps) {
   ]
 
   return (
-    <section className="bg-navy py-14">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
+    <section className="bg-navy py-12 sm:py-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 items-center">
           {statsArray.map((stat, index) => (
             <div key={stat.label} className="flex items-center justify-center">
               <StatCard value={stat.value} label={stat.label} light />
               {index < statsArray.length - 1 && (
                 <Separator
                   orientation="vertical"
-                  className="bg-white/10 h-12 ml-8 hidden md:block"
+                  className="bg-white/10 h-12 ml-6 sm:ml-8 hidden md:block"
                 />
               )}
             </div>

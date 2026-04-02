@@ -21,23 +21,23 @@ export default function HowItWorks() {
   ]
 
   return (
-    <section id="how-it-works" className="bg-white py-20">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="how-it-works" className="bg-white py-16 sm:py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center">
           <SectionLabel>HOW IT WORKS</SectionLabel>
-          <h2 className="text-3xl md:text-4xl font-semibold text-navy mt-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-navy mt-3">
             How EstateFlow works
           </h2>
-          <GoldDivider className="mx-auto mt-5 mb-3" />
-          <p className="text-text-secondary max-w-2xl mx-auto">
+          <GoldDivider className="mx-auto mt-4 sm:mt-5 mb-3" />
+          <p className="text-text-secondary max-w-2xl mx-auto text-base sm:text-lg">
             Three simple steps to connect your property with the perfect agent
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-10 sm:mt-14">
           {steps.map((step, index) => (
             <div key={step.number} className="relative">
-              <Card className="border-ef-border shadow-none p-8 h-full">
+              <Card className="border-ef-border shadow-none p-6 sm:p-8 h-full">
                 <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-6">
                   <span className="text-gold font-semibold text-sm">{step.number}</span>
                 </div>

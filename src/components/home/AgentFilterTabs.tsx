@@ -28,12 +28,12 @@ export default function AgentFilterTabs({ agents }: AgentFilterTabsProps) {
   return (
     <Tabs defaultValue="all" className="w-full">
       {/* Tab List */}
-      <TabsList className="inline-flex h-auto bg-transparent border-b border-ef-border w-auto mx-auto mb-10 rounded-none p-0 gap-2">
+      <TabsList className="inline-flex h-auto bg-transparent border-b border-ef-border w-full mx-auto mb-8 sm:mb-10 rounded-none p-0 gap-2 overflow-x-auto">
         {cities.map((city) => (
           <TabsTrigger
             key={city.value}
             value={city.value}
-            className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=inactive]:bg-transparent data-[state=inactive]:text-text-secondary hover:text-navy rounded-sm px-4 py-1.5 text-sm font-medium transition-all duration-150 data-[state=active]:shadow-none border-0"
+            className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=inactive]:bg-transparent data-[state=inactive]:text-text-secondary hover:text-navy rounded-sm px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium transition-all duration-150 data-[state=active]:shadow-none border-0 whitespace-nowrap"
           >
             {city.label}
           </TabsTrigger>
@@ -51,7 +51,7 @@ export default function AgentFilterTabs({ agents }: AgentFilterTabsProps) {
             className="mt-0 focus-visible:outline-none focus-visible:ring-0"
           >
             {filteredAgents.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in-50 duration-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-in fade-in-50 duration-300">
                 {filteredAgents.map((agent) => (
                   <AgentCard key={agent.id} agent={agent} />
                 ))}

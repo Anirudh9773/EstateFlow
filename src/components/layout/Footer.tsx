@@ -25,12 +25,12 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="bg-navy pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-6">
+    <footer className="bg-navy pt-12 sm:pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Top grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 pb-8 sm:pb-12 border-b border-white/10">
           {/* Brand column */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-1 sm:col-span-2 md:col-span-1">
             <div className="mb-3">
               <Logo className="h-5 [&_svg]:text-gold [&_span]:text-white" />
             </div>
@@ -98,7 +98,7 @@ export default function Footer() {
           </div>
 
           {/* Company links */}
-          <div>
+          <div className="col-span-1 sm:col-span-2 md:col-span-1">
             <h3 className="text-white font-medium mb-4 text-sm">Company</h3>
             <ul className="space-y-2.5">
               {companyLinks.map((link) => (
@@ -116,11 +116,11 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-white/30 text-xs">
+        <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-white/30 text-xs text-center sm:text-left">
             © 2025 EstateFlow Ltd. All rights reserved.
           </p>
-          <p className="text-white/20 text-xs">Built for UK real estate</p>
+          <p className="text-white/20 text-xs text-center sm:text-right">Built for UK real estate</p>
         </div>
       </div>
     </footer>

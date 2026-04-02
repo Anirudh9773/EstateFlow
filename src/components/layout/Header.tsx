@@ -87,15 +87,15 @@ export default function Header() {
     <>
       {/* Trust Bar */}
       {showTrustBar && (
-        <div className="hidden md:block bg-slate-900 text-white text-sm py-2">
+        <div className="bg-slate-900 text-white text-xs sm:text-sm py-2">
           <div className="container mx-auto px-4 flex items-center justify-center relative">
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 text-center">
               <span className="text-emerald-400">✓</span>
               Trusted by 1,200+ verified agents across the UK
             </span>
             <button
               onClick={() => setShowTrustBar(false)}
-              className="absolute right-4 text-slate-400 hover:text-white transition-colors"
+              className="absolute right-4 text-slate-400 hover:text-white transition-colors text-lg leading-none"
               aria-label="Dismiss announcement"
             >
               ×
@@ -114,9 +114,9 @@ export default function Header() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
-              <span className="text-2xl group-hover:scale-110 transition-transform">🏡</span>
+              <span className="text-xl sm:text-2xl group-hover:scale-110 transition-transform">🏡</span>
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-slate-900">EstateFlow</span>
+                <span className="text-lg sm:text-xl font-bold text-slate-900">EstateFlow</span>
                 <span className="text-xs text-slate-500 hidden lg:block">
                   Where properties meet the right agent
                 </span>
@@ -204,20 +204,22 @@ export default function Header() {
               {/* Primary CTA */}
               <Link
                 href="/submit-property"
-                className="px-5 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors"
+                className="px-3 sm:px-5 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors text-sm"
               >
-                Submit a Property
+                <span className="hidden sm:inline">Submit a Property</span>
+                <span className="sm:hidden">Submit</span>
               </Link>
 
               {/* Client Auth Dropdown */}
               <div className="relative" ref={clientAuthRef}>
                 <button
                   onClick={() => toggleAuthDropdown('client')}
-                  className="flex items-center gap-2 px-4 py-2 border-2 border-slate-700 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 border-2 border-slate-700 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm"
                   aria-expanded={openAuthDropdown === 'client'}
                   aria-haspopup="true"
                 >
-                  I'm a Client
+                  <span className="hidden sm:inline">I'm a Client</span>
+                  <span className="sm:hidden">Client</span>
                   <ChevronDown
                     className={`w-4 h-4 transition-transform ${
                       openAuthDropdown === 'client' ? 'rotate-180' : ''
@@ -257,11 +259,12 @@ export default function Header() {
               <div className="relative" ref={agentAuthRef}>
                 <button
                   onClick={() => toggleAuthDropdown('agent')}
-                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors text-sm"
                   aria-expanded={openAuthDropdown === 'agent'}
                   aria-haspopup="true"
                 >
-                  I'm an Agent
+                  <span className="hidden sm:inline">I'm an Agent</span>
+                  <span className="sm:hidden">Agent</span>
                   <ChevronDown
                     className={`w-4 h-4 transition-transform ${
                       openAuthDropdown === 'agent' ? 'rotate-180' : ''
