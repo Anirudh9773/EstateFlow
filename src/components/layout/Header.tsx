@@ -237,14 +237,14 @@ export default function Header() {
                     </div>
                     <div className="flex gap-2">
                       <Link
-                        href="/client/signin"
+                        href="/sign-in"
                         className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg text-center font-medium hover:bg-slate-50 transition-colors"
                         onClick={() => setOpenAuthDropdown(null)}
                       >
                         Sign In
                       </Link>
                       <Link
-                        href="/client/signup"
+                        href="/sign-up/client"
                         className="flex-1 px-4 py-2 bg-slate-900 text-white rounded-lg text-center font-medium hover:bg-slate-800 transition-colors"
                         onClick={() => setOpenAuthDropdown(null)}
                       >
@@ -284,14 +284,14 @@ export default function Header() {
                     </div>
                     <div className="flex gap-2">
                       <Link
-                        href="/agent/signin"
+                        href="/sign-in"
                         className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg text-center font-medium hover:bg-slate-50 transition-colors"
                         onClick={() => setOpenAuthDropdown(null)}
                       >
                         Sign In
                       </Link>
                       <Link
-                        href="/agent/signup"
+                        href="/sign-up/agent"
                         className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg text-center font-medium hover:bg-emerald-700 transition-colors"
                         onClick={() => setOpenAuthDropdown(null)}
                       >
@@ -378,14 +378,14 @@ export default function Header() {
                   <p className="text-xs text-slate-600 mb-3">Find your perfect property agent</p>
                   <div className="flex gap-2">
                     <Link
-                      href="/client/signin"
+                      href="/sign-in"
                       className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg text-center text-sm font-medium hover:bg-slate-50 transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign In
                     </Link>
                     <Link
-                      href="/client/signup"
+                      href="/sign-up/client"
                       className="flex-1 px-4 py-2 bg-slate-900 text-white rounded-lg text-center text-sm font-medium hover:bg-slate-800 transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -405,14 +405,14 @@ export default function Header() {
                   </p>
                   <div className="flex gap-2">
                     <Link
-                      href="/agent/signin"
+                      href="/sign-in"
                       className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg text-center text-sm font-medium hover:bg-slate-50 transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign In
                     </Link>
                     <Link
-                      href="/agent/signup"
+                      href="/sign-up/agent"
                       className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg text-center text-sm font-medium hover:bg-emerald-700 transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >

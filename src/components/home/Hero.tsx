@@ -34,12 +34,12 @@ export default function Hero() {
             </p>
             
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-              <Link href={ROUTES.submitLead}>
+              <Link href={ROUTES.submitProperty}>
                 <Button
                   size="lg"
                   className="bg-navy text-gold hover:bg-navy/90 h-12 px-6 sm:px-8 text-sm font-medium w-full sm:w-auto"
                 >
-                  Submit your property
+                  Submit Your Property
                 </Button>
               </Link>
               <Link href={ROUTES.agents}>

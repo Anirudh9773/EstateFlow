@@ -13,6 +13,7 @@ export const AGENT_TIERS = {
 export const ROUTES = {
   home: '/',
   submitLead: '/submit-lead',
+  submitProperty: '/submit-property',
   agents: '/agents',
   pricing: '/pricing',
   about: '/about',
