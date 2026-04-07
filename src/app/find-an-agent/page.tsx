@@ -101,53 +101,70 @@ export default function FindAgentPage() {
       {/* Filters Section */}
       <section className="bg-white py-8 border-b border-[var(--color-ef-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="space-y-4">
+            {/* Filter Header */}
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-[var(--color-gold)]" />
               <span className="font-medium text-[var(--color-navy)]">Filters:</span>
             </div>
             
-            {/* Location Filter */}
-            <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              className="px-4 py-2 border border-[var(--color-ef-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] bg-white text-[var(--color-navy)]"
-            >
-              {locations.map(location => (
-                <option key={location.value} value={location.value}>
-                  {location.label}
-                </option>
-              ))}
-            </select>
+            {/* Filter Controls */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Location Filter */}
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="px-4 py-2 border border-[var(--color-ef-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] bg-white text-[var(--color-navy)] w-full"
+              >
+                {locations.map(location => (
+                  <option key={location.value} value={location.value}>
+                    {location.label}
+                  </option>
+                ))}
+              </select>
 
-            {/* Specialisation Filter */}
-            <select
-              value={selectedSpecialisation}
-              onChange={(e) => setSelectedSpecialisation(e.target.value)}
-              className="px-4 py-2 border border-[var(--color-ef-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] bg-white text-[var(--color-navy)]"
-            >
-              <option value="all">All Specialisations</option>
-              {allSpecialisations.map(spec => (
-                <option key={spec} value={spec}>{spec}</option>
-              ))}
-            </select>
+              {/* Specialisation Filter */}
+              <select
+                value={selectedSpecialisation}
+                onChange={(e) => setSelectedSpecialisation(e.target.value)}
+                className="px-4 py-2 border border-[var(--color-ef-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] bg-white text-[var(--color-navy)] w-full"
+              >
+                <option value="all">All Specialisations</option>
+                {allSpecialisations.map(spec => (
+                  <option key={spec} value={spec}>{spec}</option>
+                ))}
+              </select>
 
-            {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-[var(--color-ef-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] bg-white text-[var(--color-navy)] ml-auto"
-            >
-              <option value="rating">Highest Rated</option>
-              <option value="reviews">Most Reviews</option>
-              <option value="experience">Most Experience</option>
-              <option value="response">Fastest Response</option>
-            </select>
-          </div>
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-2 border border-[var(--color-ef-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] bg-white text-[var(--color-navy)] w-full"
+              >
+                <option value="rating">Highest Rated</option>
+                <option value="reviews">Most Reviews</option>
+                <option value="experience">Most Experience</option>
+                <option value="response">Fastest Response</option>
+              </select>
 
-          {/* Results Count */}
-          <div className="mt-4 text-[var(--color-text-secondary)]">
-            Showing {sortedAgents.length} of {agents.length} agents
+              {/* Clear Filters Button */}
+              <Button
+                onClick={() => {
+                  setSearchTerm('')
+                  setSelectedLocation('all')
+                  setSelectedSpecialisation('all')
+                }}
+                variant="outline"
+                className="border-[var(--color-navy)] text-[var(--color-navy)] hover:bg-[var(--color-navy)] hover:text-[var(--color-gold)] w-full"
+              >
+                Clear Filters
+              </Button>
+            </div>
+
+            {/* Results Count */}
+            <div className="text-[var(--color-text-secondary)]">
+              Showing {sortedAgents.length} of {agents.length} agents
+            </div>
           </div>
         </div>
       </section>

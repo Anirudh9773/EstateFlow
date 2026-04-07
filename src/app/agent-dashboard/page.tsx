@@ -206,9 +206,9 @@ export default function AgentDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row">
         {/* Sidebar */}
-        <div className="w-64 bg-white shadow-md min-h-screen">
+        <div className="w-full lg:w-64 bg-white shadow-md lg:min-h-screen">
           <div className="p-6">
             <h2 className="text-2xl font-bold text-[var(--color-navy)]">EstateFlow</h2>
             <p className="text-sm text-gray-600">Agent Dashboard</p>
@@ -235,7 +235,7 @@ export default function AgentDashboard() {
           </nav>
 
           {/* Agent Profile Summary */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200">
+          <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200">
             <div className="flex items-center gap-3 mb-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage src={mockAgent.avatar} alt={mockAgent.name} />
@@ -255,24 +255,24 @@ export default function AgentDashboard() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-8">
+        <div className="flex-1 p-4 lg:p-8">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
+          <div className="mb-6 lg:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
                   {sidebarItems.find(item => item.id === activeTab)?.label}
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Welcome back, {mockAgent.name}! Here's what's happening with your business.
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <Button variant="outline" size="sm">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                   <Search className="w-4 h-4 mr-2" />
                   Search
                 </Button>
-                <Button size="sm" className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90">
+                <Button size="sm" className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 flex-1 sm:flex-none">
                   <Plus className="w-4 h-4 mr-2" />
                   Add New
                 </Button>
@@ -284,7 +284,7 @@ export default function AgentDashboard() {
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 {stats.map((stat, index) => {
                   const Icon = stat.icon
                   return (
@@ -314,12 +314,12 @@ export default function AgentDashboard() {
               </div>
 
               {/* Recent Leads and Listings */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {/* Recent Leads */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      Recent Leads
+                      <span className="text-lg">Recent Leads</span>
                       <Link href="/dashboard/leads">
                         <Button variant="outline" size="sm">View All</Button>
                       </Link>
@@ -328,18 +328,18 @@ export default function AgentDashboard() {
                   <CardContent>
                     <div className="space-y-4">
                       {mockLeads.slice(0, 3).map((lead) => (
-                        <div key={lead.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                          <div className="flex-1">
+                        <div key={lead.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-gray-200 rounded-lg gap-2">
+                          <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <p className="font-medium text-gray-900">{lead.name}</p>
+                              <p className="font-medium text-gray-900 truncate">{lead.name}</p>
                               <Badge className={getPriorityColor(lead.priority)}>
                                 {lead.priority}
                               </Badge>
                             </div>
-                            <p className="text-sm text-gray-600">{lead.property}</p>
+                            <p className="text-sm text-gray-600 truncate">{lead.property}</p>
                             <p className="text-xs text-gray-500 mt-1">{lead.received}</p>
                           </div>
-                          <Badge className={getStatusColor(lead.status)}>
+                          <Badge className={getStatusColor(lead.status)} flex-shrink-0>
                             {lead.status}
                           </Badge>
                         </div>
@@ -352,7 +352,7 @@ export default function AgentDashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      Active Listings
+                      <span className="text-lg">Active Listings</span>
                       <Link href="/dashboard/listings">
                         <Button variant="outline" size="sm">View All</Button>
                       </Link>
@@ -361,13 +361,13 @@ export default function AgentDashboard() {
                   <CardContent>
                     <div className="space-y-4">
                       {mockListings.slice(0, 3).map((listing) => (
-                        <div key={listing.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">{listing.type}</p>
-                            <p className="text-sm text-gray-600">{listing.address}</p>
+                        <div key={listing.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-gray-200 rounded-lg gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 truncate">{listing.type}</p>
+                            <p className="text-sm text-gray-600 truncate">{listing.address}</p>
                             <p className="text-xs text-gray-500 mt-1">{listing.listed}</p>
                           </div>
-                          <div className="text-right">
+                          <div className="text-right flex-shrink-0">
                             <p className="font-medium text-gray-900">{listing.price}</p>
                             <Badge className={getStatusColor(listing.status)}>
                               {listing.status.replace('_', ' ')}
@@ -480,7 +480,7 @@ export default function AgentDashboard() {
                 </Button>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                 {mockListings.map((listing) => (
                   <Card key={listing.id} className="hover:shadow-lg transition-shadow">
                     <CardHeader>

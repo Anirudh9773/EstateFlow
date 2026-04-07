@@ -12,7 +12,7 @@ interface FeaturedAgentsProps {
 export default function FeaturedAgents({ agents }: FeaturedAgentsProps) {
   return (
     <section id="agents" className="bg-surface py-20">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center">
           <SectionLabel>OUR AGENTS</SectionLabel>
           <h2 className="text-3xl md:text-4xl font-semibold text-navy mt-3">

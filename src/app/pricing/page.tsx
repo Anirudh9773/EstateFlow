@@ -184,7 +184,7 @@ export default function PricingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
             {clientPricing.map((tier, index) => {
               const Icon = tier.icon
               return (
@@ -280,7 +280,7 @@ export default function PricingPage() {
           </div>
 
           {/* Agent Pricing Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {agentPricingSummary.map((tier) => (
               <Link key={tier.category} href="/agent-pricing" className="block">
                 <Card className="border border-[var(--color-ef-border)] bg-white p-6 hover:border-[var(--color-gold)]/30 hover:shadow-lg transition-all duration-300 cursor-pointer group">
@@ -327,11 +327,11 @@ export default function PricingPage() {
           <div className="space-y-6">
             {faqs.map((faq, index) => (
               <Card key={index} className="border border-[var(--color-ef-border)] bg-white">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-[var(--color-navy)] mb-3">
+                <CardContent className="p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-[var(--color-navy)] mb-3">
                     {faq.question}
                   </h3>
-                  <p className="text-[var(--color-text-secondary)] leading-relaxed">
+                  <p className="text-[var(--color-text-secondary)] leading-relaxed text-sm sm:text-base">
                     {faq.answer}
                   </p>
                 </CardContent>
