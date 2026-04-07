@@ -14,7 +14,7 @@ export default function Footer() {
     { label: 'Agent pricing', href: ROUTES.pricing },
     { label: 'Join as an agent', href: '/join' },
     { label: 'Agent login', href: ROUTES.agentLogin },
-    { label: 'Agent dashboard', href: ROUTES.dashboard },
+    { label: 'Agent dashboard', href: ROUTES.agentDashboard },
   ]
 
   const companyLinks = [
