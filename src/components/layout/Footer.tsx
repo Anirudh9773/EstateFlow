@@ -5,7 +5,7 @@ import { SITE_TAGLINE, SITE_EMAIL, SITE_PHONE, SITE_ADDRESS, ROUTES } from '@/li
 export default function Footer() {
   const platformLinks = [
     { label: 'How it works', href: '/#how-it-works' },
-    { label: 'Find an agent', href: ROUTES.agents },
+    { label: 'Find an agent', href: ROUTES.findAgent },
     { label: 'Submit a property', href: ROUTES.submitLead },
     { label: 'Pricing', href: ROUTES.pricing },
   ]
@@ -13,7 +13,7 @@ export default function Footer() {
   const agentLinks = [
     { label: 'Agent pricing', href: ROUTES.pricing },
     { label: 'Join as an agent', href: '/join' },
-    { label: 'Agent login', href: ROUTES.login },
+    { label: 'Agent login', href: ROUTES.agentLogin },
     { label: 'Agent dashboard', href: ROUTES.dashboard },
   ]
 

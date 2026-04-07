@@ -214,7 +214,7 @@ export default function Header() {
               <div className="relative" ref={clientAuthRef}>
                 <button
                   onClick={() => toggleAuthDropdown('client')}
-                  className="flex items-center gap-2 px-3 sm:px-4 py-2 border-2 border-slate-700 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 border-2 border-amber-500 text-amber-600 rounded-lg font-medium hover:bg-amber-50 transition-colors text-sm"
                   aria-expanded={openAuthDropdown === 'client'}
                   aria-haspopup="true"
                 >
@@ -229,7 +229,7 @@ export default function Header() {
                 {openAuthDropdown === 'client' && (
                   <div className="absolute top-full right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-slate-200 p-5 animate-fadeIn">
                     <div className="flex items-start gap-3 mb-4">
-                      <User className="w-6 h-6 text-slate-700 flex-shrink-0" />
+                      <User className="w-6 h-6 text-amber-600 flex-shrink-0" />
                       <div>
                         <h3 className="font-semibold text-slate-900 mb-1">For Clients</h3>
                         <p className="text-sm text-slate-600">Find your perfect property agent</p>
@@ -245,7 +245,7 @@ export default function Header() {
                       </Link>
                       <Link
                         href="/sign-up/client"
-                        className="flex-1 px-4 py-2 bg-slate-900 text-white rounded-lg text-center font-medium hover:bg-slate-800 transition-colors"
+                        className="flex-1 px-4 py-2 bg-amber-500 text-white rounded-lg text-center font-medium hover:bg-amber-600 transition-colors"
                         onClick={() => setOpenAuthDropdown(null)}
                       >
                         Sign Up
@@ -372,7 +372,7 @@ export default function Header() {
                 {/* Client Auth */}
                 <div className="mb-4">
                   <h3 className="text-sm font-semibold text-slate-900 mb-2 flex items-center gap-2">
-                    <User className="w-4 h-4" />
+                    <User className="w-4 h-4 text-amber-600" />
                     Client Sign In / Sign Up
                   </h3>
                   <p className="text-xs text-slate-600 mb-3">Find your perfect property agent</p>
@@ -386,7 +386,7 @@ export default function Header() {
                     </Link>
                     <Link
                       href="/sign-up/client"
-                      className="flex-1 px-4 py-2 bg-slate-900 text-white rounded-lg text-center text-sm font-medium hover:bg-slate-800 transition-colors"
+                      className="flex-1 px-4 py-2 bg-amber-500 text-white rounded-lg text-center text-sm font-medium hover:bg-amber-600 transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign Up
