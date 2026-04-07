@@ -1,36 +1,204 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EstateFlow
+
+A modern, responsive real estate platform that connects property owners with verified real estate agents across the UK. Built with Next.js, TypeScript, and Tailwind CSS.
+
+## Overview
+
+EstateFlow is a comprehensive property platform designed to streamline the process of connecting homeowners with qualified real estate professionals. The platform features advanced filtering, agent verification, pricing transparency, and powerful dashboard tools for agents.
+
+## Key Features
+
+### For Homeowners & Property Seekers
+- **Advanced Agent Search**: Filter agents by location, specialisation, ratings, and response time
+- **Verified Agent Profiles**: Browse detailed profiles of 1,200+ verified agents
+- **Transparent Pricing**: Clear pricing tiers with no hidden fees
+- **Property Submission**: Easy property listing with intelligent agent matching
+- **Mobile-First Design**: Fully responsive across all devices
+
+### For Real Estate Agents
+- **Professional Dashboard**: Comprehensive lead management and analytics
+- **Lead Generation**: Access to qualified, verified leads in your coverage area
+- **Performance Analytics**: Track conversion rates, response times, and revenue
+- **Property Management**: Organize and track all your listings in one place
+- **Flexible Pricing Plans**: Tiered subscription plans based on coverage area
+
+## Technology Stack
+
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with custom design system
+- **UI Components**: Custom component library with shadcn/ui
+- **Icons**: Lucide React
+- **State Management**: React hooks and context
+- **Responsive Design**: Mobile-first approach with breakpoint optimization
+
+## Project Structure
+
+```
+src/
+  app/                    # Next.js App Router pages
+    (auth)/               # Authentication pages
+    find-an-agent/        # Agent search and filtering
+    pricing/              # Pricing information
+    agent-dashboard/      # Agent management dashboard
+    agent-login/          # Agent authentication
+    page.tsx              # Homepage
+  components/
+    agents/               # Agent-specific components
+    auth/                 # Authentication components
+    common/               # Reusable UI components
+    home/                 # Homepage components
+    layout/               # Layout components
+  data/                  # Mock data and constants
+  lib/                   # Utility functions and constants
+  types/                 # TypeScript type definitions
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+ 
+- npm, yarn, pnpm, or bun
 
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd estateflow
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+3. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages & Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Homepage
+- Hero section with property search
+- How it works overview
+- Featured agents with filtering
+- Statistics and testimonials
+- Agent call-to-action
 
-## Learn More
+### Find Agent Page (`/find-an-agent`)
+- Advanced search with real-time filtering
+- Filter by location, specialisation, and sorting options
+- Responsive agent card grid layout
+- Detailed agent profiles with ratings and reviews
 
-To learn more about Next.js, take a look at the following resources:
+### Pricing Page (`/pricing`)
+- Client pricing tiers (Free, Professional, Enterprise)
+- Agent pricing overview with detailed breakdowns
+- FAQ section with common questions
+- Interactive pricing cards with hover effects
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Agent Dashboard (`/agent-dashboard`)
+- Overview with key metrics and performance stats
+- Lead management with priority and status tracking
+- Property listings management with analytics
+- Performance analytics and conversion tracking
+- Profile settings and account management
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Agent Login (`/agent-login`)
+- Professional authentication interface
+- Split-screen design with agent benefits
+- Form validation and error handling
+- Google sign-in integration
 
-## Deploy on Vercel
+## Design System
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Color Palette
+- **Navy**: Primary brand color (`--color-navy`)
+- **Gold**: Accent color (`--color-gold`)
+- **Amber**: Client/primary actions
+- **Emerald**: Agent/secondary actions
+- **Surface**: Light backgrounds
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Responsive Breakpoints
+- **Mobile**: 0-640px
+- **Tablet**: 640px+
+- **Desktop**: 1024px+
+- **Large Desktop**: 1280px+
+
+### Component Patterns
+- Mobile-first responsive design
+- Consistent spacing and typography
+- Interactive hover states and transitions
+- Accessible form controls and navigation
+
+## Development
+
+### Code Style
+- TypeScript for type safety
+- ESLint and Prettier for code formatting
+- Component-based architecture
+- Custom hooks for reusable logic
+
+### Styling Approach
+- Tailwind CSS utility classes
+- CSS custom properties for theme colors
+- Responsive design patterns
+- Consistent component spacing
+
+### State Management
+- React hooks for local state
+- Context API for global state
+- Server components for data fetching
+
+## Deployment
+
+### Vercel (Recommended)
+The easiest way to deploy is using the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme):
+
+```bash
+npm run build
+```
+
+### Other Platforms
+The application can be deployed to any platform that supports Next.js:
+
+- Netlify
+- AWS Amplify
+- DigitalOcean
+- Railway
+- Self-hosted VPS
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support and questions:
+- Create an issue in the GitHub repository
+- Contact the development team
+- Check the documentation for common questions
+
+---
+
+**EstateFlow** - Where properties meet the right agent.
