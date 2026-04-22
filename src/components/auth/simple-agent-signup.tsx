@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+import OAuthButtonsGroup from "./OAuthButtonsGroup"
 
 export default function SimpleAgentSignUpForm() {
   const router = useRouter()
@@ -200,6 +202,15 @@ export default function SimpleAgentSignUpForm() {
         {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
         Register as Agent
       </Button>
+
+      <Separator />
+      
+      {/* OAuth Options */}
+      <OAuthButtonsGroup 
+        onOAuthClick={(provider) => console.log(`Agent sign up with ${provider}`)}
+        disabled={loading}
+        type="signup"
+      />
     </form>
   )
 }

@@ -358,6 +358,10 @@ const nationalAgents = [
 
 export default function AgentsPage() {
   const [activeTab, setActiveTab] = useState("local")
+  const [showAllAgents, setShowAllAgents] = useState(false)
+
+  // Combine all agents for the "Browse All" view
+  const allAgents = [...localAgents, ...cityAgents, ...stateAgents, ...nationalAgents]
 
   return (
     <div className="min-h-screen bg-surface">
@@ -393,95 +397,97 @@ export default function AgentsPage() {
           </Card>
         </div>
 
-        {/* Tabbed Categories */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid grid-cols-4 gap-4 bg-transparent border-0 shadow-none p-0">
-            <TabsTrigger 
-              value="local" 
-              className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-4 px-6 text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
-            >
-              Local Agent
-            </TabsTrigger>
-            <TabsTrigger 
-              value="city" 
-              className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-4 px-6 text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
-            >
-              City Agent
-            </TabsTrigger>
-            <TabsTrigger 
-              value="state" 
-              className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-4 px-6 text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
-            >
-              State Agent
-            </TabsTrigger>
-            <TabsTrigger 
-              value="national" 
-              className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-4 px-6 text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
-            >
-              National Agent
-            </TabsTrigger>
-          </TabsList>
+        {/* Tabbed Categories - Hide when showing all agents */}
+        {!showAllAgents && (
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+            <TabsList className="grid grid-cols-4 gap-4 bg-transparent border-0 shadow-none p-0">
+              <TabsTrigger 
+                value="local" 
+                className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-4 px-6 text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
+              >
+                Local Agent
+              </TabsTrigger>
+              <TabsTrigger 
+                value="city" 
+                className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-4 px-6 text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
+              >
+                City Agent
+              </TabsTrigger>
+              <TabsTrigger 
+                value="state" 
+                className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-4 px-6 text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
+              >
+                State Agent
+              </TabsTrigger>
+              <TabsTrigger 
+                value="national" 
+                className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-4 px-6 text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
+              >
+                National Agent
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Local Agents Tab */}
-          <TabsContent value="local" className="space-y-6">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-navy mb-2">Local Agents</h2>
-              <p className="text-text-secondary">
-                Specialized agents serving specific postcodes and neighborhoods
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {localAgents.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} />
-              ))}
-            </div>
-          </TabsContent>
+            {/* Local Agents Tab */}
+            <TabsContent value="local" className="space-y-6">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-navy mb-2">Local Agents</h2>
+                <p className="text-text-secondary">
+                  Specialized agents serving specific postcodes and neighborhoods
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {localAgents.map((agent) => (
+                  <AgentCard key={agent.id} agent={agent} />
+                ))}
+              </div>
+            </TabsContent>
 
-          {/* City Agents Tab */}
-          <TabsContent value="city" className="space-y-6">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-navy mb-2">City Agents</h2>
-              <p className="text-text-secondary">
-                Metropolitan agents covering entire cities and urban areas
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {cityAgents.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} />
-              ))}
-            </div>
-          </TabsContent>
+            {/* City Agents Tab */}
+            <TabsContent value="city" className="space-y-6">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-navy mb-2">City Agents</h2>
+                <p className="text-text-secondary">
+                  Metropolitan agents covering entire cities and urban areas
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {cityAgents.map((agent) => (
+                  <AgentCard key={agent.id} agent={agent} />
+                ))}
+              </div>
+            </TabsContent>
 
-          {/* State Agents Tab */}
-          <TabsContent value="state" className="space-y-6">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-navy mb-2">State Agents</h2>
-              <p className="text-text-secondary">
-                Regional specialists serving multiple counties and states
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {stateAgents.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} />
-              ))}
-            </div>
-          </TabsContent>
+            {/* State Agents Tab */}
+            <TabsContent value="state" className="space-y-6">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-navy mb-2">State Agents</h2>
+                <p className="text-text-secondary">
+                  Regional specialists serving multiple counties and states
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {stateAgents.map((agent) => (
+                  <AgentCard key={agent.id} agent={agent} />
+                ))}
+              </div>
+            </TabsContent>
 
-          {/* National Agents Tab */}
-          <TabsContent value="national" className="space-y-6">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-navy mb-2">National Agents</h2>
-              <p className="text-text-secondary">
-                Nationwide coverage with extensive UK property expertise
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {nationalAgents.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} />
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+            {/* National Agents Tab */}
+            <TabsContent value="national" className="space-y-6">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-navy mb-2">National Agents</h2>
+                <p className="text-text-secondary">
+                  Nationwide coverage with extensive UK property expertise
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {nationalAgents.map((agent) => (
+                  <AgentCard key={agent.id} agent={agent} />
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        )}
 
         {/* CTA Section */}
         <div className="text-center mt-12 p-8 bg-navy text-white rounded-lg">
@@ -494,11 +500,61 @@ export default function AgentsPage() {
             <button className="px-6 py-3 bg-gold text-navy font-semibold rounded-lg hover:bg-gold/90 transition-colors">
               Get Matched
             </button>
-            <button className="px-6 py-3 border border-gold text-gold font-semibold rounded-lg hover:bg-gold/10 transition-colors">
+            <button 
+              onClick={() => setShowAllAgents(true)}
+              className="px-6 py-3 border border-gold text-gold font-semibold rounded-lg hover:bg-gold/10 transition-colors"
+            >
               Browse All Agents
             </button>
           </div>
         </div>
+
+        {/* All Agents View - Show when Browse All is clicked */}
+        {showAllAgents && (
+          <div className="mt-12">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">All Agents</h2>
+              <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+                Browse our complete collection of {allAgents.length} verified agents across all service areas. 
+                From local specialists to national experts, find the right professional for your property needs.
+              </p>
+              <button
+                onClick={() => setShowAllAgents(false)}
+                className="mt-4 px-6 py-2 bg-navy text-white rounded-lg hover:bg-navy/90 transition-colors"
+              >
+                Back to Categories
+              </button>
+            </div>
+
+            {/* Stats Overview */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <Card className="bg-navy text-white text-center p-4">
+                <div className="text-2xl font-bold text-gold">{allAgents.length}</div>
+                <div className="text-sm opacity-90">Total Agents</div>
+              </Card>
+              <Card className="bg-navy text-white text-center p-4">
+                <div className="text-2xl font-bold text-gold">4.5+</div>
+                <div className="text-sm opacity-90">Average Rating</div>
+              </Card>
+              <Card className="bg-navy text-white text-center p-4">
+                <div className="text-2xl font-bold text-gold">2,000+</div>
+                <div className="text-sm opacity-90">Properties Sold</div>
+              </Card>
+              <Card className="bg-navy text-white text-center p-4">
+                <div className="text-2xl font-bold text-gold">24/7</div>
+                <div className="text-sm opacity-90">Support Available</div>
+              </Card>
+            </div>
+
+            {/* All Agents Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {allAgents.map((agent) => (
+                <AgentCard key={agent.id} agent={agent} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

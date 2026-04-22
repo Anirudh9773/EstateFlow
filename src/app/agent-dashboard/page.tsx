@@ -339,7 +339,7 @@ export default function AgentDashboard() {
                             <p className="text-sm text-gray-600 truncate">{lead.property}</p>
                             <p className="text-xs text-gray-500 mt-1">{lead.received}</p>
                           </div>
-                          <Badge className={getStatusColor(lead.status)} flex-shrink-0>
+                          <Badge className={`${getStatusColor(lead.status)} flex-shrink-0`}>
                             {lead.status}
                           </Badge>
                         </div>

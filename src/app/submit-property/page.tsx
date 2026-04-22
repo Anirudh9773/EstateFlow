@@ -165,39 +165,42 @@ export default function SubmitPropertyPage() {
             </div>
           </div>
 
-          {/* Bottom navigation */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 px-8 md:px-12">
-            <Button
-              variant="outline"
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              className="flex items-center gap-2"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back
-            </Button>
+          {/* Bottom navigation - Only show for steps 2-6, but no Next button on Step 5 */}
+          {currentStep !== 1 && (
+            <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 px-8 md:px-12">
+              {/* Show Back button on steps 2-5 */}
+              {currentStep !== 1 && (
+                <Button
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Back
+                </Button>
+              )}
 
-            {currentStep < 6 && (
-              <Button
-                onClick={nextStep}
-                disabled={
-                  (currentStep === 2 && formData.intent === "renting" && !formData.desiredPostcode.trim()) ||
-                  (currentStep === 2 && formData.intent === "selling" && !formData.propertyPostcode.trim()) ||
-                  (currentStep === 2 && formData.intent === "letting-selling" && (!formData.desiredPostcode.trim() || !formData.propertyPostcode.trim())) ||
-                  (currentStep === 3 && formData.propertyTypes.length === 0) ||
-                  (currentStep === 3 && formData.bedroomCounts.length === 0) ||
-                  (currentStep === 4 && formData.intent === "selling" && formData.saleTimeline.length === 0) ||
-                  (currentStep === 4 && formData.intent === "letting-selling" && formData.saleTimeline.length === 0) ||
-                  (currentStep === 5 && (!formData.firstName.trim() || !formData.lastName.trim())) ||
-                  (currentStep === 5 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) ||
-                  (currentStep === 5 && formData.phone.length < 10)
-                }
-                className="bg-green-700 hover:bg-green-800 text-white px-8"
-              >
-                Next
-              </Button>
-            )}
-          </div>
+              {/* Only show Next button on steps 2-4, not on Step 5 */}
+              {currentStep < 5 && (
+                <Button
+                  onClick={nextStep}
+                  disabled={
+                    (currentStep === 2 && formData.intent === "renting" && !formData.desiredPostcode.trim()) ||
+                    (currentStep === 2 && formData.intent === "selling" && !formData.propertyPostcode.trim()) ||
+                    (currentStep === 2 && formData.intent === "letting-selling" && (!formData.desiredPostcode.trim() || !formData.propertyPostcode.trim())) ||
+                    (currentStep === 3 && formData.propertyTypes.length === 0) ||
+                    (currentStep === 3 && formData.bedroomCounts.length === 0) ||
+                    (currentStep === 4 && formData.intent === "selling" && formData.saleTimeline.length === 0) ||
+                    (currentStep === 4 && formData.intent === "letting-selling" && formData.saleTimeline.length === 0)
+                  }
+                  className="bg-green-700 hover:bg-green-800 text-white px-8"
+                >
+                  Next
+                </Button>
+              )}
+            </div>
+          )}
         </Card>
       </div>
     </div>
@@ -291,18 +294,6 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
           className="h-14 text-lg border-green-700 focus-visible:ring-green-700"
           autoFocus
         />
-        <div className="flex justify-between mt-8">
-          <Button variant="outline" onClick={prevStep}>
-            Back
-          </Button>
-          <Button 
-            onClick={nextStep}
-            disabled={!formData.propertyPostcode.trim()}
-            className="bg-green-700 hover:bg-green-800 text-white px-8"
-          >
-            Next
-          </Button>
-        </div>
       </div>
     )
   } else if (formData.intent === "letting-selling") {
@@ -335,19 +326,7 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
           />
         </div>
         
-        <div className="flex justify-between mt-8">
-          <Button variant="outline" onClick={prevStep}>
-            Back
-          </Button>
-          <Button 
-            onClick={nextStep}
-            disabled={!formData.desiredPostcode.trim() || !formData.propertyPostcode.trim()}
-            className="bg-green-700 hover:bg-green-800 text-white px-8"
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+              </div>
     )
   } else {
     // Fallback for empty or invalid intent
@@ -355,11 +334,6 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
       <div className="space-y-6">
         <div className="text-center text-gray-500">
           Please go back and select an intent first.
-        </div>
-        <div className="flex justify-between mt-8">
-          <Button variant="outline" onClick={prevStep}>
-            Back
-          </Button>
         </div>
       </div>
     )
@@ -571,11 +545,6 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
         <div className="text-center text-gray-500">
           Please go back and select an intent first.
         </div>
-        <div className="flex justify-between mt-8">
-          <Button variant="outline" onClick={prevStep}>
-            Back
-          </Button>
-        </div>
       </div>
     )
   }
@@ -633,15 +602,6 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
         <div className="flex justify-between text-sm text-gray-400 mt-1">
           <span>£100 PCM</span>
           <span>£10,000 PCM</span>
-        </div>
-
-        <div className="flex justify-between mt-8">
-          <Button variant="outline" onClick={prevStep}>
-            Back
-          </Button>
-          <Button onClick={nextStep} className="bg-green-700 hover:bg-green-800 text-white px-8">
-            Next
-          </Button>
         </div>
       </div>
     )
@@ -841,11 +801,6 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
         <div className="text-center text-gray-500">
           Please go back and select an intent first.
         </div>
-        <div className="flex justify-between mt-8">
-          <Button variant="outline" onClick={prevStep}>
-            Back
-          </Button>
-        </div>
       </div>
     )
   }
@@ -854,17 +809,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
 function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: any) {
   return (
     <div className="space-y-6">
-      <div className="space-y-2 mt-4">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <CheckCircle className="w-5 h-5 text-green-600 shrink-0" />
-          Our recommendations are free. No strings attached.
-        </div>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <CheckCircle className="w-5 h-5 text-green-600 shrink-0" />
-          Get a list of great local agents in your inbox today
-        </div>
-      </div>
-
+      
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4 mt-6">
           <Input
@@ -910,6 +855,7 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: an
         </div>
       </div>
 
+      
       <Button
         onClick={handleSubmit}
         disabled={
@@ -932,21 +878,14 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: an
           </>
         )}
       </Button>
-
+      
       <div className="text-xs text-gray-400 mt-3 leading-relaxed">
         By clicking Submit, I acknowledge and agree to EstateFlow's{" "}
         <span className="text-green-600 underline">Terms of Use</span> and{" "}
         <span className="text-green-600 underline">Privacy Policy</span>. EstateFlow and participating agents may contact me.
       </div>
 
-      <Button 
-        variant="outline" 
-        onClick={() => setCurrentStep((s: number) => Math.max(s - 1, 1))}
-        className="mt-4"
-      >
-        Back
-      </Button>
-    </div>
+          </div>
   )
 }
 

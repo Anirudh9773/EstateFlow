@@ -33,6 +33,13 @@ export default function AgentCard({ agent }: AgentCardProps) {
             )}
           </div>
           <p className="text-text-secondary text-xs sm:text-sm truncate">{agent.agency}</p>
+          <div className="mt-2">
+            <Link href={`${ROUTES.agents}/${agent.id}`}>
+              <Button variant="outline" className="border-navy text-navy hover:bg-navy hover:text-gold text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4">
+                View profile
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -58,7 +65,7 @@ export default function AgentCard({ agent }: AgentCardProps) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-4">
+      <div className="flex flex-wrap gap-1 sm:gap-1.5">
         {agent.specialisations.slice(0, 3).map((spec) => (
           <Badge
             key={spec}
@@ -69,12 +76,6 @@ export default function AgentCard({ agent }: AgentCardProps) {
           </Badge>
         ))}
       </div>
-
-      <Link href={`${ROUTES.agents}/${agent.id}`}>
-        <Button variant="outline" className="w-full border-navy text-navy hover:bg-navy hover:text-gold text-xs sm:text-sm py-2 sm:py-2">
-          View profile
-        </Button>
-      </Link>
     </Card>
   )
 }

@@ -7,6 +7,8 @@ import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
+import OAuthButtonsGroup from "./OAuthButtonsGroup"
 
 export default function SimpleClientSignUpForm() {
   const router = useRouter()
@@ -142,6 +144,15 @@ export default function SimpleClientSignUpForm() {
         {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
         Create Client Account
       </Button>
+
+      <Separator />
+      
+      {/* OAuth Options */}
+      <OAuthButtonsGroup 
+        onOAuthClick={(provider) => console.log(`Client sign up with ${provider}`)}
+        disabled={loading}
+        type="signup"
+      />
     </form>
   )
 }
