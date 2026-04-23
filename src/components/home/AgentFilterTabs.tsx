@@ -28,7 +28,7 @@ export default function AgentFilterTabs({ agents }: AgentFilterTabsProps) {
   return (
     <Tabs defaultValue="all" className="w-full">
       {/* Tab List */}
-      <TabsList className="inline-flex h-auto bg-transparent border-b border-ef-border w-full mx-auto mb-8 sm:mb-10 rounded-none p-0 gap-2 overflow-x-auto">
+      <TabsList className="inline-flex h-auto border-red border w-full mx-auto mb-8 sm:mb-10 rounded-none p-0 gap-2">
         {cities.map((city) => (
           <TabsTrigger
             key={city.value}
