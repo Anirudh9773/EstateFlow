@@ -19,6 +19,7 @@ export default function AboutPage() {
       <HowWereDifferent />
       <OurStory />
       <AboutStats />
+      <AboutStats />
       <AboutCTA />
     </main>
   );
