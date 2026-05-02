@@ -70,11 +70,7 @@ export default function SimpleForgotPasswordForm() {
           {loading ? "Sending..." : "Send Reset Link"}
         </Button>
 
-        <div className="text-center">
-          <Link href="/sign-in" className="text-sm text-blue-600 hover:underline inline-flex items-center">
-            ← Back to sign in
-          </Link>
-        </div>
+        
       </form>
     </div>
   )

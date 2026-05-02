@@ -31,6 +31,7 @@ import {
   AlertCircle
 } from 'lucide-react'
 import { getInitials } from '@/lib/utils/getInitials'
+import { useUser } from '@/lib/auth/useUser'
 
 // Mock data for the dashboard
 const mockAgent = {
@@ -174,6 +175,11 @@ const stats = [
 export default function AgentDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
   const [searchTerm, setSearchTerm] = useState('')
+  const { user } = useUser() // Get actual logged-in user
+
+  // Use actual user data instead of mock data
+  const agentName = user?.user_metadata?.full_name || 'Agent'
+  const agentAgency = user?.user_metadata?.agency_name || 'Your Agency'
 
   const sidebarItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -213,6 +219,21 @@ export default function AgentDashboard() {
             <h2 className="text-2xl font-bold text-[var(--color-navy)]">EstateFlow</h2>
             <p className="text-sm text-gray-600">Agent Dashboard</p>
           </div>
+
+          {/* Mobile Profile Summary */}
+          <div className="lg:hidden px-6 pb-4 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-12 w-12 border-2 border-[var(--color-gold)]">
+                <AvatarFallback className="bg-[var(--color-navy)] text-[var(--color-gold)] text-lg font-semibold">
+                  {getInitials(agentName)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900 truncate">{agentName}</p>
+                <p className="text-xs text-gray-500 truncate">{agentAgency}</p>
+              </div>
+            </div>
+          </div>
           
           <nav className="mt-6">
             {sidebarItems.map((item) => {
@@ -234,21 +255,20 @@ export default function AgentDashboard() {
             })}
           </nav>
 
-          {/* Agent Profile Summary */}
-          <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200">
+          {/* Agent Profile Summary - Desktop */}
+          <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 bg-white">
             <div className="flex items-center gap-3 mb-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={mockAgent.avatar} alt={mockAgent.name} />
-                <AvatarFallback className="bg-[var(--color-navy)] text-[var(--color-gold)]">
-                  {getInitials(mockAgent.name)}
+              <Avatar className="h-12 w-12 border-2 border-[var(--color-gold)]">
+                <AvatarFallback className="bg-[var(--color-navy)] text-[var(--color-gold)] text-lg font-semibold">
+                  {getInitials(agentName)}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <p className="font-medium text-gray-900">{mockAgent.name}</p>
-                <p className="text-xs text-gray-500">{mockAgent.agency}</p>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900 truncate">{agentName}</p>
+                <p className="text-xs text-gray-500 truncate">{agentAgency}</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="w-full">
+            <Button variant="outline" size="sm" className="w-full border-[var(--color-navy)] text-[var(--color-navy)] hover:bg-[var(--color-navy)] hover:text-white">
               View Profile
             </Button>
           </div>
@@ -264,7 +284,7 @@ export default function AgentDashboard() {
                   {sidebarItems.find(item => item.id === activeTab)?.label}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Welcome back, {mockAgent.name}! Here's what's happening with your business.
+                  Welcome back, {agentName}! Here's what's happening with your business.
                 </p>
               </div>
               <div className="flex items-center gap-2 sm:gap-4">
@@ -622,7 +642,7 @@ export default function AgentDashboard() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                       <input
                         type="text"
-                        defaultValue={mockAgent.name}
+                        defaultValue={agentName}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
                       />
                     </div>
@@ -630,7 +650,7 @@ export default function AgentDashboard() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Agency</label>
                       <input
                         type="text"
-                        defaultValue={mockAgent.agency}
+                        defaultValue={agentAgency}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
                       />
                     </div>
@@ -638,7 +658,7 @@ export default function AgentDashboard() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                       <input
                         type="email"
-                        defaultValue="oliver@hartley.com"
+                        defaultValue={user?.email || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
                       />
                     </div>
@@ -646,7 +666,7 @@ export default function AgentDashboard() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                       <input
                         type="tel"
-                        defaultValue="+44 20 1234 5678"
+                        defaultValue={user?.user_metadata?.phone || ''}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
                       />
                     </div>
@@ -655,7 +675,7 @@ export default function AgentDashboard() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
                     <textarea
                       rows={4}
-                      defaultValue={mockAgent.bio}
+                      defaultValue={user?.user_metadata?.bio || 'Tell us about yourself and your experience...'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
                     />
                   </div>

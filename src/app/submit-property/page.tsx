@@ -125,17 +125,17 @@ export default function SubmitPropertyPage() {
       <div className="relative min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-2xl w-full overflow-hidden">
           {/* Progress bar */}
-          <div className="h-1.5 bg-gray-200">
+          <div className="h-1.5 bg-gray-200 relative">
             <div 
               className="h-full bg-green-700 transition-all duration-500 ease-in-out"
               style={{ width: `${getProgress()}%` }}
             />
-          </div>
-
-          {/* Step badge */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
-            <div className="border border-green-700 text-green-700 text-sm font-medium px-4 py-1 rounded-full bg-transparent">
-              {currentStep === 8 ? "Last Step!" : `Step ${currentStep} / ${TOTAL_STEPS}`}
+            
+            {/* Step badge - positioned above progress bar */}
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-10">
+              <div className="border border-green-700 text-green-700 text-sm font-medium px-4 py-1 rounded-full bg-white shadow-sm">
+                {currentStep === 8 ? "Last Step!" : `Step ${currentStep} / ${TOTAL_STEPS}`}
+              </div>
             </div>
           </div>
 

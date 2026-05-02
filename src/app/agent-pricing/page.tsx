@@ -294,8 +294,6 @@ export default function AgentPricingPage() {
                   className={`w-full mt-auto ${
                     selectedPlan === tier.category
                       ? "bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90" 
-                      : tier.popular
-                      ? "bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90"
                       : "bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90"
                   }`}
                 >
@@ -382,14 +380,14 @@ export default function AgentPricingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-6 py-3">
-              Start Free Trial
+              Get Started Now
             </Button>
             <Button variant="outline" className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-6 py-3">
               Schedule Demo
             </Button>
           </div>
           <p className="mt-4 text-sm opacity-75">
-            No credit card required · Cancel anytime · 14-day free trial
+            Flexible monthly plans · Cancel anytime · No setup fees
           </p>
         </div>
       </div>

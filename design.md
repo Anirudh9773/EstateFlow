@@ -130,6 +130,273 @@ export default function PageName() {
 - **Surface:** Light background (`bg-surface`)
 - **Text Secondary:** Muted text (`text-text-secondary`)
 - **Text Muted:** Very muted text (`text-text-muted`)
+- **Border:** Custom border color (`border-ef-border`)
+
+## Form Input Styling
+
+### Input Fields (Email, Password, Text, etc.)
+- **Border**: `border border-slate-300` (visible border matching theme)
+- **Focus State**: `focus:border-navy focus:ring-2 focus:ring-navy/20`
+- **Hover State**: `hover:border-slate-400`
+- **Disabled State**: `disabled:bg-slate-50 disabled:text-slate-500`
+- **Padding**: `px-3 py-2` or `px-4 py-2` for larger inputs
+- **Border Radius**: `rounded-lg` or `rounded-md`
+- **Background**: `bg-white`
+
+### Checkbox Styling
+- **Border**: `border-2 border-slate-300` (visible border)
+- **Checked State**: `data-[state=checked]:bg-navy data-[state=checked]:border-navy`
+- **Focus State**: `focus:ring-2 focus:ring-navy/20`
+- **Size**: `h-4 w-4` or `h-5 w-5`
+- **Border Radius**: `rounded` or `rounded-sm`
+
+### Select/Dropdown Styling
+- **Border**: `border border-slate-300`
+- **Focus State**: `focus:border-navy focus:ring-2 focus:ring-navy/20`
+- **Background**: `bg-white`
+- **Padding**: `px-3 py-2`
+
+### Radio Button Styling
+- **Border**: `border-2 border-slate-300`
+- **Checked State**: `data-[state=checked]:border-navy`
+- **Focus State**: `focus:ring-2 focus:ring-navy/20`
+
+### Textarea Styling
+- **Border**: `border border-slate-300`
+- **Focus State**: `focus:border-navy focus:ring-2 focus:ring-navy/20`
+- **Min Height**: `min-h-[100px]`
+- **Resize**: `resize-y` or `resize-none`
+
+### Form Field Pattern
+```tsx
+<div className="space-y-2">
+  <label className="text-sm font-medium text-slate-900">
+    Field Label
+  </label>
+  <Input
+    type="text"
+    placeholder="Enter value"
+    className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+  />
+</div>
+```
+
+### Checkbox Pattern
+```tsx
+<div className="flex items-center gap-2">
+  <Checkbox
+    id="checkbox-id"
+    className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy"
+  />
+  <label htmlFor="checkbox-id" className="text-sm">
+    Checkbox Label
+  </label>
+</div>
+```
+
+### OAuth Button Styling
+
+OAuth buttons for social authentication (Google, Microsoft, X/Twitter):
+
+- **Border**: `border-2 border-slate-300` (visible 2px border)
+- **Background**: `bg-white` (white background)
+- **Hover**: `hover:bg-slate-50 hover:border-slate-400`
+- **Height**: `h-11` (44px for better touch targets)
+- **Text**: `text-slate-700 font-medium`
+- **Layout**: Icon on left, text centered, full width
+- **Spacing**: `space-y-3` between buttons in group
+- **Loading State**: Disabled with spinner icon
+- **Focus State**: `focus:ring-2 focus:ring-navy/20`
+
+#### OAuth Button Pattern
+```tsx
+<Button 
+  type="button" 
+  variant="outline" 
+  className="w-full gap-2 h-11 border-2 border-slate-300 bg-white hover:bg-slate-50 hover:border-slate-400 text-slate-700 font-medium"
+  disabled={isLoading}
+>
+  {isLoading ? (
+    <Loader2 className="h-4 w-4 animate-spin" />
+  ) : (
+    <ProviderIcon className="h-5 w-5" />
+  )}
+  <span className="flex-1 text-left">Continue with Provider</span>
+</Button>
+```
+
+#### OAuth Buttons Group Pattern
+```tsx
+<div className="space-y-3">
+  <OAuthButton provider="google" type="signin" onLoading={setIsLoading} />
+  <OAuthButton provider="microsoft" type="signin" onLoading={setIsLoading} />
+  <OAuthButton provider="twitter" type="signin" onLoading={setIsLoading} />
+</div>
+
+{/* Or use the group component */}
+<OAuthButtonsGroup type="signin" />
+```
+
+#### OAuth Button Component Usage
+```tsx
+// In sign-in page
+<OAuthButton 
+  provider="google" 
+  type="signin"  // No user type for sign-in
+  onLoading={setIsLoading}
+/>
+
+// In client sign-up page
+<OAuthButton 
+  provider="google" 
+  type="signup" 
+  userType="client"  // Specify user type for sign-up
+  onLoading={setIsLoading}
+/>
+
+// In agent sign-up page
+<OAuthButton 
+  provider="google" 
+  type="signup" 
+  userType="agent"  // Specify user type for sign-up
+  onLoading={setIsLoading}
+/>
+```
+
+### Authentication Form Layout
+
+Authentication forms follow a consistent split-screen layout pattern:
+
+#### Layout Structure
+- **Left Panel**: Branding and value proposition (40% width on desktop)
+- **Right Panel**: Form content (60% width on desktop)
+- **Mobile**: Stacked layout (left panel hidden or minimal)
+
+#### Form Container Pattern
+```tsx
+<div className="min-h-screen flex">
+  {/* Left Panel - Branding */}
+  <div className="hidden lg:flex lg:w-2/5 bg-navy text-white p-12 flex-col justify-between">
+    <div>
+      <Logo />
+      <h1 className="text-3xl font-bold mt-8">Welcome to EstateFlow</h1>
+      <p className="text-lg mt-4 text-white/80">
+        Connect with verified real estate agents across the UK
+      </p>
+    </div>
+    {/* Features list or testimonials */}
+  </div>
+
+  {/* Right Panel - Form */}
+  <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+    <div className="w-full max-w-md space-y-8">
+      {/* Form content */}
+    </div>
+  </div>
+</div>
+```
+
+#### Form Content Pattern
+```tsx
+<div className="space-y-6">
+  {/* Header */}
+  <div className="text-center">
+    <h2 className="text-2xl font-bold text-navy">Sign In</h2>
+    <p className="text-sm text-slate-600 mt-2">
+      Enter your credentials to continue
+    </p>
+  </div>
+
+  {/* OAuth Buttons */}
+  <div className="space-y-3">
+    <OAuthButtonsGroup type="signin" />
+  </div>
+
+  {/* Divider */}
+  <div className="relative">
+    <div className="absolute inset-0 flex items-center">
+      <div className="w-full border-t border-slate-300" />
+    </div>
+    <div className="relative flex justify-center text-sm">
+      <span className="px-2 bg-white text-slate-500">Or continue with email</span>
+    </div>
+  </div>
+
+  {/* Email/Password Form */}
+  <form className="space-y-4">
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-slate-900">Email</label>
+      <Input 
+        type="email" 
+        className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+      />
+    </div>
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-slate-900">Password</label>
+      <Input 
+        type="password" 
+        className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+      />
+    </div>
+    <Button type="submit" className="w-full bg-navy text-gold hover:bg-navy/90">
+      Sign In
+    </Button>
+  </form>
+
+  {/* Footer Links */}
+  <div className="text-center text-sm">
+    <p className="text-slate-600">
+      Don't have an account?{' '}
+      <Link href="/sign-up/client" className="text-navy font-medium hover:underline">
+        Sign up
+      </Link>
+    </p>
+  </div>
+</div>
+```
+
+#### Loading States
+```tsx
+// Button loading state
+<Button disabled={isLoading}>
+  {isLoading ? (
+    <>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      Signing in...
+    </>
+  ) : (
+    'Sign In'
+  )}
+</Button>
+
+// OAuth button loading state
+<OAuthButton 
+  provider="google" 
+  type="signin" 
+  onLoading={setIsLoading}
+  disabled={isLoading}
+/>
+```
+
+#### Error Display Pattern
+```tsx
+{error && (
+  <Alert variant="destructive">
+    <AlertCircle className="h-4 w-4" />
+    <AlertDescription>{error}</AlertDescription>
+  </Alert>
+)}
+```
+
+#### Success Message Pattern
+```tsx
+{success && (
+  <Alert className="border-green-200 bg-green-50 text-green-800">
+    <CheckCircle className="h-4 w-4" />
+    <AlertDescription>{success}</AlertDescription>
+  </Alert>
+)}
+```
 
 ## Responsive Breakpoints
 - Mobile: Default styles

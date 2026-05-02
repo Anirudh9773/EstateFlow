@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 
 interface OAuthButtonProps {
-  provider: "google" | "yahoo" | "microsoft" | "apple" | "facebook"
+  provider: "google" | "microsoft" | "twitter"
   onClick?: () => void
   disabled?: boolean
   loading?: boolean
@@ -22,40 +22,22 @@ const providerConfig = {
       </svg>
     ),
   },
-  yahoo: {
-    name: "Yahoo",
-    icon: (
-      <svg className="w-4 h-4" viewBox="0 0 24 24">
-        <path fill="#6001D2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        <path fill="#FF7900" d="M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12h20z"/>
-        <text x="12" y="16" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">Y!</text>
-      </svg>
-    ),
-  },
   microsoft: {
     name: "Microsoft",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24">
-        <rect x="2" y="2" width="20" height="20" rx="2" fill="#F25022"/>
-        <rect x="2" y="2" width="9.5" height="9.5" fill="#7FBA00"/>
-        <rect x="12.5" y="12.5" width="9.5" height="9.5" fill="#00A4EF"/>
-        <rect x="12.5" y="2" width="9.5" height="9.5" fill="#FFB900"/>
+        <rect x="2" y="2" width="9.5" height="9.5" fill="#F25022"/>
+        <rect x="13" y="2" width="9.5" height="9.5" fill="#7FBA00"/>
+        <rect x="2" y="13" width="9.5" height="9.5" fill="#00A4EF"/>
+        <rect x="13" y="13" width="9.5" height="9.5" fill="#FFB900"/>
       </svg>
     ),
   },
-  apple: {
-    name: "Apple",
+  twitter: {
+    name: "X",
     icon: (
-      <svg className="w-4 h-4" viewBox="0 0 24 24">
-        <path fill="#000000" d="M17.05 20.28c-.98.95-2.05.88-3.08.43-1.09-.46-2.09-.48-3.24 0-1.44.62-2.66.44-4.02-1.31C2.54 15.97 3.04 9.27 7.72 9.03c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.2 4.36zm-2.28-13.92c.07-1.23-.9-2.26-2.03-2.36-1.14.11-1.99 1.35-1.92 2.58.07 1.23.9 2.26 2.03 2.36 1.14-.11 1.99-1.35 1.92-2.58z"/>
-      </svg>
-    ),
-  },
-  facebook: {
-    name: "Facebook",
-    icon: (
-      <svg className="w-4 h-4" viewBox="0 0 24 24">
-        <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="#000000"/>
       </svg>
     ),
   },
@@ -75,12 +57,12 @@ export default function OAuthButton({
     <Button 
       type="button" 
       variant="outline" 
-      className="w-full gap-2"
+      className="w-full gap-2 h-11 border-2 border-slate-300 bg-white hover:bg-slate-50 hover:border-slate-400 text-slate-700 font-medium transition-colors justify-center"
       onClick={onClick}
       disabled={disabled || loading}
     >
       {config.icon}
-      {actionText} {config.name}
+      <span>{actionText} {config.name}</span>
     </Button>
   )
 }

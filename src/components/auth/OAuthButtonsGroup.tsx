@@ -7,15 +7,13 @@ interface OAuthButtonsGroupProps {
   disabled?: boolean
   loading?: boolean
   type?: "signin" | "signup"
-  providers?: ("google" | "yahoo" | "microsoft" | "apple" | "facebook")[]
+  providers?: ("google" | "microsoft" | "twitter")[]
 }
 
-const defaultProviders: Array<"google" | "yahoo" | "microsoft" | "apple" | "facebook"> = [
+const defaultProviders: Array<"google" | "microsoft" | "twitter"> = [
   "google",
-  "yahoo", 
   "microsoft",
-  "apple",
-  "facebook"
+  "twitter"
 ]
 
 export default function OAuthButtonsGroup({ 
@@ -36,7 +34,7 @@ export default function OAuthButtonsGroup({
   }
   
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {providers.map((provider) => (
         <OAuthButton
           key={provider}

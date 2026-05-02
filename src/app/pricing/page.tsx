@@ -13,12 +13,12 @@ export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
   const [selectedPlan, setSelectedPlan] = useState<string>('Professional')
 
-  // Client Pricing Tiers (Free for clients)
+  // Client Pricing Tiers
   const clientPricing = [
     {
       category: 'Basic',
       description: 'Perfect for homeowners looking to sell a single property',
-      price: 'Free',
+      price: '£49',
       period: 'one-time',
       features: [
         'Submit one property listing',
@@ -26,6 +26,8 @@ export default function PricingPage() {
         'Basic property profile',
         'Email notifications',
         '7-day agent matching',
+        'Basic market insights',
+        'Standard support'
       ],
       notIncluded: [
         'Priority placement',
@@ -123,8 +125,8 @@ export default function PricingPage() {
 
   const faqs = [
     {
-      question: 'Is EstateFlow really free for homeowners?',
-      answer: 'Yes! Our Basic plan for homeowners is completely free. You can submit your property and connect with up to 3 verified agents at no cost.'
+      question: 'What payment methods do you accept?',
+      answer: 'We accept all major credit cards, debit cards, and bank transfers. All payments are processed securely through our encrypted payment gateway.'
     },
     {
       question: 'How do agents get paid?',
@@ -247,12 +249,10 @@ export default function PricingPage() {
                       className={`w-full mt-auto ${
                         selectedPlan === tier.category
                           ? "bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90" 
-                          : tier.popular
-                          ? "bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90"
                           : "bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90"
                       }`}
                     >
-                      {tier.price === 'Custom' ? 'Contact Sales' : tier.price === 'Free' ? 'Get Started' : 'Choose Plan'}
+                      {tier.price === 'Custom' ? 'Contact Sales' : 'Choose Plan'}
                     </Button>
                   </CardContent>
                 </Card>

@@ -34,26 +34,15 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-10 sm:mt-14">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-12">
           {steps.map((step, index) => (
-            <div key={step.number} className="relative">
-              <Card className="border-ef-border shadow-none p-6 sm:p-8 h-full">
-                <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-6">
-                  <span className="text-gold font-semibold text-sm">{step.number}</span>
-                </div>
-                <h3 className="font-semibold text-navy text-lg mb-2">{step.title}</h3>
-                <p className="text-text-secondary text-sm leading-relaxed">{step.description}</p>
-              </Card>
-              
-              {/* Arrow between cards (desktop only) */}
-              {index < steps.length - 1 && (
-                <div className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                  <svg className="w-5 h-5 text-gold/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              )}
-            </div>
+            <Card key={step.number} className="border-2 border-slate-200 shadow-sm hover:shadow-md hover:border-gold/30 transition-all duration-300 p-6 sm:p-8 h-full">
+              <div className="w-12 h-12 rounded-full bg-gold/10 border-2 border-gold/30 flex items-center justify-center mb-6">
+                <span className="text-gold font-semibold text-sm">{step.number}</span>
+              </div>
+              <h3 className="font-semibold text-navy text-lg mb-2">{step.title}</h3>
+              <p className="text-text-secondary text-sm leading-relaxed">{step.description}</p>
+            </Card>
           ))}
         </div>
       </div>

@@ -20,8 +20,8 @@ export default function HowWereDifferent() {
     },
     {
       icon: Shield,
-      title: 'Free to Use',
-      description: 'Property owners submit for free — no hidden fees, no obligations. Only pay your chosen agent when you decide to work with them.',
+      title: 'Affordable & Transparent',
+      description: 'Property owners pay only for the services they need — no hidden fees, no obligations. Clear pricing for every plan.',
     },
   ];
 

@@ -22,12 +22,27 @@ export default function SimpleClientSignInForm() {
     e.preventDefault()
     setLoading(true)
     
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    
-    console.log('Client sign in:', { email, password, rememberMe })
-    setLoading(false)
-    router.push("/")
+    try {
+      const { signIn } = await import('@/lib/auth/actions')
+      const result = await signIn({ email, password })
+      
+      if (result?.error) {
+        alert(result.error)
+        setLoading(false)
+        return
+      }
+      
+      // Success - redirect based on user type
+      if (result.userType === 'agent') {
+        window.location.href = '/agent-dashboard'
+      } else {
+        window.location.href = '/'
+      }
+    } catch (error) {
+      console.error('Sign in error:', error)
+      alert('An error occurred during sign in')
+      setLoading(false)
+    }
   }
 
   return (

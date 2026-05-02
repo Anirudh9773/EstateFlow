@@ -11,7 +11,7 @@ const faqs = [
     link: '/agent-pricing',
   },
   {
-    question: 'Is EstateFlow free for sellers?',
+    question: 'What are the pricing options for sellers?',
     link: '/pricing',
   },
 ];

@@ -5,7 +5,7 @@ export default function AboutCTA() {
     <DualCTA
       leftSection={{
         title: 'Ready to Find Your Perfect Agent?',
-        description: 'Submit your property details and get matched with verified local agents in under 2 minutes. It\'s free, with no obligations.',
+        description: 'Submit your property details and get matched with verified local agents in under 2 minutes. Simple, transparent pricing.',
         buttonText: 'Submit Your Property',
         buttonHref: '/submit-property',
         buttonVariant: 'primary',

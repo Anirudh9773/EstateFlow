@@ -9,12 +9,14 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import OAuthButtonsGroup from "./OAuthButtonsGroup"
+import { signInWithOAuth } from "@/lib/auth/actions"
 
 export default function SimpleClientSignUpForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [oauthLoading, setOauthLoading] = useState(false)
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -24,8 +26,31 @@ export default function SimpleClientSignUpForm() {
     terms: false,
   })
 
+  const handleOAuthClick = async (provider: string) => {
+    setOauthLoading(true)
+    try {
+      const result = await signInWithOAuth(provider as 'google' | 'azure' | 'twitter', 'client')
+      if (result?.error) {
+        alert(result.error)
+        setOauthLoading(false)
+      }
+      // If successful, user will be redirected
+    } catch (error) {
+      console.error('OAuth error:', error)
+      alert('An error occurred during OAuth sign up')
+      setOauthLoading(false)
+    }
+  }
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate all required fields
+    if (!formData.fullName || !formData.email || !formData.phone || 
+        !formData.password || !formData.confirmPassword) {
+      alert("Please fill in all required fields")
+      return
+    }
     
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match")
@@ -39,12 +64,30 @@ export default function SimpleClientSignUpForm() {
     
     setLoading(true)
     
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    
-    console.log('Client sign up:', formData)
-    setLoading(false)
-    router.push("/sign-in")
+    try {
+      const { signUp } = await import('@/lib/auth/actions')
+      const result = await signUp({
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        phone: formData.phone,
+        userType: 'client',
+      })
+      
+      if (result.error) {
+        alert(result.error)
+        setLoading(false)
+        return
+      }
+      
+      // Success - force reload for immediate auth state update
+      alert('Account created successfully!')
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Sign up error:', error)
+      alert('An error occurred during sign up')
+      setLoading(false)
+    }
   }
 
   const handleChange = (field: string, value: any) => {
@@ -61,6 +104,7 @@ export default function SimpleClientSignUpForm() {
           value={formData.fullName}
           onChange={(e) => handleChange("fullName", e.target.value)}
           required
+          className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
         />
       </div>
 
@@ -72,6 +116,7 @@ export default function SimpleClientSignUpForm() {
           value={formData.email}
           onChange={(e) => handleChange("email", e.target.value)}
           required
+          className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
         />
       </div>
 
@@ -83,6 +128,7 @@ export default function SimpleClientSignUpForm() {
           value={formData.phone}
           onChange={(e) => handleChange("phone", e.target.value)}
           required
+          className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
         />
       </div>
 
@@ -95,6 +141,7 @@ export default function SimpleClientSignUpForm() {
             value={formData.password}
             onChange={(e) => handleChange("password", e.target.value)}
             required
+            className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
           />
           <button
             type="button"
@@ -115,6 +162,7 @@ export default function SimpleClientSignUpForm() {
             value={formData.confirmPassword}
             onChange={(e) => handleChange("confirmPassword", e.target.value)}
             required
+            className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
           />
           <button
             type="button"
@@ -131,16 +179,21 @@ export default function SimpleClientSignUpForm() {
           id="terms"
           checked={formData.terms}
           onCheckedChange={(checked) => handleChange("terms", checked)}
+          className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy"
         />
         <label htmlFor="terms" className="text-sm leading-tight">
           I agree to the{" "}
-          <Link href="/terms" className="text-blue-600 hover:underline">
+          <Link href="/terms" className="text-navy hover:underline font-medium">
             Terms & Conditions
           </Link>
         </label>
       </div>
 
-      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={loading}>
+      <Button 
+        type="submit" 
+        className="w-full bg-navy text-gold hover:bg-navy/90 font-medium" 
+        disabled={loading || oauthLoading}
+      >
         {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
         Create Client Account
       </Button>
@@ -149,8 +202,9 @@ export default function SimpleClientSignUpForm() {
       
       {/* OAuth Options */}
       <OAuthButtonsGroup 
-        onOAuthClick={(provider) => console.log(`Client sign up with ${provider}`)}
-        disabled={loading}
+        onOAuthClick={handleOAuthClick}
+        disabled={loading || oauthLoading}
+        loading={oauthLoading}
         type="signup"
       />
     </form>

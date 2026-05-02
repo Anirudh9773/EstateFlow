@@ -43,7 +43,7 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 - **Language**: TypeScript (strict mode)
 - **Styling**: Tailwind CSS v4
 - **UI Library**: shadcn/ui (27 components) with @base-ui/react primitives
-- **Authentication**: Supabase Auth with OAuth (Google, Yahoo, Microsoft, Apple, Facebook)
+- **Authentication**: Supabase Auth with OAuth (Google, Microsoft, X/Twitter)
 - **Database**: Supabase (PostgreSQL)
 - **Icons**: Lucide React
 - **Forms**: React Hook Form + Zod validation
@@ -59,10 +59,18 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 ### Recent Major Updates (April 2026)
 
 #### Authentication System Overhaul
-- OAuth Integration for 5 providers (Google, Yahoo, Microsoft, Apple, Facebook)
+- OAuth Integration for 3 providers (Google, Microsoft, X/Twitter)
 - Reusable components: `OAuthButton`, `OAuthButtonsGroup`, `AuthForm`
 - Consolidated authentication forms (eliminated duplicates)
 - Unified `AuthForm` component for all auth scenarios
+- Google OAuth fully implemented and ready for configuration
+
+#### Role-Based User Profiles
+- Automatic profile creation in dedicated tables (clients/agents)
+- Database trigger-based profile creation (or manual via service role key)
+- Row Level Security (RLS) policies for data protection
+- Agent-specific professional fields (agency, license, experience)
+- Public agent profile browsing for marketplace functionality
 
 #### Property Submission Enhancement
 - Multi-step form with improved navigation
@@ -78,6 +86,7 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 - Fixed React `flex-shrink-0` boolean attribute error
 - Enhanced component reusability
 - Standardized UI patterns
+- Fixed form input visibility (added borders to all inputs)
 
 ---
 
@@ -269,27 +278,47 @@ estateflow/
 **Files**:
 - `src/lib/supabaseClient.ts` - Browser client (use `createSupabaseClient()`)
 - `src/lib/supabaseServer.ts` - Server client (use `createSupabaseServerClient()`)
-- `src/lib/auth/actions.ts` - Server actions (signUp, signIn, signOut, getUser)
+- `src/lib/auth/actions.ts` - Server actions (signUp, signIn, signOut, signInWithOAuth, getUser)
 - `src/lib/auth/useUser.ts` - Client hook for user state
 - `src/middleware.ts` - Route protection
+- `src/app/auth/callback/route.ts` - OAuth callback handler
 
-**Environment Variables** (already configured in `.env.local`):
+**Environment Variables** (configure in `.env.local`):
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://cdzhgwptfwwyubrdcbsa.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
+**Get these values from**: Supabase Dashboard → Settings → API
+
+**Database Schema**:
+- `public.clients` - Client user profiles
+- `public.agents` - Agent user profiles with professional fields
+- Automatic profile creation via database trigger or manual creation
+- Row Level Security (RLS) policies for data protection
+
 ### User Types
-- **Client**: Property owners/seekers
-- **Agent**: Real estate professionals
+- **Client**: Property owners/seekers (stored in `public.clients` table)
+- **Agent**: Real estate professionals (stored in `public.agents` table)
 
 ### OAuth Providers
-- Google
-- Yahoo
-- Microsoft
-- Apple
-- Facebook
+- **Google** - ✅ Fully implemented (requires Supabase configuration)
+- **Microsoft** - ⏳ Code ready (requires Supabase configuration)
+- **X (Twitter)** - ⏳ Code ready (requires Supabase configuration)
+
+### Profile Creation Methods
+1. **Database Trigger** (Recommended for production):
+   - Automatic profile creation when user signs up
+   - Requires special permissions on `auth.users` table
+   - See `SUPABASE_DATABASE_SETUP.md` for setup
+
+2. **Manual Creation** (Works everywhere):
+   - Profile created via server action using service role key
+   - No special permissions required
+   - Fallback method if trigger fails
+   - See `QUICK_FIX_GUIDE.md` for implementation
 
 ### Protected Routes (via middleware)
 - `/agent-dashboard/*` - Requires authentication
@@ -307,8 +336,12 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - `SignOutButton.tsx` - Sign-out button
 
 **IMPORTANT**: 
-- See `SUPABASE_SETUP.md` for database schema and setup instructions
-- See `OAUTH_IMPLEMENTATION_PLAN.md` for OAuth social authentication implementation
+- See `SUPABASE_DATABASE_SETUP.md` for complete database schema and setup instructions
+- See `GOOGLE_OAUTH_SETUP.md` for Google OAuth configuration (step-by-step)
+- See `OAUTH_IMPLEMENTATION_SUMMARY.md` for OAuth implementation details
+- See `QUICK_FIX_GUIDE.md` for quick database setup without triggers
+- See `MIGRATION_TROUBLESHOOTING.md` for database migration issues
+- See `E2E_TESTING_GUIDE.md` for comprehensive testing instructions
 
 ---
 
@@ -463,6 +496,28 @@ export default function MyComponent({ title, agents }: MyComponentProps) {
 4. **FOLLOW** design system colors and spacing
 5. **USE** responsive classes: `text-base sm:text-lg md:text-xl`
 
+### Form Input Styling (IMPORTANT)
+1. **ALL input fields MUST have visible borders**: `border border-slate-300`
+2. **Focus states**: `focus:border-navy focus:ring-2 focus:ring-navy/20`
+3. **Checkboxes MUST have borders**: `border-2 border-slate-300`
+4. **Checked state**: `data-[state=checked]:bg-navy data-[state=checked]:border-navy`
+5. **Follow design.md** for complete form styling patterns
+
+**Example Input**:
+```tsx
+<Input
+  type="email"
+  className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+/>
+```
+
+**Example Checkbox**:
+```tsx
+<Checkbox
+  className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy"
+/>
+```
+
 ### State Management Rules
 1. **USE** React hooks for local state
 2. **USE** Server Components for data fetching
@@ -529,6 +584,100 @@ export default function MyComponent({ title, agents }: MyComponentProps) {
 
 ---
 
+## 🗄️ Database Setup & Profile Management
+
+### Profile Tables Schema
+
+**clients table**:
+- `id` (UUID, primary key)
+- `user_id` (UUID, foreign key to auth.users, unique)
+- `full_name` (TEXT, not null)
+- `email` (TEXT, not null)
+- `phone` (TEXT, nullable)
+- `created_at` (TIMESTAMPTZ)
+- `updated_at` (TIMESTAMPTZ)
+
+**agents table**:
+- `id` (UUID, primary key)
+- `user_id` (UUID, foreign key to auth.users, unique)
+- `full_name` (TEXT, not null)
+- `email` (TEXT, not null)
+- `phone` (TEXT, nullable)
+- `agency_name` (TEXT, nullable)
+- `license_number` (TEXT, nullable)
+- `area_of_operation` (TEXT, nullable)
+- `years_experience` (TEXT, nullable)
+- `created_at` (TIMESTAMPTZ)
+- `updated_at` (TIMESTAMPTZ)
+
+### Profile Creation Methods
+
+**Method 1: Database Trigger (Recommended for Production)**
+- Automatic profile creation when user signs up
+- Trigger function reads `user_metadata` and creates appropriate profile
+- Requires special permissions on `auth.users` table
+- See `SUPABASE_DATABASE_SETUP.md` for complete setup
+
+**Method 2: Manual Creation (Works Everywhere)**
+- Profile created via server action using service role key
+- No special permissions required
+- Implemented in `src/lib/auth/actions.ts` (signUp function)
+- Fallback method if trigger fails
+- See `QUICK_FIX_GUIDE.md` for 3-step setup
+
+### Row Level Security (RLS) Policies
+
+**clients table**:
+- Users can SELECT their own profile
+- Users can UPDATE their own profile
+- Users can INSERT their own profile (for manual creation)
+
+**agents table**:
+- Users can SELECT their own profile
+- Users can UPDATE their own profile
+- Users can INSERT their own profile (for manual creation)
+- Public can SELECT all agent profiles (for browsing)
+
+**RLS Setup**: Run `supabase/migrations/002_enable_rls_policies.sql` in Supabase Dashboard
+
+### Database Setup Steps
+
+**Quick Setup (No Trigger)**:
+1. Run `supabase/migrations/001_create_profile_tables_and_trigger.sql` (creates tables)
+2. Run INSERT policy SQL from `QUICK_FIX_GUIDE.md`
+3. Restart dev server
+4. Test sign-up
+
+**Full Setup (With Trigger)**:
+1. Run `supabase/migrations/001_create_profile_tables_and_trigger.sql`
+2. Run `supabase/migrations/002_enable_rls_policies.sql`
+3. Test sign-up
+4. If trigger fails, follow `MIGRATION_TROUBLESHOOTING.md`
+
+### Testing Database Setup
+
+**Verify Tables**:
+```sql
+SELECT table_name FROM information_schema.tables 
+WHERE table_schema = 'public' AND table_name IN ('clients', 'agents');
+```
+
+**Verify RLS Policies**:
+```sql
+SELECT tablename, policyname, cmd FROM pg_policies 
+WHERE tablename IN ('clients', 'agents');
+```
+
+**Test Profile Creation**:
+1. Sign up as client at `/sign-up/client`
+2. Check `public.clients` table for new record
+3. Sign up as agent at `/sign-up/agent`
+4. Check `public.agents` table for new record
+
+**Comprehensive Testing**: See `E2E_TESTING_GUIDE.md` for complete test suite
+
+---
+
 ## 🧪 Testing & Quality
 
 ### Before Committing
@@ -537,6 +686,8 @@ export default function MyComponent({ title, agents }: MyComponentProps) {
 3. **TEST** in browser - all user flows
 4. **VERIFY** responsive design (mobile, tablet, desktop)
 5. **CHECK** console for errors/warnings
+6. **TEST** authentication flows (sign-up, sign-in, OAuth)
+7. **VERIFY** profile creation in database
 
 ### Code Quality Checklist
 - [ ] No TypeScript errors
@@ -547,6 +698,41 @@ export default function MyComponent({ title, agents }: MyComponentProps) {
 - [ ] Loading states implemented
 - [ ] Error handling implemented
 - [ ] Accessibility considerations (ARIA labels, keyboard nav)
+- [ ] Database profiles created correctly
+- [ ] RLS policies working as expected
+
+### End-to-End Testing
+
+**Comprehensive Test Suite**: See `E2E_TESTING_GUIDE.md` for complete testing instructions
+
+**Key Test Scenarios**:
+1. Client email/password sign-up → profile in clients table → sign-in → home redirect
+2. Agent email/password sign-up → profile in agents table → sign-in → dashboard redirect
+3. Client OAuth sign-up → profile in clients table → sign-in → home redirect
+4. Agent OAuth sign-up → profile in agents table → sign-in → dashboard redirect
+5. Duplicate email prevention
+6. RLS policies (own profile access only, public agent browsing)
+7. Form validations (email, password, required fields)
+8. Error handling (invalid credentials, network errors, weak passwords)
+
+**Quick Test**:
+```bash
+# 1. Sign up as client
+# Navigate to /sign-up/client, fill form, submit
+
+# 2. Verify in Supabase Dashboard
+# Check auth.users for user with user_type='client'
+# Check public.clients for profile record
+
+# 3. Sign in
+# Navigate to /sign-in, enter credentials
+# Verify redirect to homepage
+
+# 4. Repeat for agent
+# Navigate to /sign-up/agent, fill form, submit
+# Verify profile in public.agents
+# Sign in and verify redirect to /agent-dashboard
+```
 
 ---
 
@@ -578,13 +764,34 @@ interface Agent {
 ```
 
 ### User Metadata (Supabase)
+
+**Client Metadata**:
 ```typescript
-interface UserMetadata {
+interface ClientMetadata {
+  user_type: 'client'
   full_name: string
   phone?: string
-  user_type: 'client' | 'agent'
+  email: string
 }
 ```
+
+**Agent Metadata**:
+```typescript
+interface AgentMetadata {
+  user_type: 'agent'
+  full_name: string
+  phone?: string
+  email: string
+  agency_name?: string
+  license_number?: string
+  area_of_operation?: string
+  years_experience?: string
+}
+```
+
+**Profile Tables**:
+- `public.clients` - Stores client profiles (id, user_id, full_name, email, phone, created_at, updated_at)
+- `public.agents` - Stores agent profiles with additional fields (agency_name, license_number, area_of_operation, years_experience)
 
 ---
 
@@ -719,7 +926,7 @@ interface Agent {
 
 **Authentication Methods**:
 1. **Email/Password** - Traditional authentication
-2. **OAuth** - Social login (Google, Microsoft, Facebook, Apple)
+2. **OAuth** - Social login (Google, Microsoft, X/Twitter)
 
 **Routes**:
 - `/sign-in` - Client sign-in
@@ -737,6 +944,16 @@ interface Agent {
 - `OAuthButtonsGroup.tsx` - All OAuth buttons
 - `AuthForm.tsx` - Unified auth form (handles all scenarios)
 - `SignOutButton.tsx` - Sign-out button
+
+**Current Implementation**:
+- **Header**: Dropdown menus for "Sign In" and "Sign Up" buttons
+  - Sign In dropdown: "As Client" and "As Agent" options (both go to `/sign-in`)
+  - Sign Up dropdown: "As Client" (→ `/sign-up/client`) and "As Agent" (→ `/sign-up/agent`)
+- **Sign-In Page**: Unified form without tabs (backend handles user type detection)
+- **Sign-Up Pages**: Separate pages for clients and agents
+- **Backend Logic**: Checks `user_metadata.user_type` and redirects accordingly
+
+**Documentation**: See `AUTH_FLOW_UPDATE.md` and `UNIFIED_SIGNIN_UPDATE.md` for complete details
 
 **Auth Flow**:
 1. User enters credentials or clicks OAuth button
@@ -762,28 +979,409 @@ interface Agent {
 
 ### OAuth Authentication
 
-**Providers**: Google, Yahoo, Microsoft, Apple, Facebook
+**Providers**: Google, Microsoft, X (Twitter)
 
 **Implementation Status**: 
-- ✅ UI Components Ready
-- ⏳ OAuth Integration Pending (see `OAUTH_IMPLEMENTATION_PLAN.md`)
+- ✅ Google OAuth - Fully implemented (requires Supabase configuration)
+- ⏳ Microsoft OAuth - Code ready (requires Supabase configuration)
+- ⏳ X (Twitter) OAuth - Code ready (requires Supabase configuration)
 
 **Components**:
-- `OAuthButton.tsx` - Single provider button
-- `OAuthButtonsGroup.tsx` - All providers
-- `AuthForm.tsx` - Unified form with OAuth
+- `OAuthButton.tsx` - Single provider button with loading states
+- `OAuthButtonsGroup.tsx` - All providers grouped
+- `AuthForm.tsx` - Unified form with OAuth integration
+- `src/app/auth/callback/route.ts` - OAuth callback handler
+
+**OAuth Flow**:
+1. User clicks OAuth button (e.g., "Continue with Google")
+2. `signInWithOAuth(provider, userType?)` server action called
+3. User redirected to provider's OAuth consent screen
+4. After authorization, provider redirects to `/auth/callback?code=...&user_type=...`
+5. Callback route exchanges code for session
+6. User metadata updated with user_type (if provided)
+7. User redirected based on user_type:
+   - `agent` → `/agent-dashboard`
+   - `client` or no type → `/` (homepage)
+
+**User Type Detection**:
+- Sign-up pages pass user_type to OAuth flow
+- Sign-in page detects user_type from existing metadata
+- Callback route handles metadata updates and redirects
 
 **Rules**:
 - Always show OAuth options below email/password
 - Use consistent provider icons and colors
 - Handle OAuth errors gracefully
-- Redirect to appropriate page after auth
+- Show loading states during OAuth flow
+- Redirect to appropriate page based on user_type
 
-**Implementation Guide**: See `OAUTH_IMPLEMENTATION_PLAN.md` for complete OAuth setup instructions
+**Setup Guide**: See `GOOGLE_OAUTH_SETUP.md` for complete Google OAuth configuration
+**Implementation Details**: See `OAUTH_IMPLEMENTATION_SUMMARY.md` for technical details
 
 ---
 
 ## 🐛 Common Issues & Solutions
+
+### Issue: Profile Not Created After Sign-Up
+
+**Symptoms**: User created in `auth.users` but no profile in `clients` or `agents` table
+
+**Diagnosis Steps**:
+1. Check if user exists in Supabase Dashboard → Authentication → Users
+2. Click on user and verify `user_metadata` contains `user_type`, `full_name`, `email`, `phone`
+3. Check if INSERT policy exists:
+   ```sql
+   SELECT tablename, policyname, cmd 
+   FROM pg_policies 
+   WHERE tablename IN ('clients', 'agents');
+   ```
+4. Check server logs for errors like "Error creating client profile"
+
+**Solutions**:
+
+**Solution 1: Missing INSERT Policy** (Most Common)
+```sql
+-- Add INSERT policies
+CREATE POLICY "Users can insert own client profile"
+  ON public.clients
+  FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own agent profile"
+  ON public.agents
+  FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+```
+
+**Solution 2: Missing Service Role Key**
+- Check `.env.local` has `SUPABASE_SERVICE_ROLE_KEY`
+- Get from Supabase Dashboard → Settings → API → service_role key
+- Restart dev server after adding
+
+**Solution 3: Manually Create Profile for Existing User**
+```sql
+-- Get user_id
+SELECT id, email, raw_user_meta_data 
+FROM auth.users 
+WHERE email = 'user@example.com';
+
+-- Create profile manually
+INSERT INTO public.clients (user_id, full_name, email, phone)
+VALUES ('USER_ID_HERE', 'Full Name', 'email@example.com', 'phone');
+```
+
+**Solution 4: Create Profiles for All Users Without Profiles**
+```sql
+-- Automatically create profiles for users missing them
+INSERT INTO public.clients (user_id, full_name, email, phone)
+SELECT 
+  u.id,
+  u.raw_user_meta_data->>'full_name',
+  u.email,
+  u.raw_user_meta_data->>'phone'
+FROM auth.users u
+LEFT JOIN public.clients c ON u.id = c.user_id
+WHERE c.user_id IS NULL
+  AND u.raw_user_meta_data->>'user_type' = 'client';
+```
+
+---
+
+### Issue: Email Rate Limit Exceeded
+
+**Symptoms**: Error message "email rate limit exceeded" when signing up
+
+**Cause**: Supabase limits confirmation emails sent in a short period (anti-spam protection)
+
+**Solutions**:
+
+**Solution 1: Disable Email Confirmations** (Recommended for Development)
+
+1. Go to Supabase Dashboard → Authentication → Providers
+2. Click on "Email" provider to expand settings
+3. Scroll down to find "Enable email confirmations" or "Confirm email" toggle
+4. Turn it **OFF** (disable it)
+5. Click **Save** button
+6. Try signing up again - should work instantly!
+
+**Solution 2: Wait for Rate Limit Reset**
+- Rate limit resets after 1 hour
+- Wait and try again later
+
+**Solution 3: Use Existing Test Users**
+- Go to Supabase Dashboard → Authentication → Users
+- Sign in with users you already created
+- Or delete test users to free up emails
+
+**Solution 4: Use Email Plus Trick** (Gmail)
+- Instead of: `user@gmail.com`
+- Use: `user+test1@gmail.com` or `user+test2@gmail.com`
+- Gmail treats these as the same inbox
+- Supabase sees them as different emails
+
+**Important Notes**:
+- **Development**: Keep email confirmations OFF for faster testing
+- **Production**: Turn email confirmations back ON for security
+- **Location**: Authentication → Providers → Email → Scroll down to find the toggle
+
+---
+
+### Issue: Can't Access Sign-In/Sign-Up Pages (Redirects to Homepage)
+
+**Symptoms**: Clicking "Sign In" or "Sign Up" redirects to homepage
+
+**Cause**: You're already signed in. Middleware redirects authenticated users away from auth pages.
+
+**Solutions**:
+
+**Solution 1: Clear Browser Cookies**
+1. Open Developer Tools (F12)
+2. Go to Application tab → Cookies → `http://localhost:3000`
+3. Delete all cookies (especially ones starting with `sb-`)
+4. Refresh page
+
+**Solution 2: Clear Cookies via Console**
+```javascript
+document.cookie.split(";").forEach(function(c) { 
+  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+});
+location.reload();
+```
+
+**Solution 3: Add Sign-Out Functionality**
+- Use the `SignOutButton` component in your header
+- Or navigate to a protected route and sign out from there
+
+---
+
+### Issue: Can't Access Sign-In/Sign-Up Pages (Redirects to Homepage)
+
+**Symptoms**: Clicking "Sign In" or "Sign Up" redirects to homepage
+
+**Cause**: You're already signed in. Middleware redirects authenticated users away from auth pages.
+
+**Solutions**:
+
+**Solution 1: Clear Browser Cookies**
+1. Open Developer Tools (F12)
+2. Go to Application tab → Cookies → `http://localhost:3000`
+3. Delete all cookies (especially ones starting with `sb-`)
+4. Refresh page
+
+**Solution 2: Clear Cookies via Console**
+```javascript
+document.cookie.split(";").forEach(function(c) { 
+  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+});
+location.reload();
+```
+
+**Solution 3: Add Sign-Out Functionality**
+- Use the `SignOutButton` component in your header
+- Or navigate to a protected route and sign out from there
+
+---
+
+### Issue: Permission Denied for Table (agents/clients)
+
+**Symptoms**: Error "Failed to create profile: permission denied for table agents" or "permission denied for table clients"
+
+**Error Code**: PostgreSQL error 42501 (insufficient_privilege)
+
+**Root Cause**: Database permissions issue - either RLS policies are blocking inserts OR the service_role/authenticated role lacks table-level permissions
+
+**Quick Fix**: See `START_HERE.md` → Choose your preferred guide style
+
+**Complete Solution (3 Steps)**:
+
+1. **Disable RLS temporarily** to test if it's the issue:
+   ```sql
+   ALTER TABLE public.agents DISABLE ROW LEVEL SECURITY;
+   ALTER TABLE public.clients DISABLE ROW LEVEL SECURITY;
+   ```
+   - Try signing up as agent
+   - If it works → RLS was the issue, proceed to step 2
+   - If it still fails → Permission issue, run step 3 first
+
+2. **Grant table-level permissions** (required even with RLS disabled):
+   ```sql
+   GRANT ALL PRIVILEGES ON TABLE public.agents TO service_role;
+   GRANT ALL PRIVILEGES ON TABLE public.clients TO service_role;
+   GRANT ALL PRIVILEGES ON TABLE public.agents TO authenticated;
+   GRANT ALL PRIVILEGES ON TABLE public.clients TO authenticated;
+   GRANT USAGE ON SCHEMA public TO service_role;
+   GRANT USAGE ON SCHEMA public TO authenticated;
+   ```
+
+3. **Re-enable RLS with correct policies**:
+   - Run the complete script from `supabase/fix_agent_signup.sql`
+   - This properly secures your database with RLS + correct policies
+   - See `FIX_SUMMARY.md` for step-by-step instructions
+
+**Verification**:
+```sql
+-- Check RLS status
+SELECT tablename, rowsecurity FROM pg_tables WHERE tablename IN ('agents', 'clients');
+
+-- Check permissions
+SELECT grantee, table_name, privilege_type
+FROM information_schema.role_table_grants 
+WHERE table_name IN ('agents', 'clients') AND grantee IN ('service_role', 'authenticated');
+
+-- Check policies (if RLS enabled)
+SELECT tablename, policyname, cmd FROM pg_policies WHERE tablename IN ('clients', 'agents');
+```
+
+**Detailed Guides**:
+- `START_HERE.md` - Choose your learning style (visual, checklist, quick, detailed)
+- `FIX_SUMMARY.md` - Quick 3-step solution (5 minutes)
+- `VISUAL_FIX_GUIDE.md` - Step-by-step with visual diagrams
+- `CHECKLIST.md` - Checkbox-style guide
+- `AGENT_SIGNUP_FIX_GUIDE.md` - Complete troubleshooting guide
+- `SUPABASE_NAVIGATION_GUIDE.md` - How to navigate Supabase Dashboard
+- `supabase/README.md` - About the SQL scripts
+
+**SQL Scripts**:
+- `supabase/fix_agent_signup.sql` - Complete fix with RLS properly configured
+- `supabase/quick_fix_disable_rls.sql` - Quick test (disable RLS temporarily)
+
+---
+
+### Debugging Profile Creation Issues
+
+If profiles are not being created after sign-up, follow these diagnostic steps:
+
+**Step 1: Check if User Exists in Authentication**
+1. Go to Supabase Dashboard → Authentication → Users
+2. Look for your newly created user
+3. If user doesn't exist, sign-up failed completely - check browser console and server logs
+
+**Step 2: Verify User Metadata**
+1. Click on the user in Authentication → Users
+2. Check the `user_metadata` field (or `raw_user_meta_data` in Raw JSON view)
+3. It should contain:
+   ```json
+   {
+     "user_type": "client",
+     "full_name": "Your Name",
+     "email": "your@email.com",
+     "phone": "your phone"
+   }
+   ```
+
+**Step 3: Check RLS Policies**
+Run this query in SQL Editor:
+```sql
+SELECT tablename, policyname, cmd 
+FROM pg_policies 
+WHERE tablename IN ('clients', 'agents');
+```
+
+You should see policies for SELECT, UPDATE, and INSERT.
+
+**Step 4: Check Server Logs**
+Look at your terminal where `pnpm dev` is running for errors like:
+- "Error creating client profile"
+- "Error creating agent profile"
+- PostgreSQL errors
+
+**Step 5: Manually Test Profile Creation**
+```sql
+-- Get the user_id of your newly created user
+SELECT id, email, raw_user_meta_data 
+FROM auth.users 
+ORDER BY created_at DESC 
+LIMIT 1;
+
+-- Try to manually insert a profile (replace USER_ID_HERE with actual ID)
+INSERT INTO public.clients (user_id, full_name, email, phone)
+VALUES (
+  'USER_ID_HERE',
+  'Test User',
+  'test@example.com',
+  '1234567890'
+);
+```
+
+If manual insert fails, check the error message - it's likely an RLS policy issue.
+
+**Step 6: Verify Service Role Key**
+1. Check `.env.local` has `SUPABASE_SERVICE_ROLE_KEY`
+2. Get from Supabase Dashboard → Settings → API → "Legacy anon, service_role API keys" tab
+3. Copy the `service_role` key (NOT the anon key)
+4. Update `.env.local` and restart dev server
+
+---
+
+### Database Maintenance Tasks
+
+**Check if Tables Exist**:
+```sql
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'public' 
+  AND table_name IN ('clients', 'agents');
+```
+
+**View All Clients**:
+```sql
+SELECT * FROM public.clients ORDER BY created_at DESC;
+```
+
+**View All Agents**:
+```sql
+SELECT * FROM public.agents ORDER BY created_at DESC;
+```
+
+**Check User Metadata**:
+```sql
+SELECT id, email, raw_user_meta_data 
+FROM auth.users 
+WHERE email = 'user@example.com';
+```
+
+**Find Duplicate Profiles**:
+```sql
+-- Find duplicates
+SELECT user_id, COUNT(*) 
+FROM public.clients 
+GROUP BY user_id 
+HAVING COUNT(*) > 1;
+
+-- Remove duplicates (keep first)
+DELETE FROM public.clients 
+WHERE id NOT IN (
+  SELECT MIN(id) FROM public.clients GROUP BY user_id
+);
+```
+
+**Manually Create Profile for Existing User**:
+```sql
+-- For client
+INSERT INTO public.clients (user_id, full_name, email, phone)
+SELECT id, raw_user_meta_data->>'full_name', email, raw_user_meta_data->>'phone'
+FROM auth.users
+WHERE email = 'client@example.com';
+
+-- For agent
+INSERT INTO public.agents (
+  user_id, full_name, email, phone,
+  agency_name, license_number, area_of_operation, years_experience
+)
+SELECT 
+  id, 
+  raw_user_meta_data->>'full_name', 
+  email, 
+  raw_user_meta_data->>'phone',
+  raw_user_meta_data->>'agency_name',
+  raw_user_meta_data->>'license_number',
+  raw_user_meta_data->>'area_of_operation',
+  raw_user_meta_data->>'years_experience'
+FROM auth.users
+WHERE email = 'agent@example.com';
+```
+
+---
 
 ### Issue: Supabase Cookie Errors
 **Solution**: Ensure middleware properly handles cookies with `setAll()` method
@@ -807,10 +1405,21 @@ interface Agent {
 ### Internal Docs
 - `context.md` - **READ FIRST** - Complete project flow, pages, features, and recent updates
 - `AGENTS.md` - This file - AI agent guidelines and coding standards
-- `SUPABASE_SETUP.md` - Supabase configuration, database schema, and authentication usage
-- `OAUTH_IMPLEMENTATION_PLAN.md` - Complete OAuth social authentication implementation guide
-- `design.md` - Design system, component patterns, and styling guidelines
+- `design.md` - Design system, component patterns, styling guidelines, and form input styling
 - `README.md` - Project overview and setup instructions
+
+### Database & Authentication Documentation
+- `SUPABASE_DATABASE_SETUP.md` - Complete database schema, profile tables, triggers, and RLS policies
+- `QUICK_FIX_GUIDE.md` - Quick database setup without triggers (3 simple steps)
+- `MIGRATION_TROUBLESHOOTING.md` - Database migration issues and solutions
+- `GOOGLE_OAUTH_SETUP.md` - Step-by-step Google OAuth configuration guide
+- `OAUTH_IMPLEMENTATION_SUMMARY.md` - OAuth implementation details and technical flow
+- `E2E_TESTING_GUIDE.md` - Comprehensive end-to-end testing instructions
+
+### Legacy Authentication Documentation (Deprecated)
+- `AUTH_FLOW_UPDATE.md` - Authentication flow overview (see OAUTH_IMPLEMENTATION_SUMMARY.md instead)
+- `UNIFIED_SIGNIN_UPDATE.md` - Unified sign-in page structure (see OAUTH_IMPLEMENTATION_SUMMARY.md instead)
+- `HEADER_UPDATE_SUMMARY.md` - Header authentication UI/UX changes (deprecated)
 
 ### External Docs
 - [Next.js 16 Docs](https://nextjs.org/docs) - Framework documentation
@@ -855,6 +1464,8 @@ Before making ANY changes, verify:
 9. **Performance matters** - Optimize images, code split, lazy load
 10. **Read SUPABASE_SETUP.md** - Before touching auth code
 11. **Read OAUTH_IMPLEMENTATION_PLAN.md** - Before implementing OAuth
+12. **Form inputs MUST have borders** - Follow design.md form styling patterns
+13. **Checkboxes MUST be visible** - Use `border-2 border-slate-300` class
 10. **Read SUPABASE_SETUP.md** - Before touching auth code
 
 ---
@@ -863,18 +1474,32 @@ Before making ANY changes, verify:
 
 1. Check this file first (AGENTS.md)
 2. Read `context.md` for complete project flow and all pages
-3. Read `SUPABASE_SETUP.md` for Supabase auth setup and database schema
-4. Read `OAUTH_IMPLEMENTATION_PLAN.md` for OAuth social login implementation
-5. Read `design.md` for design patterns and styling
-6. Check `node_modules/next/dist/docs/` for Next.js APIs
-7. Search official documentation
-8. Ask for clarification if unclear
+3. **Database Setup Issues?** → Read `QUICK_FIX_GUIDE.md` (3 simple steps)
+4. **Migration Errors?** → Read `MIGRATION_TROUBLESHOOTING.md`
+5. **OAuth Setup?** → Read `GOOGLE_OAUTH_SETUP.md` (step-by-step)
+6. **Testing?** → Read `E2E_TESTING_GUIDE.md` (comprehensive test suite)
+7. Read `SUPABASE_DATABASE_SETUP.md` for complete database schema
+8. Read `design.md` for design patterns and styling
+9. Check `node_modules/next/dist/docs/` for Next.js APIs
+10. Search official documentation
+11. Ask for clarification if unclear
 
 ---
 
-**Last Updated**: April 23, 2026
-**Version**: 2.0.0
+**Last Updated**: April 24, 2026
+**Version**: 2.1.0
 **Maintainer**: EstateFlow Development Team
+
+**Recent Changes**:
+- Added Google OAuth implementation (fully functional)
+- Added role-based user profiles with dedicated tables
+- Added database setup guides (trigger-based and manual)
+- Added comprehensive testing guide
+- Added troubleshooting documentation
+- Updated form input styling (visible borders)
+- **Added complete RLS troubleshooting guides** (permission denied errors)
+- **Added email rate limit solutions** (disable confirmations for development)
+- **Created comprehensive fix documentation** (7 guides + 2 SQL scripts)
 
 ---
 

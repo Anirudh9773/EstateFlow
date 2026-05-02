@@ -23,7 +23,7 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
     <div className="relative">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={24}
+        spaceBetween={16}
         slidesPerView={1}
         navigation={{
           nextEl: '.swiper-button-next-custom',
@@ -39,6 +39,10 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
           pauseOnMouseEnter: true,
         }}
         breakpoints={{
+          640: {
+            slidesPerView: 1,
+            spaceBetween: 20,
+          },
           768: {
             slidesPerView: 2,
             spaceBetween: 24,
@@ -52,12 +56,7 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
       >
         {testimonials.map((testimonial) => (
           <SwiperSlide key={testimonial.id}>
-            <Card className="border-ef-border shadow-none p-8 h-full">
-              {/* Opening quote */}
-              <div className="text-6xl leading-none text-gold/20 font-serif mb-4 select-none">
-                "
-              </div>
-
+            <Card className="border-ef-border shadow-none p-6 sm:p-8 h-full">
               {/* Quote text */}
               <p className="text-text-secondary leading-relaxed text-sm mb-6">
                 {testimonial.quote}
@@ -67,7 +66,7 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
 
               {/* Author info */}
               <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
+                <Avatar className="h-10 w-10 flex-shrink-0">
                   <AvatarImage
                     src={testimonial.avatar}
                     alt={`${testimonial.name} avatar`}
@@ -77,19 +76,19 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <div className="text-navy font-medium text-sm">{testimonial.name}</div>
-                  <div className="text-text-muted text-xs">{testimonial.location}</div>
+                  <div className="text-navy font-medium text-sm truncate">{testimonial.name}</div>
+                  <div className="text-text-muted text-xs truncate">{testimonial.location}</div>
                 </div>
-                <StarRating rating={testimonial.rating} size="sm" className="ml-auto" />
+                <StarRating rating={testimonial.rating} size="sm" className="ml-auto flex-shrink-0" />
               </div>
             </Card>
           </SwiperSlide>
         ))}
       </Swiper>
 
-      {/* Custom Navigation Arrows */}
+      {/* Custom Navigation Arrows - Hidden on mobile, shown on sm+ */}
       <button
-        className="swiper-button-prev-custom absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold hover:bg-gold/5 transition-all duration-150 flex items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed"
+        className="swiper-button-prev-custom hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 sm:-translate-x-4 md:-translate-x-6 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold hover:bg-gold/5 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
         aria-label="Previous testimonial"
       >
         <svg
@@ -103,7 +102,7 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
       </button>
 
       <button
-        className="swiper-button-next-custom absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold hover:bg-gold/5 transition-all duration-150 flex items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed"
+        className="swiper-button-next-custom hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 sm:translate-x-4 md:translate-x-6 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold hover:bg-gold/5 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
         aria-label="Next testimonial"
       >
         <svg
@@ -117,7 +116,7 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
       </button>
 
       {/* Custom Pagination Dots */}
-      <div className="swiper-pagination-custom flex items-center justify-center gap-2 mt-8" />
+      <div className="swiper-pagination-custom flex items-center justify-center gap-2 mt-6 sm:mt-8" />
     </div>
   )
 }
