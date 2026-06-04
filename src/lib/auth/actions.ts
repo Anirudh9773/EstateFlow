@@ -242,7 +242,13 @@ export async function signIn(formData: {
 export async function signInWithOAuth(provider: 'google' | 'facebook' | 'twitter', userType?: 'client' | 'agent') {
   const supabase = await createSupabaseServerClient()
   
-  const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback${userType ? `?user_type=${userType}` : ''}`
+  // Resolve site URL dynamically on Vercel to avoid redirecting to localhost in production
+  let siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  if (process.env.VERCEL_URL && (siteUrl.includes('localhost') || !siteUrl)) {
+    siteUrl = `https://${process.env.VERCEL_URL}`
+  }
+  
+  const redirectUrl = `${siteUrl}/auth/callback${userType ? `?user_type=${userType}` : ''}`
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: provider as any,
