@@ -36,7 +36,7 @@ export default function HowItWorks() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-12">
           {steps.map((step, index) => (
-            <Card key={step.number} className="border-2 border-slate-200 shadow-sm hover:shadow-md hover:border-gold/30 transition-all duration-300 p-6 sm:p-8 h-full">
+            <Card key={step.number} className="border-2 border-slate-200 shadow-sm hover:shadow-md hover:border-gold/60 transition-all duration-300 p-6 sm:p-8 h-full">
               <div className="w-12 h-12 rounded-full bg-gold/10 border-2 border-gold/30 flex items-center justify-center mb-6">
                 <span className="text-gold font-semibold text-sm">{step.number}</span>
               </div>

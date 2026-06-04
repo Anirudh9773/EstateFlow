@@ -4,6 +4,13 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import type { UserMetadata } from '@/types/profile'
+import { serverSignInSchema, serverSignUpSchema } from '@/lib/validations/auth'
+import { sendEmail } from '@/lib/utils/email'
+import { decodeSupabaseToken } from '@/lib/auth/twoFactor'
+import crypto from 'crypto'
+import { cookies } from 'next/headers'
+import fs from 'fs'
+import path from 'path'
 
 export async function signUp(formData: {
   email: string
@@ -17,6 +24,15 @@ export async function signUp(formData: {
   areaOfOperation?: string
   yearsExperience?: string
 }) {
+  // Server-side validation
+  const validationResult = serverSignUpSchema.safeParse(formData)
+  
+  if (!validationResult.success) {
+    const errors = validationResult.error.flatten().fieldErrors
+    const firstError = Object.values(errors)[0]?.[0] || 'Validation failed'
+    return { error: firstError }
+  }
+
   const supabase = await createSupabaseServerClient()
 
   // Build metadata object conditionally based on userType
@@ -106,6 +122,16 @@ export async function signUp(formData: {
       console.error('❌ Exception creating profile:', profileError)
       return { error: 'Failed to create user profile. Please try again.' }
     }
+
+    // Automatically send 2FA OTP on sign up
+    try {
+      const otpResult = await send2faOtp(data.user.id, data.user.email!)
+      if (otpResult.error) {
+        console.error('❌ Failed to send initial signup 2FA OTP:', otpResult.error)
+      }
+    } catch (otpError) {
+      console.error('❌ Exception sending initial signup 2FA OTP:', otpError)
+    }
   }
 
   revalidatePath('/', 'layout')
@@ -116,6 +142,15 @@ export async function signIn(formData: {
   email: string
   password: string
 }) {
+  // Server-side validation
+  const validationResult = serverSignInSchema.safeParse(formData)
+  
+  if (!validationResult.success) {
+    const errors = validationResult.error.flatten().fieldErrors
+    const firstError = Object.values(errors)[0]?.[0] || 'Validation failed'
+    return { error: firstError }
+  }
+
   const supabase = await createSupabaseServerClient()
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -127,16 +162,84 @@ export async function signIn(formData: {
     return { error: 'Invalid email or password' }
   }
 
+  // Check if device is trusted
+  const cookieStore = await cookies()
+  const trustToken = cookieStore.get('remember_device_token')?.value
+  let hasTrustedDevice = false
+
+  if (trustToken && data.user) {
+    let queryClient;
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const { createClient } = await import('@supabase/supabase-js')
+      queryClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+      )
+    } else {
+      queryClient = supabase
+    }
+
+    const { data: deviceRecord } = await queryClient
+      .from('remembered_devices')
+      .select('id')
+      .eq('user_id', data.user.id)
+      .eq('device_token', trustToken)
+      .gt('expires_at', new Date().toISOString())
+      .maybeSingle()
+    
+    hasTrustedDevice = !!deviceRecord
+  }
+
+  if (hasTrustedDevice && data.user && data.session) {
+    const tokenPayload = decodeSupabaseToken(data.session.access_token)
+    const sid = tokenPayload?.sid
+    if (sid) {
+      let queryClient;
+      if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        const { createClient } = await import('@supabase/supabase-js')
+        queryClient = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          { auth: { autoRefreshToken: false, persistSession: false } }
+        )
+      } else {
+        queryClient = supabase
+      }
+
+      await queryClient.from('user_2fa_sessions').insert({
+        user_id: data.user.id,
+        session_id: sid,
+        expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      })
+    }
+
+    revalidatePath('/', 'layout')
+    return { 
+      success: true, 
+      requires2fa: false,
+      userType: data.user?.user_metadata?.user_type || 'client' 
+    }
+  }
+
+  // Trigger 2FA OTP generation and dispatch
+  if (data.user) {
+    const otpResult = await send2faOtp(data.user.id, data.user.email!)
+    if (otpResult.error) {
+      return { error: otpResult.error }
+    }
+  }
+
   revalidatePath('/', 'layout')
   
-  // Return success with user type for client-side redirect
   return { 
     success: true, 
+    requires2fa: true,
     userType: data.user?.user_metadata?.user_type || 'client' 
   }
 }
 
-export async function signInWithOAuth(provider: 'google' | 'azure' | 'twitter', userType?: 'client' | 'agent') {
+export async function signInWithOAuth(provider: 'google' | 'facebook' | 'twitter', userType?: 'client' | 'agent') {
   const supabase = await createSupabaseServerClient()
   
   const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback${userType ? `?user_type=${userType}` : ''}`
@@ -176,4 +279,260 @@ export async function getUser() {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   return user
+}
+
+export async function send2faOtp(userId: string, email: string) {
+  const otp = Math.floor(100000 + Math.random() * 900000).toString()
+  const otpHash = crypto.createHash('sha256').update(otp).digest('hex')
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+
+  let supabase;
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const { createClient } = await import('@supabase/supabase-js')
+    supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+  } else {
+    supabase = await createSupabaseServerClient()
+  }
+
+  // Delete existing OTPs first
+  await supabase.from('user_2fa_otps').delete().eq('user_id', userId)
+
+  const { error } = await supabase.from('user_2fa_otps').insert({
+    user_id: userId,
+    otp_hash: otpHash,
+    expires_at: expiresAt.toISOString(),
+  })
+
+  if (error) {
+    console.error('Error inserting OTP:', error)
+    return { error: 'Failed to generate 2FA code' }
+  }
+
+  // Send the email
+  await sendEmail({
+    to: email,
+    subject: 'Your EstateFlow 2FA Verification Code',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <h2 style="color: #1e3a8a; text-align: center;">Two-Factor Authentication</h2>
+        <p style="color: #475569; font-size: 16px;">Hello,</p>
+        <p style="color: #475569; font-size: 16px;">Please use the following 6-digit security code to verify your sign-in attempt at EstateFlow:</p>
+        <div style="background-color: #f1f5f9; padding: 15px; border-radius: 6px; text-align: center; margin: 24px 0;">
+          <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0f172a; font-family: monospace;">${otp}</span>
+        </div>
+        <p style="color: #e11d48; font-size: 14px; font-weight: 500;">This code will expire in 10 minutes. Do not share this code with anyone.</p>
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+        <p style="color: #64748b; font-size: 12px; text-align: center;">This is an automated security email from EstateFlow. If you did not request this, please ignore it.</p>
+      </div>
+    `,
+    code: otp,
+  })
+
+  return { success: true }
+}
+
+export async function verify2faOtp(otpCode: string, rememberDevice: boolean) {
+  const supabase = await createSupabaseServerClient()
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (!session) {
+    return { error: 'Session not found. Please log in again.' }
+  }
+
+  const user = session.user
+  const payload = decodeSupabaseToken(session.access_token)
+  const sid = payload?.sid
+
+  if (!sid) {
+    return { error: 'Invalid session structure' }
+  }
+
+  let queryClient;
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const { createClient } = await import('@supabase/supabase-js')
+    queryClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+  } else {
+    queryClient = supabase
+  }
+
+  // Fetch OTP record
+  const { data: otpRecord, error: otpError } = await queryClient
+    .from('user_2fa_otps')
+    .select('*')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (otpError || !otpRecord) {
+    return { error: 'Verification code not found. Please click Resend.' }
+  }
+
+  // Check expiration
+  if (new Date(otpRecord.expires_at) < new Date()) {
+    return { error: 'Verification code has expired. Please click Resend.', showResend: true }
+  }
+
+  // Check attempts
+  if (otpRecord.attempts >= 3) {
+    return { error: 'Too many failed attempts. Please request a new code.', showResend: true }
+  }
+
+  // Hash user input and compare
+  const inputHash = crypto.createHash('sha256').update(otpCode).digest('hex')
+  if (inputHash !== otpRecord.otp_hash) {
+    const newAttempts = otpRecord.attempts + 1
+    await queryClient
+      .from('user_2fa_otps')
+      .update({ attempts: newAttempts })
+      .eq('id', otpRecord.id)
+
+    const remaining = 3 - newAttempts
+    return {
+      error: `Invalid verification code. ${remaining > 0 ? `${remaining} attempts remaining.` : 'No attempts remaining.'}`,
+      showResend: remaining <= 0
+    }
+  }
+
+  // Success! Delete OTP record
+  await queryClient.from('user_2fa_otps').delete().eq('id', otpRecord.id)
+
+  // Mark session as 2FA-verified
+  const sessionExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+  const { error: sessionInsertError } = await queryClient.from('user_2fa_sessions').insert({
+    user_id: user.id,
+    session_id: sid,
+    expires_at: sessionExpiry.toISOString(),
+  })
+
+  if (sessionInsertError) {
+    console.error('Error saving 2FA session:', sessionInsertError)
+    return { error: 'Failed to finalize 2FA session verification.' }
+  }
+
+  // Handle "Remember this device"
+  if (rememberDevice) {
+    const trustToken = crypto.randomBytes(32).toString('hex')
+    const deviceExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+
+    const { error: deviceInsertError } = await queryClient.from('remembered_devices').insert({
+      user_id: user.id,
+      device_token: trustToken,
+      expires_at: deviceExpiry.toISOString(),
+    })
+
+    if (deviceInsertError) {
+      console.error('Error saving remembered device:', deviceInsertError)
+    } else {
+      const cookieStore = await cookies()
+      cookieStore.set('remember_device_token', trustToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        expires: deviceExpiry,
+        path: '/',
+      })
+    }
+  }
+
+  return { success: true, userType: user.user_metadata?.user_type || 'client' }
+}
+
+export async function resend2faOtp() {
+  const supabase = await createSupabaseServerClient()
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (!session) {
+    return { error: 'Session not found. Please log in again.' }
+  }
+
+  const result = await send2faOtp(session.user.id, session.user.email!)
+  return result
+}
+
+export async function resetPasswordForEmail(email: string) {
+  const supabase = await createSupabaseServerClient()
+  
+  const redirectTo = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`
+  
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo,
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { success: true }
+}
+
+export async function updateUserPassword(password: string) {
+  const supabase = await createSupabaseServerClient()
+  const { error } = await supabase.auth.updateUser({ password })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { success: true }
+}
+
+export async function isSession2faVerified() {
+  const supabase = await createSupabaseServerClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  const cookieStore = await cookies()
+  const rememberToken = cookieStore.get('remember_device_token')?.value
+  
+  let payload = null
+  let amr: string[] = []
+  let sid = null
+  let isPasswordLogin = false
+  let isVerified = false
+  
+  if (session) {
+    payload = decodeSupabaseToken(session.access_token)
+    amr = payload?.amr || []
+    sid = payload?.sid
+    isPasswordLogin = amr.includes('password')
+    
+    if (isPasswordLogin && sid) {
+      const { isUser2faVerified } = await import('@/lib/auth/twoFactor')
+      isVerified = await isUser2faVerified(supabase, session.user.id, sid, cookieStore)
+    } else {
+      isVerified = true // OAuth/Non-password
+    }
+  }
+
+  // Write debug log
+  try {
+    const logDir = 'd:\\Anirudh\'s Project\\estateflow\\scratch'
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true })
+    }
+    fs.appendFileSync(
+      path.join(logDir, 'debug.log'),
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        hasSession: !!session,
+        email: session?.user?.email,
+        amr,
+        sid,
+        isPasswordLogin,
+        isVerified,
+        rememberTokenPresent: !!rememberToken,
+      }, null, 2) + '\n'
+    )
+  } catch (err) {
+    console.error('Failed to write debug log:', err)
+  }
+  
+  if (!session) return false
+  return isVerified
 }

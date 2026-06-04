@@ -43,7 +43,7 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 - **Language**: TypeScript (strict mode)
 - **Styling**: Tailwind CSS v4
 - **UI Library**: shadcn/ui (27 components) with @base-ui/react primitives
-- **Authentication**: Supabase Auth with OAuth (Google, Microsoft, X/Twitter)
+- **Authentication**: Supabase Auth with OAuth (Google, Facebook, X/Twitter)
 - **Database**: Supabase (PostgreSQL)
 - **Icons**: Lucide React
 - **Forms**: React Hook Form + Zod validation
@@ -59,11 +59,15 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 ### Recent Major Updates (April 2026)
 
 #### Authentication System Overhaul
-- OAuth Integration for 3 providers (Google, Microsoft, X/Twitter)
+- OAuth Integration for 3 providers (Google, Facebook, X/Twitter)
 - Reusable components: `OAuthButton`, `OAuthButtonsGroup`, `AuthForm`
 - Consolidated authentication forms (eliminated duplicates)
 - Unified `AuthForm` component for all auth scenarios
 - Google OAuth fully implemented and ready for configuration
+- **Comprehensive validation system** with React Hook Form + Zod
+- Client-side and server-side validation for all auth forms
+- Password strength requirements enforced
+- Real-time validation feedback on blur
 
 #### Role-Based User Profiles
 - Automatic profile creation in dedicated tables (clients/agents)
@@ -87,6 +91,7 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 - Enhanced component reusability
 - Standardized UI patterns
 - Fixed form input visibility (added borders to all inputs)
+- Fixed checkbox validation (Terms & Conditions now properly integrated with React Hook Form)
 
 ---
 
@@ -115,7 +120,6 @@ estateflow/
 │   │   ├── agent-dashboard/          # Agent management dashboard (protected)
 │   │   ├── agent-login/              # Agent authentication
 │   │   ├── agent-pricing/            # Agent pricing plans
-│   │   ├── join-as-agent/            # Agent onboarding
 │   │   │
 │   │   ├── pricing/                  # Client pricing information
 │   │   ├── about/                    # About EstateFlow
@@ -251,7 +255,6 @@ estateflow/
 - `/privacy` - Privacy policy
 - `/terms` - Terms of service
 - `/join` - General join/signup page
-- `/join-as-agent` - Agent onboarding information
 
 #### Authentication Pages (Route Group)
 - `/sign-in` - Client sign-in (email/password + OAuth)
@@ -305,7 +308,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 ### OAuth Providers
 - **Google** - ✅ Fully implemented (requires Supabase configuration)
-- **Microsoft** - ⏳ Code ready (requires Supabase configuration)
+- **Facebook** - ⏳ Code ready (requires Supabase configuration)
 - **X (Twitter)** - ⏳ Code ready (requires Supabase configuration)
 
 ### Profile Creation Methods
@@ -527,10 +530,24 @@ export default function MyComponent({ title, agents }: MyComponentProps) {
 
 ### Form Handling
 1. **USE** React Hook Form for complex forms
-2. **USE** Zod for validation
+2. **USE** Zod for validation (v3.25.76 - compatible with @hookform/resolvers)
 3. **USE** Server Actions for form submission
 4. **ALWAYS** show loading states
 5. **ALWAYS** handle errors gracefully
+6. **VALIDATE** on both client and server side
+
+**Important**: shadcn/ui Checkbox component requires special integration:
+```tsx
+// ❌ WRONG - register() doesn't work with Checkbox
+<Checkbox {...register("terms")} />
+
+// ✅ CORRECT - Use setValue() and watch()
+const termsAccepted = watch("terms")
+<Checkbox
+  checked={termsAccepted}
+  onCheckedChange={(checked) => setValue("terms", checked === true, { shouldValidate: true })}
+/>
+```
 
 ---
 
@@ -925,8 +942,8 @@ interface Agent {
 - **Agent**: Real estate professionals
 
 **Authentication Methods**:
-1. **Email/Password** - Traditional authentication
-2. **OAuth** - Social login (Google, Microsoft, X/Twitter)
+1. **Email/Password** - Traditional authentication with validation
+2. **OAuth** - Social login (Google, Facebook, X/Twitter)
 
 **Routes**:
 - `/sign-in` - Client sign-in
@@ -945,6 +962,27 @@ interface Agent {
 - `AuthForm.tsx` - Unified auth form (handles all scenarios)
 - `SignOutButton.tsx` - Sign-out button
 
+**Validation System** (✅ Implemented):
+- **Technology**: React Hook Form + Zod validation (v3.25.76)
+- **Validation File**: `src/lib/validations/auth.ts`
+- **Validation Mode**: On blur (validates when user leaves field)
+- **Server-Side**: All inputs validated in `src/lib/auth/actions.ts`
+
+**Validation Rules**:
+- **Email**: Required, valid format (RFC 5322)
+- **Password (Sign-Up)**: 8+ chars, uppercase, lowercase, number, special character
+- **Password (Sign-In)**: Required only
+- **Full Name**: 2-100 chars, letters and spaces only
+- **Phone**: 10+ digits, international format supported
+- **Agent Fields**: Agency name, license number, area, experience (all required)
+- **Terms Checkbox**: Must be checked (uses `setValue()` and `watch()` for proper integration)
+
+**Error Display**:
+- Inline errors below each field (red text)
+- Server errors in alert banner at top
+- Password requirements shown as hint
+- Clear, actionable error messages
+
 **Current Implementation**:
 - **Header**: Dropdown menus for "Sign In" and "Sign Up" buttons
   - Sign In dropdown: "As Client" and "As Agent" options (both go to `/sign-in`)
@@ -957,11 +995,12 @@ interface Agent {
 
 **Auth Flow**:
 1. User enters credentials or clicks OAuth button
-2. Form validates input
+2. **Form validates input (client-side)**
 3. Server action called (`signIn`, `signUp`, or `signInWithOAuth`)
-4. Supabase handles authentication
-5. User redirected to home or dashboard
-6. Middleware protects routes
+4. **Server validates input (server-side)**
+5. Supabase handles authentication
+6. User redirected to home or dashboard
+7. Middleware protects routes
 
 **User Metadata**:
 ```typescript
@@ -977,13 +1016,19 @@ interface Agent {
 - `/submit-property/*` - Requires authentication
 - Authenticated users redirected away from `/sign-in` and `/sign-up/*`
 
+**Important Notes**:
+- Checkbox validation requires `setValue()` and `watch()` (not `register()`)
+- Password validation only enforced on sign-up, not sign-in
+- All validation schemas in `src/lib/validations/auth.ts`
+- Server-side validation prevents bypassing client validation
+
 ### OAuth Authentication
 
-**Providers**: Google, Microsoft, X (Twitter)
+**Providers**: Google, Facebook, X (Twitter)
 
 **Implementation Status**: 
 - ✅ Google OAuth - Fully implemented (requires Supabase configuration)
-- ⏳ Microsoft OAuth - Code ready (requires Supabase configuration)
+- ⏳ Facebook OAuth - Code ready (requires Supabase configuration)
 - ⏳ X (Twitter) OAuth - Code ready (requires Supabase configuration)
 
 **Components**:
@@ -1486,20 +1531,25 @@ Before making ANY changes, verify:
 
 ---
 
-**Last Updated**: April 24, 2026
-**Version**: 2.1.0
+**Last Updated**: May 4, 2026
+**Version**: 2.2.0
 **Maintainer**: EstateFlow Development Team
 
 **Recent Changes**:
+- Added comprehensive form validation system (React Hook Form + Zod)
+- Implemented client-side and server-side validation for all auth forms
+- Fixed checkbox validation integration with shadcn/ui components
+- Added password strength requirements (8+ chars, uppercase, lowercase, number, special char)
+- Added real-time validation feedback (on blur)
+- Updated form input styling (visible borders)
 - Added Google OAuth implementation (fully functional)
 - Added role-based user profiles with dedicated tables
 - Added database setup guides (trigger-based and manual)
 - Added comprehensive testing guide
 - Added troubleshooting documentation
-- Updated form input styling (visible borders)
-- **Added complete RLS troubleshooting guides** (permission denied errors)
-- **Added email rate limit solutions** (disable confirmations for development)
-- **Created comprehensive fix documentation** (7 guides + 2 SQL scripts)
+- Added complete RLS troubleshooting guides (permission denied errors)
+- Added email rate limit solutions (disable confirmations for development)
+- Created comprehensive fix documentation (7 guides + 2 SQL scripts)
 
 ---
 

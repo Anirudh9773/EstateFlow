@@ -196,7 +196,7 @@ export default function PageName() {
 
 ### OAuth Button Styling
 
-OAuth buttons for social authentication (Google, Microsoft, X/Twitter):
+OAuth buttons for social authentication (Google, Facebook, X/Twitter):
 
 - **Border**: `border-2 border-slate-300` (visible 2px border)
 - **Background**: `bg-white` (white background)
@@ -229,7 +229,7 @@ OAuth buttons for social authentication (Google, Microsoft, X/Twitter):
 ```tsx
 <div className="space-y-3">
   <OAuthButton provider="google" type="signin" onLoading={setIsLoading} />
-  <OAuthButton provider="microsoft" type="signin" onLoading={setIsLoading} />
+  <OAuthButton provider="facebook" type="signin" onLoading={setIsLoading} />
   <OAuthButton provider="twitter" type="signin" onLoading={setIsLoading} />
 </div>
 

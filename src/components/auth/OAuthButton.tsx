@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 
 interface OAuthButtonProps {
-  provider: "google" | "microsoft" | "twitter"
+  provider: "google" | "facebook" | "twitter"
   onClick?: () => void
   disabled?: boolean
   loading?: boolean
@@ -22,14 +22,11 @@ const providerConfig = {
       </svg>
     ),
   },
-  microsoft: {
-    name: "Microsoft",
+  facebook: {
+    name: "Facebook",
     icon: (
-      <svg className="w-4 h-4" viewBox="0 0 24 24">
-        <rect x="2" y="2" width="9.5" height="9.5" fill="#F25022"/>
-        <rect x="13" y="2" width="9.5" height="9.5" fill="#7FBA00"/>
-        <rect x="2" y="13" width="9.5" height="9.5" fill="#00A4EF"/>
-        <rect x="13" y="13" width="9.5" height="9.5" fill="#FFB900"/>
+      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="#1877F2">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
       </svg>
     ),
   },
@@ -57,7 +54,7 @@ export default function OAuthButton({
     <Button 
       type="button" 
       variant="outline" 
-      className="w-full gap-2 h-11 border-2 border-slate-300 bg-white hover:bg-slate-50 hover:border-slate-400 text-slate-700 font-medium transition-colors justify-center"
+      className="w-full gap-2 h-11 border-2 border-slate-300 bg-white hover:bg-slate-50 hover:border-slate-500 text-slate-700 font-medium transition-colors justify-center"
       onClick={onClick}
       disabled={disabled || loading}
     >

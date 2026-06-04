@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import OAuthButtonsGroup from '@/components/auth/OAuthButtonsGroup'
+import { signIn, signInWithOAuth } from '@/lib/auth/actions'
 
 export default function AgentLoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -23,25 +24,50 @@ export default function AgentLoginPage() {
     setLoading(true)
     setError("")
     
-    // Basic validation
     if (!email || !password) {
       setError("Please fill in all fields")
       setLoading(false)
       return
     }
 
-    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const result = await signIn({ email, password })
       
-      // Simulate successful login
-      console.log('Agent sign in:', { email, password, rememberMe })
+      if (result?.error) {
+        setError(result.error)
+        setLoading(false)
+        return
+      }
+
+      if (result.requires2fa) {
+        window.location.href = '/verify-2fa'
+        return
+      }
       
-      // Redirect to agent dashboard
       window.location.href = "/agent-dashboard"
     } catch (err) {
+      console.error('Agent sign in error:', err)
       setError("Invalid email or password")
     } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleOAuthClick = async (provider: string) => {
+    setLoading(true)
+    setError("")
+    try {
+      const result = await signInWithOAuth(provider as 'google' | 'facebook' | 'twitter', 'agent')
+      if (result?.error) {
+        setError(result.error)
+        setLoading(false)
+      }
+    } catch (err: any) {
+      if (err?.message?.includes('NEXT_REDIRECT')) {
+        return
+      }
+      console.error('OAuth error:', err)
+      setError('An error occurred during OAuth sign in')
       setLoading(false)
     }
   }
@@ -233,7 +259,7 @@ export default function AgentLoginPage() {
                 <Separator />
 
                 <OAuthButtonsGroup 
-                  onOAuthClick={(provider) => console.log(`Agent sign in with ${provider}`)}
+                  onOAuthClick={handleOAuthClick}
                   disabled={loading}
                   type="signin"
                 />
@@ -243,7 +269,7 @@ export default function AgentLoginPage() {
               <div className="mt-6 text-center">
                 <p className="text-[var(--color-text-secondary)] text-sm">
                   Don't have an agent account?{' '}
-                  <Link href="/join-as-agent" className="text-[var(--color-gold)] hover:underline font-medium">
+                  <Link href="/sign-up/agent" className="text-[var(--color-gold)] hover:underline font-medium">
                     Join EstateFlow
                   </Link>
                 </p>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -177,6 +177,16 @@ export default function AgentDashboard() {
   const [searchTerm, setSearchTerm] = useState('')
   const { user } = useUser() // Get actual logged-in user
 
+  // Handle URL hash navigation (e.g., #settings from profile page)
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '')
+    if (hash && sidebarItems.some(item => item.id === hash)) {
+      setActiveTab(hash)
+      // Clear the hash from URL after reading it
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+  }, [])
+
   // Use actual user data instead of mock data
   const agentName = user?.user_metadata?.full_name || 'Agent'
   const agentAgency = user?.user_metadata?.agency_name || 'Your Agency'
@@ -214,7 +224,7 @@ export default function AgentDashboard() {
     <div className="min-h-screen bg-gray-50">
       <div className="flex flex-col lg:flex-row">
         {/* Sidebar */}
-        <div className="w-full lg:w-64 bg-white shadow-md lg:min-h-screen">
+        <div className="w-full lg:w-64 bg-white shadow-md lg:min-h-screen lg:flex lg:flex-col">
           <div className="p-6">
             <h2 className="text-2xl font-bold text-[var(--color-navy)]">EstateFlow</h2>
             <p className="text-sm text-gray-600">Agent Dashboard</p>
@@ -235,7 +245,7 @@ export default function AgentDashboard() {
             </div>
           </div>
           
-          <nav className="mt-6">
+          <nav className="mt-6 flex-1">
             {sidebarItems.map((item) => {
               const Icon = item.icon
               return (
@@ -256,7 +266,7 @@ export default function AgentDashboard() {
           </nav>
 
           {/* Agent Profile Summary - Desktop */}
-          <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 bg-white">
+          <div className="hidden lg:block p-6 border-t border-gray-200 bg-white mt-auto">
             <div className="flex items-center gap-3 mb-3">
               <Avatar className="h-12 w-12 border-2 border-[var(--color-gold)]">
                 <AvatarFallback className="bg-[var(--color-navy)] text-[var(--color-gold)] text-lg font-semibold">
@@ -268,9 +278,11 @@ export default function AgentDashboard() {
                 <p className="text-xs text-gray-500 truncate">{agentAgency}</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="w-full border-[var(--color-navy)] text-[var(--color-navy)] hover:bg-[var(--color-navy)] hover:text-white">
-              View Profile
-            </Button>
+            <Link href="/agent-dashboard/profile">
+              <Button variant="outline" size="sm" className="w-full border-[var(--color-navy)] text-[var(--color-navy)] hover:bg-[var(--color-navy)] hover:text-white">
+                View Profile
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -340,9 +352,13 @@ export default function AgentDashboard() {
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span className="text-lg">Recent Leads</span>
-                      <Link href="/dashboard/leads">
-                        <Button variant="outline" size="sm">View All</Button>
-                      </Link>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setActiveTab('leads')}
+                      >
+                        View All
+                      </Button>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -373,9 +389,13 @@ export default function AgentDashboard() {
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span className="text-lg">Active Listings</span>
-                      <Link href="/dashboard/listings">
-                        <Button variant="outline" size="sm">View All</Button>
-                      </Link>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setActiveTab('listings')}
+                      >
+                        View All
+                      </Button>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

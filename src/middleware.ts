@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { decodeSupabaseToken } from '@/lib/auth/twoFactor'
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
@@ -25,22 +26,62 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
 
-  // Redirect to sign-in if not authenticated and accessing protected routes
+  // 1. Redirect to sign-in if not authenticated and accessing protected routes or verify-2fa
   if (!user && (
     request.nextUrl.pathname.startsWith('/agent-dashboard') ||
-    request.nextUrl.pathname.startsWith('/submit-property')
+    request.nextUrl.pathname.startsWith('/submit-property') ||
+    request.nextUrl.pathname.startsWith('/verify-2fa')
   )) {
     return NextResponse.redirect(new URL('/sign-in', request.url))
   }
 
-  // Redirect authenticated users away from auth pages
-  if (user && (
-    request.nextUrl.pathname.startsWith('/sign-in') ||
-    request.nextUrl.pathname.startsWith('/sign-up')
-  )) {
-    return NextResponse.redirect(new URL('/', request.url))
+  // 2. Redirect authenticated users based on 2FA status
+  if (user && session) {
+    const payload = decodeSupabaseToken(session.access_token)
+    const amr = payload?.amr || []
+    const sid = payload?.sid
+    const isPasswordLogin = amr.includes('password')
+
+    console.log('🔍 Middleware Auth Status:', {
+      email: user.email,
+      amr,
+      sid: sid ? 'Present' : 'Missing',
+      isPasswordLogin,
+      path: request.nextUrl.pathname
+    })
+
+    const isProtectedRoute =
+      request.nextUrl.pathname.startsWith('/agent-dashboard') ||
+      request.nextUrl.pathname.startsWith('/submit-property')
+
+    const isAuthRoute =
+      request.nextUrl.pathname.startsWith('/sign-in') ||
+      request.nextUrl.pathname.startsWith('/sign-up')
+
+    const is2faRoute = request.nextUrl.pathname.startsWith('/verify-2fa')
+
+    let isVerified = true
+    if (isPasswordLogin && sid) {
+      const { isUser2faVerified } = await import('@/lib/auth/twoFactor')
+      isVerified = await isUser2faVerified(supabase, user.id, sid, request.cookies)
+    }
+
+    if (!isVerified) {
+      // If not 2FA-verified, force redirect to /verify-2fa for protected or auth pages
+      if (isProtectedRoute || isAuthRoute) {
+        return NextResponse.redirect(new URL('/verify-2fa', request.url))
+      }
+    } else {
+      // If already verified, redirect away from /verify-2fa or standard auth pages
+      if (is2faRoute || isAuthRoute) {
+        const userType = user.user_metadata?.user_type
+        const dest = userType === 'agent' ? '/agent-dashboard' : '/'
+        return NextResponse.redirect(new URL(dest, request.url))
+      }
+    }
   }
 
   return response
@@ -52,5 +93,6 @@ export const config = {
     '/submit-property/:path*',
     '/sign-in',
     '/sign-up/:path*',
+    '/verify-2fa',
   ],
-}
+}

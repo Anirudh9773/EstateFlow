@@ -1,122 +1,121 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import OAuthButtonsGroup from "./OAuthButtonsGroup"
 import { signInWithOAuth } from "@/lib/auth/actions"
+import { agentSignUpSchema, type AgentSignUpFormData } from "@/lib/validations/auth"
 
 export default function SimpleAgentSignUpForm() {
-  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    agencyName: "",
-    licenseNumber: "",
-    areaOfOperation: "",
-    experience: "",
-    password: "",
-    confirmPassword: "",
-    terms: false,
+  const [serverError, setServerError] = useState<string | null>(null)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<AgentSignUpFormData>({
+    resolver: zodResolver(agentSignUpSchema),
+    mode: "onBlur",
+    defaultValues: {
+      terms: false,
+      areaOfOperation: "",
+      experience: "",
+    },
   })
+
+  const areaOfOperation = watch("areaOfOperation")
+  const experience = watch("experience")
+  const termsAccepted = watch("terms")
 
   const handleOAuthClick = async (provider: string) => {
     setOauthLoading(true)
     try {
-      const result = await signInWithOAuth(provider as 'google' | 'azure' | 'twitter', 'agent')
+      const result = await signInWithOAuth(provider as 'google' | 'facebook' | 'twitter', 'agent')
       if (result?.error) {
-        alert(result.error)
+        setServerError(result.error)
         setOauthLoading(false)
+        return
       }
       // If successful, user will be redirected
-    } catch (error) {
+    } catch (error: unknown) {
+      // NEXT_REDIRECT is expected and means redirect is working
+      if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+        console.log('Redirect initiated successfully')
+        return
+      }
       console.error('OAuth error:', error)
-      alert('An error occurred during OAuth sign up')
+      setServerError('An error occurred during OAuth sign up')
       setOauthLoading(false)
     }
   }
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // Validate all required fields
-    if (!formData.fullName || !formData.email || !formData.phone || 
-        !formData.agencyName || !formData.licenseNumber || 
-        !formData.areaOfOperation || !formData.experience || 
-        !formData.password || !formData.confirmPassword) {
-      alert("Please fill in all required fields")
-      return
-    }
-    
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match")
-      return
-    }
-    
-    if (!formData.terms) {
-      alert("Please accept the terms and conditions")
-      return
-    }
-    
+  const onSubmit = async (data: AgentSignUpFormData) => {
     setLoading(true)
+    setServerError(null)
     
     try {
       const { signUp } = await import('@/lib/auth/actions')
       const result = await signUp({
-        email: formData.email,
-        password: formData.password,
-        fullName: formData.fullName,
-        phone: formData.phone,
+        email: data.email,
+        password: data.password,
+        fullName: data.fullName,
+        phone: data.phone,
         userType: 'agent',
-        agencyName: formData.agencyName,
-        licenseNumber: formData.licenseNumber,
-        areaOfOperation: formData.areaOfOperation,
-        yearsExperience: formData.experience,
+        agencyName: data.agencyName,
+        licenseNumber: data.licenseNumber,
+        areaOfOperation: data.areaOfOperation,
+        yearsExperience: data.experience,
       })
       
       if (result.error) {
-        alert(result.error)
+        setServerError(result.error)
         setLoading(false)
         return
       }
       
-      // Success - force reload for immediate auth state update
-      alert('Account created successfully!')
-      window.location.href = '/agent-dashboard'
+      // Success - redirect to 2FA verification page
+      window.location.href = '/verify-2fa'
     } catch (error) {
       console.error('Sign up error:', error)
-      alert('An error occurred during sign up')
+      setServerError('An unexpected error occurred. Please try again.')
       setLoading(false)
     }
   }
 
-  const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
-
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {serverError && (
+        <Alert variant="destructive">
+          <AlertDescription>{serverError}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Full Name</label>
         <Input
           type="text"
           placeholder="John Doe"
-          value={formData.fullName}
-          onChange={(e) => handleChange("fullName", e.target.value)}
-          required
           className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+          {...register("fullName")}
         />
+        {errors.fullName && (
+          <p className="text-sm text-red-600">{errors.fullName.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -124,23 +123,25 @@ export default function SimpleAgentSignUpForm() {
         <Input
           type="email"
           placeholder="you@example.com"
-          value={formData.email}
-          onChange={(e) => handleChange("email", e.target.value)}
-          required
           className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+          {...register("email")}
         />
+        {errors.email && (
+          <p className="text-sm text-red-600">{errors.email.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Phone Number</label>
         <Input
           type="tel"
-          placeholder="+91 98765 43210"
-          value={formData.phone}
-          onChange={(e) => handleChange("phone", e.target.value)}
-          required
+          placeholder="+44 7700 900000"
           className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+          {...register("phone")}
         />
+        {errors.phone && (
+          <p className="text-sm text-red-600">{errors.phone.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -148,11 +149,12 @@ export default function SimpleAgentSignUpForm() {
         <Input
           type="text"
           placeholder="Your Agency Name"
-          value={formData.agencyName}
-          onChange={(e) => handleChange("agencyName", e.target.value)}
-          required
           className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+          {...register("agencyName")}
         />
+        {errors.agencyName && (
+          <p className="text-sm text-red-600">{errors.agencyName.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -160,17 +162,21 @@ export default function SimpleAgentSignUpForm() {
         <Input
           type="text"
           placeholder="Your License Number"
-          value={formData.licenseNumber}
-          onChange={(e) => handleChange("licenseNumber", e.target.value)}
-          required
           className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+          {...register("licenseNumber")}
         />
+        {errors.licenseNumber && (
+          <p className="text-sm text-red-600">{errors.licenseNumber.message}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">Area of Operation</label>
-          <Select value={formData.areaOfOperation} onValueChange={(value) => handleChange("areaOfOperation", value)}>
+          <Select 
+            value={areaOfOperation} 
+            onValueChange={(value) => setValue("areaOfOperation", value || "", { shouldValidate: true })}
+          >
             <SelectTrigger className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20">
               <SelectValue placeholder="Select your area" />
             </SelectTrigger>
@@ -182,11 +188,17 @@ export default function SimpleAgentSignUpForm() {
               <SelectItem value="pan-city">Pan City</SelectItem>
             </SelectContent>
           </Select>
+          {errors.areaOfOperation && (
+            <p className="text-sm text-red-600">{errors.areaOfOperation.message}</p>
+          )}
         </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Years of Experience</label>
-          <Select value={formData.experience} onValueChange={(value) => handleChange("experience", value)}>
+          <Select 
+            value={experience} 
+            onValueChange={(value) => setValue("experience", value || "", { shouldValidate: true })}
+          >
             <SelectTrigger className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20">
               <SelectValue placeholder="Select experience" />
             </SelectTrigger>
@@ -197,6 +209,9 @@ export default function SimpleAgentSignUpForm() {
               <SelectItem value="10+">10+ years</SelectItem>
             </SelectContent>
           </Select>
+          {errors.experience && (
+            <p className="text-sm text-red-600">{errors.experience.message}</p>
+          )}
         </div>
       </div>
 
@@ -206,10 +221,8 @@ export default function SimpleAgentSignUpForm() {
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
-            value={formData.password}
-            onChange={(e) => handleChange("password", e.target.value)}
-            required
             className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            {...register("password")}
           />
           <button
             type="button"
@@ -219,6 +232,14 @@ export default function SimpleAgentSignUpForm() {
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
+        {errors.password && (
+          <p className="text-sm text-red-600">{errors.password.message}</p>
+        )}
+        {!errors.password && (
+          <p className="text-xs text-gray-500">
+            Must be 8+ characters with uppercase, lowercase, number, and special character
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -227,10 +248,8 @@ export default function SimpleAgentSignUpForm() {
           <Input
             type={showConfirmPassword ? "text" : "password"}
             placeholder="••••••••"
-            value={formData.confirmPassword}
-            onChange={(e) => handleChange("confirmPassword", e.target.value)}
-            required
             className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            {...register("confirmPassword")}
           />
           <button
             type="button"
@@ -240,21 +259,29 @@ export default function SimpleAgentSignUpForm() {
             {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
+        {errors.confirmPassword && (
+          <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+        )}
       </div>
 
-      <div className="flex items-start gap-2">
-        <Checkbox
-          id="terms-agent"
-          checked={formData.terms}
-          onCheckedChange={(checked) => handleChange("terms", checked)}
-          className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy"
-        />
-        <label htmlFor="terms-agent" className="text-sm leading-tight">
-          I agree to the{" "}
-          <Link href="/terms" className="text-emerald-600 hover:underline font-medium">
-            Terms & Conditions
-          </Link>
-        </label>
+      <div className="space-y-2">
+        <div className="flex items-start gap-2">
+          <Checkbox
+            id="terms-agent"
+            checked={termsAccepted}
+            onCheckedChange={(checked) => setValue("terms", checked === true, { shouldValidate: true })}
+            className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy mt-0.5"
+          />
+          <label htmlFor="terms-agent" className="text-sm leading-tight">
+            I agree to the{" "}
+            <Link href="/terms" className="text-emerald-600 hover:underline font-medium">
+              Terms & Conditions
+            </Link>
+          </label>
+        </div>
+        {errors.terms && (
+          <p className="text-sm text-red-600">{errors.terms.message}</p>
+        )}
       </div>
 
       <Button 

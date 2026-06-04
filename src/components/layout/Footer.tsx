@@ -28,10 +28,10 @@ export default function Footer() {
       {/* Separator line */}
       <div className="bg-white border-t border-slate-200"></div>
       
-      <footer className="bg-navy pt-12 sm:pt-16 pb-8">
+      <footer className="bg-white pt-12 sm:pt-16 pb-8 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           {/* Top grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 pb-8 sm:pb-12 border-b border-white/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 pb-8 sm:pb-12 border-b border-slate-200">
             {/* Brand column */}
             <div className="col-span-1 sm:col-span-2 md:col-span-1">
               <div className="mb-3 flex items-center gap-2">
@@ -49,7 +49,7 @@ export default function Footer() {
                     height="12"
                     stroke="currentColor"
                     strokeWidth="1.5"
-                    className="text-gold"
+                    className="text-navy"
                   />
                   <rect
                     x="8"
@@ -57,7 +57,7 @@ export default function Footer() {
                     width="10"
                     height="12"
                     fill="currentColor"
-                    className="text-gold/20"
+                    className="text-navy/10"
                   />
                   <path
                     d="M14 10L17 10M17 10L15.5 8.5M17 10L15.5 11.5"
@@ -65,14 +65,14 @@ export default function Footer() {
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="text-gold"
+                    className="text-navy"
                   />
                 </svg>
-                <span className="text-lg font-semibold text-gold">
+                <span className="text-lg font-semibold text-navy">
                   EstateFlow
                 </span>
               </div>
-              <p className="text-white/40 text-sm mb-4">{SITE_TAGLINE}</p>
+              <p className="text-slate-600 text-sm mb-4">{SITE_TAGLINE}</p>
               
               {/* Social icons */}
               <div className="flex items-center gap-3">
@@ -80,7 +80,7 @@ export default function Footer() {
                   href="https://linkedin.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white/40 hover:text-gold transition-colors duration-150"
+                  className="text-slate-400 hover:text-navy transition-colors duration-150"
                   aria-label="LinkedIn"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@ export default function Footer() {
                   href="https://twitter.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white/40 hover:text-gold transition-colors duration-150"
+                  className="text-slate-400 hover:text-navy transition-colors duration-150"
                   aria-label="Twitter"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -103,13 +103,13 @@ export default function Footer() {
 
             {/* Platform links */}
             <div>
-              <h3 className="text-white font-medium mb-4 text-sm">Platform</h3>
+              <h3 className="text-navy font-medium mb-4 text-sm">Platform</h3>
               <ul className="space-y-2.5">
                 {platformLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-white/50 text-sm hover:text-gold transition-colors duration-150"
+                      className="text-slate-600 text-sm hover:text-navy transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -120,13 +120,13 @@ export default function Footer() {
 
             {/* For Agents links */}
             <div>
-              <h3 className="text-white font-medium mb-4 text-sm">For Agents</h3>
+              <h3 className="text-navy font-medium mb-4 text-sm">For Agents</h3>
               <ul className="space-y-2.5">
                 {agentLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-white/50 text-sm hover:text-gold transition-colors duration-150"
+                      className="text-slate-600 text-sm hover:text-navy transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -137,13 +137,13 @@ export default function Footer() {
 
             {/* Company links */}
             <div className="col-span-1 sm:col-span-2 md:col-span-1">
-              <h3 className="text-white font-medium mb-4 text-sm">Company</h3>
+              <h3 className="text-navy font-medium mb-4 text-sm">Company</h3>
               <ul className="space-y-2.5">
                 {companyLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-white/50 text-sm hover:text-gold transition-colors duration-150"
+                      className="text-slate-600 text-sm hover:text-navy transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -155,10 +155,10 @@ export default function Footer() {
 
           {/* Bottom bar */}
           <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-white/30 text-xs text-center sm:text-left">
+            <p className="text-slate-500 text-xs text-center sm:text-left">
               © 2026 EstateFlow Ltd. All rights reserved.
             </p>
-            <p className="text-white/20 text-xs text-center sm:text-right">Built for UK real estate</p>
+            <p className="text-slate-400 text-xs text-center sm:text-right">Built for UK real estate</p>
           </div>
         </div>
       </footer>

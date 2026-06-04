@@ -12,6 +12,26 @@ export default function Header() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [showTrustBar, setShowTrustBar] = useState(true);
   const { user, loading } = useUser();
+  const [is2faVerified, setIs2faVerified] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    async function check2fa() {
+      if (loading) return;
+      if (!user) {
+        setIs2faVerified(true);
+        return;
+      }
+      try {
+        const { isSession2faVerified } = await import('@/lib/auth/actions');
+        const verified = await isSession2faVerified();
+        setIs2faVerified(verified);
+      } catch (e) {
+        console.error('Error checking 2FA in Header:', e);
+        setIs2faVerified(true);
+      }
+    }
+    check2fa();
+  }, [user, loading]);
 
   const platformDropdownRef = useRef<HTMLDivElement>(null);
   const agentsDropdownRef = useRef<HTMLDivElement>(null);
@@ -33,6 +53,10 @@ export default function Header() {
   const userInitial = useMemo(() => {
     return userDisplayName.charAt(0).toUpperCase();
   }, [userDisplayName]);
+
+  // 2FA state variables
+  const showUserMenu = !!user && is2faVerified === true;
+  const showLoading = loading || (!!user && is2faVerified === null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -105,7 +129,7 @@ export default function Header() {
 
   const agentLinks = [
     { label: 'Agent Pricing', href: '/agent-pricing' },
-    { label: 'Join as an Agent', href: '/join-as-agent' },
+    { label: 'Join as an Agent', href: '/sign-up/agent' },
     { label: 'Agent Dashboard', href: '/agent-dashboard' },
   ];
 
@@ -237,10 +261,10 @@ export default function Header() {
                 <span className="sm:hidden">Submit</span>
               </Link>
 
-              {loading ? (
+              {showLoading ? (
                 // Loading state
                 <div className="w-24 h-10 bg-slate-200 animate-pulse rounded-lg"></div>
-              ) : user ? (
+              ) : showUserMenu ? (
                 // Logged in - Show user menu
                 <div className="relative" ref={userMenuDropdownRef}>
                   <button
@@ -463,13 +487,13 @@ export default function Header() {
                   Submit a Property
                 </Link>
 
-                {loading ? (
+                {showLoading ? (
                   // Loading state
                   <div className="space-y-3">
                     <div className="h-20 bg-slate-200 animate-pulse rounded-lg"></div>
                     <div className="h-20 bg-slate-200 animate-pulse rounded-lg"></div>
                   </div>
-                ) : user ? (
+                ) : showUserMenu ? (
                   // Logged in - Show user info and sign out
                   <div>
                     <div className="mb-4 p-4 bg-slate-50 rounded-lg">

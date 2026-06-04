@@ -88,7 +88,7 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
 
       {/* Custom Navigation Arrows - Hidden on mobile, shown on sm+ */}
       <button
-        className="swiper-button-prev-custom hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 sm:-translate-x-4 md:-translate-x-6 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold hover:bg-gold/5 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
+        className="swiper-button-prev-custom hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 sm:-translate-x-4 md:-translate-x-6 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold/80 hover:bg-gold/5 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
         aria-label="Previous testimonial"
       >
         <svg
@@ -102,7 +102,7 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
       </button>
 
       <button
-        className="swiper-button-next-custom hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 sm:translate-x-4 md:translate-x-6 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold hover:bg-gold/5 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
+        className="swiper-button-next-custom hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 sm:translate-x-4 md:translate-x-6 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold/80 hover:bg-gold/5 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
         aria-label="Next testimonial"
       >
         <svg

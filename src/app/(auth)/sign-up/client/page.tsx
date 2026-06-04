@@ -11,11 +11,27 @@ export default function ClientSignUpPage() {
   const router = useRouter()
   const { user, loading } = useUser()
 
-  // Redirect if already logged in
+  // Redirect if already logged in (handling 2FA check first)
   useEffect(() => {
-    if (!loading && user) {
-      router.replace('/')
+    async function checkAuthAndRedirect() {
+      if (loading || !user) return
+
+      try {
+        const { isSession2faVerified } = await import('@/lib/auth/actions')
+        const isVerified = await isSession2faVerified()
+
+        if (!isVerified) {
+          router.replace('/verify-2fa')
+          return
+        }
+
+        router.replace('/')
+      } catch (err) {
+        console.error('Error verifying 2FA session on sign-up mount:', err)
+      }
     }
+
+    checkAuthAndRedirect()
   }, [user, loading, router])
 
   // Show loading while checking auth status

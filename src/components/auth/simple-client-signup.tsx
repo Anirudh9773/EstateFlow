@@ -1,111 +1,110 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import OAuthButtonsGroup from "./OAuthButtonsGroup"
 import { signInWithOAuth } from "@/lib/auth/actions"
+import { clientSignUpSchema, type ClientSignUpFormData } from "@/lib/validations/auth"
 
 export default function SimpleClientSignUpForm() {
-  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-    terms: false,
+  const [serverError, setServerError] = useState<string | null>(null)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<ClientSignUpFormData>({
+    resolver: zodResolver(clientSignUpSchema),
+    mode: "onBlur",
+    defaultValues: {
+      terms: false,
+    },
   })
+
+  const termsAccepted = watch("terms")
 
   const handleOAuthClick = async (provider: string) => {
     setOauthLoading(true)
     try {
-      const result = await signInWithOAuth(provider as 'google' | 'azure' | 'twitter', 'client')
+      const result = await signInWithOAuth(provider as 'google' | 'facebook' | 'twitter', 'client')
       if (result?.error) {
-        alert(result.error)
+        setServerError(result.error)
         setOauthLoading(false)
+        return
       }
-      // If successful, user will be redirected
-    } catch (error) {
+    } catch (error: unknown) {
+      // NEXT_REDIRECT is expected - it means redirect is working
+      if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+        return
+      }
       console.error('OAuth error:', error)
-      alert('An error occurred during OAuth sign up')
+      setServerError('An error occurred during OAuth sign up')
       setOauthLoading(false)
     }
   }
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // Validate all required fields
-    if (!formData.fullName || !formData.email || !formData.phone || 
-        !formData.password || !formData.confirmPassword) {
-      alert("Please fill in all required fields")
-      return
-    }
-    
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match")
-      return
-    }
-    
-    if (!formData.terms) {
-      alert("Please accept the terms and conditions")
-      return
-    }
-    
+  const onSubmit = async (data: ClientSignUpFormData) => {
     setLoading(true)
+    setServerError(null)
     
     try {
       const { signUp } = await import('@/lib/auth/actions')
       const result = await signUp({
-        email: formData.email,
-        password: formData.password,
-        fullName: formData.fullName,
-        phone: formData.phone,
+        email: data.email,
+        password: data.password,
+        fullName: data.fullName,
+        phone: data.phone,
         userType: 'client',
       })
       
       if (result.error) {
-        alert(result.error)
+        setServerError(result.error)
         setLoading(false)
         return
       }
       
-      // Success - force reload for immediate auth state update
-      alert('Account created successfully!')
-      window.location.href = '/'
+      // Success - redirect to 2FA verification page
+      window.location.href = '/verify-2fa'
     } catch (error) {
       console.error('Sign up error:', error)
-      alert('An error occurred during sign up')
+      setServerError('An unexpected error occurred. Please try again.')
       setLoading(false)
     }
   }
 
-  const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
-
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {serverError && (
+        <Alert variant="destructive">
+          <AlertDescription>{serverError}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Full Name</label>
         <Input
           type="text"
           placeholder="John Doe"
-          value={formData.fullName}
-          onChange={(e) => handleChange("fullName", e.target.value)}
-          required
           className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+          {...register("fullName")}
         />
+        {errors.fullName && (
+          <p className="text-sm text-red-600">{errors.fullName.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -113,23 +112,25 @@ export default function SimpleClientSignUpForm() {
         <Input
           type="email"
           placeholder="you@example.com"
-          value={formData.email}
-          onChange={(e) => handleChange("email", e.target.value)}
-          required
           className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+          {...register("email")}
         />
+        {errors.email && (
+          <p className="text-sm text-red-600">{errors.email.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Phone Number</label>
         <Input
           type="tel"
-          placeholder="+91 98765 43210"
-          value={formData.phone}
-          onChange={(e) => handleChange("phone", e.target.value)}
-          required
+          placeholder="+44 7700 900000"
           className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+          {...register("phone")}
         />
+        {errors.phone && (
+          <p className="text-sm text-red-600">{errors.phone.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -138,10 +139,8 @@ export default function SimpleClientSignUpForm() {
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
-            value={formData.password}
-            onChange={(e) => handleChange("password", e.target.value)}
-            required
             className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            {...register("password")}
           />
           <button
             type="button"
@@ -151,6 +150,14 @@ export default function SimpleClientSignUpForm() {
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
+        {errors.password && (
+          <p className="text-sm text-red-600">{errors.password.message}</p>
+        )}
+        {!errors.password && (
+          <p className="text-xs text-gray-500">
+            Must be 8+ characters with uppercase, lowercase, number, and special character
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -159,10 +166,8 @@ export default function SimpleClientSignUpForm() {
           <Input
             type={showConfirmPassword ? "text" : "password"}
             placeholder="••••••••"
-            value={formData.confirmPassword}
-            onChange={(e) => handleChange("confirmPassword", e.target.value)}
-            required
             className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            {...register("confirmPassword")}
           />
           <button
             type="button"
@@ -172,21 +177,29 @@ export default function SimpleClientSignUpForm() {
             {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
+        {errors.confirmPassword && (
+          <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+        )}
       </div>
 
-      <div className="flex items-start gap-2">
-        <Checkbox
-          id="terms"
-          checked={formData.terms}
-          onCheckedChange={(checked) => handleChange("terms", checked)}
-          className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy"
-        />
-        <label htmlFor="terms" className="text-sm leading-tight">
-          I agree to the{" "}
-          <Link href="/terms" className="text-navy hover:underline font-medium">
-            Terms & Conditions
-          </Link>
-        </label>
+      <div className="space-y-2">
+        <div className="flex items-start gap-2">
+          <Checkbox
+            id="terms"
+            checked={termsAccepted}
+            onCheckedChange={(checked) => setValue("terms", checked === true, { shouldValidate: true })}
+            className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy mt-0.5"
+          />
+          <label htmlFor="terms" className="text-sm leading-tight">
+            I agree to the{" "}
+            <Link href="/terms" className="text-navy hover:underline font-medium">
+              Terms & Conditions
+            </Link>
+          </label>
+        </div>
+        {errors.terms && (
+          <p className="text-sm text-red-600">{errors.terms.message}</p>
+        )}
       </div>
 
       <Button 

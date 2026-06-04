@@ -22,16 +22,32 @@ export default function SignInPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
 
-  // Redirect if already logged in
+  // Redirect if already logged in (handling 2FA check first)
   useEffect(() => {
-    if (!userLoading && user) {
-      const userType = user.user_metadata?.user_type
-      if (userType === 'agent') {
-        router.replace('/agent-dashboard')
-      } else {
-        router.replace('/')
+    async function checkAuthAndRedirect() {
+      if (userLoading || !user) return
+
+      try {
+        const { isSession2faVerified } = await import('@/lib/auth/actions')
+        const isVerified = await isSession2faVerified()
+
+        if (!isVerified) {
+          router.replace('/verify-2fa')
+          return
+        }
+
+        const userType = user.user_metadata?.user_type
+        if (userType === 'agent') {
+          router.replace('/agent-dashboard')
+        } else {
+          router.replace('/')
+        }
+      } catch (err) {
+        console.error('Error verifying 2FA session on sign-in mount:', err)
       }
     }
+
+    checkAuthAndRedirect()
   }, [user, userLoading, router])
 
   // Show loading while checking auth status
@@ -58,13 +74,19 @@ export default function SignInPage() {
   const handleOAuthClick = async (provider: string) => {
     setOauthLoading(true)
     try {
-      const result = await signInWithOAuth(provider as 'google' | 'azure' | 'twitter')
+      const result = await signInWithOAuth(provider as 'google' | 'facebook' | 'twitter')
       if (result?.error) {
         alert(result.error)
         setOauthLoading(false)
+        return
       }
       // If successful, user will be redirected
-    } catch (error) {
+    } catch (error: any) {
+      // NEXT_REDIRECT is expected and means redirect is working
+      if (error?.message?.includes('NEXT_REDIRECT')) {
+        console.log('Redirect initiated successfully')
+        return
+      }
       console.error('OAuth error:', error)
       alert('An error occurred during OAuth sign in')
       setOauthLoading(false)
@@ -85,6 +107,11 @@ export default function SignInPage() {
         return
       }
       
+      if (result.requires2fa) {
+        window.location.href = '/verify-2fa'
+        return
+      }
+
       // Success - force reload for immediate auth state update
       // This is necessary because Supabase auth state needs to propagate
       if (result.userType === 'agent') {

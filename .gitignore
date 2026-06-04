@@ -46,3 +46,34 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sensitive SQL files
+*_metadata.sql
+fix_existing_users.sql
+check_*.sql
+
+# Temporary documentation
+STEP*.md
+TEST_*.md
+*_FIX.md
+*_SUMMARY.md
+*_STATUS.md
+*_DEBUG.md
+*_ANALYSIS.md
+*_VISUAL_GUIDE.md
+*_FLOW_DIAGRAM.md
+WHAT_CHANGED.md
+RECENT_*.md
+FINAL_*.md
+IMPLEMENTATION_STATUS.md
+
+# Keep main implementation guides
+!IMPLEMENT_*.md
+!*_IMPLEMENTATION.md
+!OTP_QUICK_START.md
+!DYNAMIC_AGENTS_GUIDE.md
+!DYNAMIC_AGENTS_TESTING.md
+!TWITTER_OAUTH_SETUP.md
+
+# scratch directory
+/scratch/

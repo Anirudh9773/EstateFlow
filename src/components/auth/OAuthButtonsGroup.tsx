@@ -7,13 +7,11 @@ interface OAuthButtonsGroupProps {
   disabled?: boolean
   loading?: boolean
   type?: "signin" | "signup"
-  providers?: ("google" | "microsoft" | "twitter")[]
+  providers?: ("google" | "facebook" | "twitter")[]
 }
 
-const defaultProviders: Array<"google" | "microsoft" | "twitter"> = [
-  "google",
-  "microsoft",
-  "twitter"
+const defaultProviders: Array<"google" | "facebook" | "twitter"> = [
+  "google"
 ]
 
 export default function OAuthButtonsGroup({ 

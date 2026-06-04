@@ -244,7 +244,7 @@ function Step1({ formData, update, nextStep }: any) {
               "cursor-pointer flex flex-col items-center justify-center py-8 px-4 transition-all",
               formData.intent === value
                 ? "border-2 border-green-700 shadow-md"
-                : "border border-gray-200 hover:border-green-400"
+                : "border border-gray-200 hover:border-green-500"
             )}
           >
             <div className={cn("w-12 h-12 mb-4", formData.intent === value ? "text-green-700" : "text-gray-400")} />

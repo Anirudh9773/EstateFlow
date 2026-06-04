@@ -17,7 +17,7 @@ interface AuthFormProps {
   onOAuthClick?: (provider: string) => void
   className?: string
   showOAuth?: boolean
-  oauthProviders?: Array<"google" | "microsoft" | "twitter">
+  oauthProviders?: Array<"google" | "facebook" | "twitter">
 }
 
 interface FormData {

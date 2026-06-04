@@ -15,7 +15,7 @@ interface AgentCardProps {
 
 export default function AgentCard({ agent }: AgentCardProps) {
   return (
-    <Card className="border-ef-border bg-card shadow-none p-4 sm:p-6 hover:border-gold/30 transition-colors duration-150">
+    <Card className="border-ef-border bg-card shadow-none p-4 sm:p-6 hover:border-gold/60 transition-colors duration-150">
       <div className="flex items-start gap-3 sm:gap-4 mb-4">
         <Avatar className="h-12 w-12 sm:h-14 sm:w-14">
           <AvatarImage src={agent.avatar} alt={`${agent.name} profile photo`} />
