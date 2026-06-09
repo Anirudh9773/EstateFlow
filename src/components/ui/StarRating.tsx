@@ -14,13 +14,14 @@ export default function StarRating({ rating, size = 'md', className }: StarRatin
       {[1, 2, 3, 4, 5].map((star) => (
         <svg
           key={star}
-          className={cn(starSize, star <= rating ? 'text-gold fill-gold' : 'text-gold/20')}
+          className={cn(starSize, star <= rating ? 'text-gold fill-gold' : 'text-slate-200 fill-slate-200')}
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M10 1.5L12.5 6.5L18 7.5L14 11.5L15 17L10 14.5L5 17L6 11.5L2 7.5L7.5 6.5L10 1.5Z" />
+          <path d="M10 1.5L12.5 6.5L18 7.5L14 11.5L15 17L10 14.5L5 17L6 11.5L2 7.5L7.5 6.5L10 1.5Z" fill="currentColor" />
         </svg>
       ))}
     </div>
   )
 }
+

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -28,10 +28,15 @@ import {
   Edit,
   CheckCircle,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react'
 import { getInitials } from '@/lib/utils/getInitials'
 import { useUser } from '@/lib/auth/useUser'
+import { createSupabaseClient } from '@/lib/supabaseClient'
+import { syncAgentRatings } from '@/lib/agents/ratings'
+import { toast } from 'sonner'
+import { RefreshCw } from 'lucide-react'
 
 // Mock data for the dashboard
 const mockAgent = {
@@ -177,6 +182,30 @@ export default function AgentDashboard() {
   const [searchTerm, setSearchTerm] = useState('')
   const { user } = useUser() // Get actual logged-in user
 
+  // Profile states
+  const [profile, setProfile] = useState<any>(null)
+  const [profileLoading, setProfileLoading] = useState(true)
+  const [savingSettings, setSavingSettings] = useState(false)
+  const [syncingRatings, setSyncingRatings] = useState(false)
+  const hasLoadedRef = useRef(false)
+
+  // Settings form states
+  const [fullName, setFullName] = useState('')
+  const [agencyName, setAgencyName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [bio, setBio] = useState('')
+  const [trustpilotUsername, setTrustpilotUsername] = useState('')
+  const [allagentsUsername, setAllagentsUsername] = useState('')
+  const [googlePlaceId, setGooglePlaceId] = useState('')
+  
+  // Manual ratings states
+  const [trustpilotRating, setTrustpilotRating] = useState('')
+  const [trustpilotReviewCount, setTrustpilotReviewCount] = useState('')
+  const [allagentsRating, setAllagentsRating] = useState('')
+  const [allagentsReviewCount, setAllagentsReviewCount] = useState('')
+  const [googleRating, setGoogleRating] = useState('')
+  const [googleReviewCount, setGoogleReviewCount] = useState('')
+
   // Handle URL hash navigation (e.g., #settings from profile page)
   useEffect(() => {
     const hash = window.location.hash.replace('#', '')
@@ -187,9 +216,160 @@ export default function AgentDashboard() {
     }
   }, [])
 
+  // Load agent profile on mount
+  useEffect(() => {
+    if (hasLoadedRef.current) return
+    async function loadAgentProfile() {
+      if (!user) return
+      try {
+        const supabase = createSupabaseClient()
+        const { data, error } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('user_id', user.id)
+          .single()
+        
+        if (data) {
+          setProfile(data)
+          setFullName(data.full_name || '')
+          setAgencyName(data.agency_name || '')
+          setPhone(data.phone || '')
+          setBio(data.bio || '')
+          
+          setTrustpilotUsername(data.trustpilot_username || '')
+          setAllagentsUsername(data.allagents_username || '')
+          setGooglePlaceId(data.google_place_id || '')
+          
+          // Manual fallback inputs
+          setTrustpilotRating(data.trustpilot_rating?.toString() || '')
+          setTrustpilotReviewCount(data.trustpilot_review_count?.toString() || '')
+          setAllagentsRating(data.allagents_rating?.toString() || '')
+          setAllagentsReviewCount(data.allagents_review_count?.toString() || '')
+          setGoogleRating(data.google_rating?.toString() || '')
+          setGoogleReviewCount(data.google_review_count?.toString() || '')
+          
+          hasLoadedRef.current = true
+        }
+      } catch (err) {
+        console.error('Error loading agent profile:', err)
+      } finally {
+        setProfileLoading(false)
+      }
+    }
+    loadAgentProfile()
+  }, [user])
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!profile) return
+    setSavingSettings(true)
+
+    try {
+      const supabase = createSupabaseClient()
+      
+      const updates = {
+        full_name: fullName,
+        agency_name: agencyName,
+        phone: phone || null,
+        bio: bio || null,
+        trustpilot_username: trustpilotUsername || null,
+        allagents_username: allagentsUsername || null,
+        google_place_id: googlePlaceId || null,
+        
+        // Convert input values to numbers or nulls
+        trustpilot_rating: trustpilotRating !== '' ? parseFloat(trustpilotRating) : null,
+        trustpilot_review_count: trustpilotReviewCount !== '' ? parseInt(trustpilotReviewCount, 10) : 0,
+        allagents_rating: allagentsRating !== '' ? parseFloat(allagentsRating) : null,
+        allagents_review_count: allagentsReviewCount !== '' ? parseInt(allagentsReviewCount, 10) : 0,
+        google_rating: googleRating !== '' ? parseFloat(googleRating) : null,
+        google_review_count: googleReviewCount !== '' ? parseInt(googleReviewCount, 10) : 0,
+        
+        updated_at: new Date().toISOString()
+      }
+
+      const { data, error } = await supabase
+        .from('agents')
+        .update(updates)
+        .eq('id', profile.id)
+        .select()
+        .single()
+
+      if (error) {
+        toast.error('Failed to save settings: ' + error.message)
+      } else {
+        setProfile(data)
+        toast.success('Settings updated successfully!')
+      }
+    } catch (err) {
+      console.error('Error saving settings:', err)
+      toast.error('An unexpected error occurred while saving settings.')
+    } finally {
+      setSavingSettings(false)
+    }
+  }
+
+  const handleSyncRatings = async () => {
+    if (!profile) return
+    setSyncingRatings(true)
+    toast.info('Starting ratings synchronization...')
+
+    try {
+      // First save current profile inputs so usernames are stored in database
+      const supabase = createSupabaseClient()
+      await supabase.from('agents').update({
+        trustpilot_username: trustpilotUsername || null,
+        allagents_username: allagentsUsername || null,
+        google_place_id: googlePlaceId || null,
+      }).eq('id', profile.id)
+
+      const result = await syncAgentRatings(profile.id)
+
+      if (result.error) {
+        toast.error(result.error)
+      } else if (result.warning) {
+        toast.warning(result.message)
+        
+        // Reload new profile settings from database to display saved usernames
+        const { data } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('id', profile.id)
+          .single()
+        
+        if (data) {
+          setProfile(data)
+        }
+      } else {
+        toast.success('Ratings synchronized successfully!')
+        
+        // Reload new profile settings from database to display new numbers
+        const { data } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('id', profile.id)
+          .single()
+        
+        if (data) {
+          setProfile(data)
+          setTrustpilotRating(data.trustpilot_rating?.toString() || '')
+          setTrustpilotReviewCount(data.trustpilot_review_count?.toString() || '')
+          setAllagentsRating(data.allagents_rating?.toString() || '')
+          setAllagentsReviewCount(data.allagents_review_count?.toString() || '')
+          setGoogleRating(data.google_rating?.toString() || '')
+          setGoogleReviewCount(data.google_review_count?.toString() || '')
+        }
+      }
+    } catch (err) {
+      console.error('Error syncing ratings:', err)
+      toast.error('Failed to sync ratings.')
+    } finally {
+      setSyncingRatings(false)
+    }
+  }
+
   // Use actual user data instead of mock data
-  const agentName = user?.user_metadata?.full_name || 'Agent'
-  const agentAgency = user?.user_metadata?.agency_name || 'Your Agency'
+  const agentName = profile?.full_name || user?.user_metadata?.full_name || 'Agent'
+  const agentAgency = profile?.agency_name || user?.user_metadata?.agency_name || 'Your Agency'
 
   const sidebarItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -651,59 +831,257 @@ export default function AgentDashboard() {
           {/* Settings Tab */}
           {activeTab === 'settings' && (
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Profile Settings</CardTitle>
-                  <CardDescription>Update your personal information and preferences</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                      <input
-                        type="text"
-                        defaultValue={agentName}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Agency</label>
-                      <input
-                        type="text"
-                        defaultValue={agentAgency}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                      <input
-                        type="email"
-                        defaultValue={user?.email || ''}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                      <input
-                        type="tel"
-                        defaultValue={user?.user_metadata?.phone || ''}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
-                      />
-                    </div>
+              {profileLoading ? (
+                <div className="flex items-center justify-center p-12 bg-white rounded-xl shadow">
+                  <Loader2 className="w-8 h-8 animate-spin text-navy" />
+                </div>
+              ) : (
+                <form onSubmit={handleSaveSettings} className="space-y-6">
+                  {/* Personal & Professional Details Card */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Profile Details</CardTitle>
+                      <CardDescription>Update your personal information and biography</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                          <input
+                            type="text"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            required
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Agency Name</label>
+                          <input
+                            type="text"
+                            value={agencyName}
+                            onChange={(e) => setAgencyName(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Email (Read Only)</label>
+                          <input
+                            type="email"
+                            value={user?.email || ''}
+                            disabled
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                          <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Biography</label>
+                        <textarea
+                          rows={4}
+                          value={bio}
+                          onChange={(e) => setBio(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
+                          placeholder="Introduce yourself, your coverage, and your specialties..."
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Ratings Integration Card */}
+                  <Card>
+                    <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <CardTitle>Ratings Integration</CardTitle>
+                        <CardDescription>Configure identifiers to synchronize reviews automatically for free</CardDescription>
+                      </div>
+                      <Button
+                        type="button"
+                        onClick={handleSyncRatings}
+                        disabled={syncingRatings}
+                        className="bg-navy text-gold hover:bg-navy/90 font-medium w-full sm:w-auto"
+                      >
+                        {syncingRatings ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Syncing...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Sync Ratings Now
+                          </>
+                        )}
+                      </Button>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
+                            <span>Trustpilot Username</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={trustpilotUsername}
+                            onChange={(e) => setTrustpilotUsername(e.target.value)}
+                            placeholder="e.g. savills"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
+                          />
+                          <p className="text-xs text-gray-400 mt-1">Username from your Trustpilot profile URL</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
+                            <span>allAgents Slug</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={allagentsUsername}
+                            onChange={(e) => setAllagentsUsername(e.target.value)}
+                            placeholder="e.g. savills-london"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
+                          />
+                          <p className="text-xs text-gray-400 mt-1">Agency slug from allAgents listing URL</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
+                            <span>Google Place ID</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={googlePlaceId}
+                            onChange={(e) => setGooglePlaceId(e.target.value)}
+                            placeholder="e.g. ChIJtX..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
+                          />
+                          <p className="text-xs text-gray-400 mt-1">Google Maps location Place ID or Maps link</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Manual Override Ratings Card */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Manual Ratings Fallbacks</CardTitle>
+                      <CardDescription>Enter metrics manually if you don't wish to use auto-sync or if Google Places API is not configured</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Trustpilot Manual Inputs */}
+                        <div className="space-y-3 p-4 bg-slate-50/50 border border-slate-100 rounded-xl">
+                          <p className="font-semibold text-sm text-slate-800">Trustpilot Fallbacks</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">Score (0-5)</label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                max="5"
+                                value={trustpilotRating}
+                                onChange={(e) => setTrustpilotRating(e.target.value)}
+                                className="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-gold)]"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">Review Count</label>
+                              <input
+                                type="number"
+                                value={trustpilotReviewCount}
+                                onChange={(e) => setTrustpilotReviewCount(e.target.value)}
+                                className="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-gold)]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* allAgents Manual Inputs */}
+                        <div className="space-y-3 p-4 bg-slate-50/50 border border-slate-100 rounded-xl">
+                          <p className="font-semibold text-sm text-slate-800">allAgents Fallbacks</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">Score (0-5)</label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                max="5"
+                                value={allagentsRating}
+                                onChange={(e) => setAllagentsRating(e.target.value)}
+                                className="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-gold)]"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">Review Count</label>
+                              <input
+                                type="number"
+                                value={allagentsReviewCount}
+                                onChange={(e) => setAllagentsReviewCount(e.target.value)}
+                                className="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-gold)]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Google My Business Manual Inputs */}
+                        <div className="space-y-3 p-4 bg-slate-50/50 border border-slate-100 rounded-xl">
+                          <p className="font-semibold text-sm text-slate-800">Google Reviews Fallbacks</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">Score (0-5)</label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                max="5"
+                                value={googleRating}
+                                onChange={(e) => setGoogleRating(e.target.value)}
+                                className="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-gold)]"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">Review Count</label>
+                              <input
+                                type="number"
+                                value={googleReviewCount}
+                                onChange={(e) => setGoogleReviewCount(e.target.value)}
+                                className="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-gold)]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <div className="flex gap-4">
+                    <Button
+                      type="submit"
+                      disabled={savingSettings}
+                      className="flex-1 bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-11"
+                    >
+                      {savingSettings ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Saving changes...
+                        </>
+                      ) : (
+                        'Save All Settings'
+                      )}
+                    </Button>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-                    <textarea
-                      rows={4}
-                      defaultValue={user?.user_metadata?.bio || 'Tell us about yourself and your experience...'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
-                    />
-                  </div>
-                  <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90">
-                    Save Changes
-                  </Button>
-                </CardContent>
-              </Card>
+                </form>
+              )}
             </div>
           )}
         </div>

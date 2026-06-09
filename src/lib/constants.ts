@@ -17,7 +17,6 @@ export const ROUTES = {
   findAgent: '/find-an-agent',
   agents: '/agents',
   agentDashboard: '/agent-dashboard',
-  agentLogin: '/agent-login',
   pricing: '/pricing',
   about: '/about',
   contact: '/contact',

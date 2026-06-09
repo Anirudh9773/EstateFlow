@@ -35,7 +35,6 @@ export default function Header() {
 
   const platformDropdownRef = useRef<HTMLDivElement>(null);
   const agentsDropdownRef = useRef<HTMLDivElement>(null);
-  const signInDropdownRef = useRef<HTMLDivElement>(null);
   const signUpDropdownRef = useRef<HTMLDivElement>(null);
   const userMenuDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -75,12 +74,6 @@ export default function Header() {
         !agentsDropdownRef.current.contains(event.target as Node)
       ) {
         if (openDropdown === 'agents') setOpenDropdown(null);
-      }
-      if (
-        signInDropdownRef.current &&
-        !signInDropdownRef.current.contains(event.target as Node)
-      ) {
-        if (openDropdown === 'signin') setOpenDropdown(null);
       }
       if (
         signUpDropdownRef.current &&
@@ -315,52 +308,13 @@ export default function Header() {
               ) : (
                 // Not logged in - Show sign in/up buttons
                 <>
-                  {/* Sign In Dropdown */}
-                  <div className="relative" ref={signInDropdownRef}>
-                    <button
-                      onClick={() => toggleDropdown('signin')}
-                      className="flex items-center gap-2 px-4 py-2 border-2 border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm"
-                      aria-expanded={openDropdown === 'signin'}
-                      aria-haspopup="true"
-                    >
-                      Sign In
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform ${
-                          openDropdown === 'signin' ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </button>
-                    {openDropdown === 'signin' && (
-                      <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-slate-200 py-2 animate-fadeIn z-50">
-                        <Link
-                          href="/sign-in"
-                          className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
-                          onClick={() => setOpenDropdown(null)}
-                        >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100">
-                            <User className="w-5 h-5 text-amber-600" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-slate-900">As Client</div>
-                            <div className="text-xs text-slate-500">Find your perfect agent</div>
-                          </div>
-                        </Link>
-                        <Link
-                          href="/sign-in"
-                          className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
-                          onClick={() => setOpenDropdown(null)}
-                        >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100">
-                            <Building2 className="w-5 h-5 text-emerald-600" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-slate-900">As Agent</div>
-                            <div className="text-xs text-slate-500">Manage your leads</div>
-                          </div>
-                        </Link>
-                      </div>
-                    )}
-                  </div>
+                  {/* Sign In Button */}
+                  <Link
+                    href="/sign-in"
+                    className="px-4 py-2 border-2 border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm"
+                  >
+                    Sign In
+                  </Link>
 
                   {/* Sign Up Dropdown */}
                   <div className="relative" ref={signUpDropdownRef}>
@@ -531,38 +485,14 @@ export default function Header() {
                 ) : (
                   // Not logged in - Show sign in/up options
                   <>
-                    {/* Sign In Section */}
-                    <div className="mb-4">
-                      <h3 className="text-sm font-semibold text-slate-900 mb-3">Sign In</h3>
-                      <div className="space-y-2">
-                        <Link
-                          href="/sign-in"
-                          className="flex items-center gap-3 px-4 py-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100">
-                            <User className="w-5 h-5 text-amber-600" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-slate-900 text-sm">As Client</div>
-                            <div className="text-xs text-slate-500">Find your perfect agent</div>
-                          </div>
-                        </Link>
-                        <Link
-                          href="/sign-in"
-                          className="flex items-center gap-3 px-4 py-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100">
-                            <Building2 className="w-5 h-5 text-emerald-600" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-slate-900 text-sm">As Agent</div>
-                            <div className="text-xs text-slate-500">Manage your leads</div>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
+                    {/* Sign In Button */}
+                    <Link
+                      href="/sign-in"
+                      className="block w-full px-5 py-3 border border-slate-200 rounded-lg text-center font-medium text-slate-700 hover:bg-slate-50 transition-colors mb-4"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Sign In
+                    </Link>
 
                     {/* Sign Up Section */}
                     <div>

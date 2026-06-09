@@ -25,6 +25,16 @@ function transformDbAgentToAgent(dbAgent: any): Agent {
     featured: dbAgent.featured || false,
     commission: parseFloat(dbAgent.commission) || 1.5,
     fee: dbAgent.fee || '1.5% + VAT',
+    trustpilot_username: dbAgent.trustpilot_username,
+    trustpilot_rating: dbAgent.trustpilot_rating !== null ? parseFloat(dbAgent.trustpilot_rating) : null,
+    trustpilot_review_count: dbAgent.trustpilot_review_count,
+    allagents_username: dbAgent.allagents_username,
+    allagents_rating: dbAgent.allagents_rating !== null ? parseFloat(dbAgent.allagents_rating) : null,
+    allagents_review_count: dbAgent.allagents_review_count,
+    google_place_id: dbAgent.google_place_id,
+    google_rating: dbAgent.google_rating !== null ? parseFloat(dbAgent.google_rating) : null,
+    google_review_count: dbAgent.google_review_count,
+    ratings_last_synced_at: dbAgent.ratings_last_synced_at,
   }
 }
 
