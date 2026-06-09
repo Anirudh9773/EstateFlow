@@ -44,7 +44,7 @@ export async function scrapeTrustpilotRating(username: string): Promise<{ rating
             }
           }
         }
-      } catch (e) {
+      } catch {
         // Parse error for script tags that are not JSON-LD
       }
     }
@@ -109,7 +109,7 @@ export async function scrapeAllagentsRating(username: string): Promise<{ rating:
             }
           }
         }
-      } catch (e) {}
+      } catch {}
     }
 
     // 2. Try standard microdata attributes
@@ -194,7 +194,7 @@ export async function syncAgentRatings(agentId: string) {
       return { error: 'Agent profile not found in database.' }
     }
 
-    const updates: Record<string, any> = {
+    const updates: Record<string, string | number | null | undefined> = {
       ratings_last_synced_at: new Date().toISOString()
     }
 
@@ -269,8 +269,9 @@ export async function syncAgentRatings(agentId: string) {
     }
 
     return { success: true, message: 'Ratings synchronized successfully.' }
-  } catch (error: any) {
+  } catch (error) {
     console.error('[Ratings Sync] Server action exception:', error)
-    return { error: error.message || 'An unexpected error occurred during sync.' }
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred during sync.'
+    return { error: message }
   }
 }

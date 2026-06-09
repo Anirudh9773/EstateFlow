@@ -14,7 +14,7 @@ export default function PrivacyContent() {
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed">
-            EstateFlow Ltd. ("we", "us", or "our") operates EstateFlow, a UK-based online property matching 
+            EstateFlow Ltd. (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates EstateFlow, a UK-based online property matching 
             platform that connects property owners with verified local estate agents.
           </p>
           <p className="text-slate-700 leading-relaxed">
@@ -270,7 +270,7 @@ export default function PrivacyContent() {
             </a>. We will respond to your request within one month.
           </p>
           <p className="text-slate-700 leading-relaxed">
-            You also have the right to lodge a complaint with the Information Commissioner's Office (ICO), the UK's 
+            You also have the right to lodge a complaint with the Information Commissioner&apos;s Office (ICO), the UK&apos;s 
             data protection authority, if you believe we have not handled your data properly. Visit{' '}
             <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:text-amber-700 font-medium">
               ico.org.uk
@@ -324,7 +324,7 @@ export default function PrivacyContent() {
             legal requirements, or other factors. When we make significant changes, we will notify you by:
           </p>
           <ul className="list-disc pl-6 mb-4 text-slate-700 space-y-2">
-            <li>Posting the updated policy on our website with a new "Last updated" date</li>
+            <li>Posting the updated policy on our website with a new &quot;Last updated&quot; date</li>
             <li>Sending an email notification to registered users (for material changes)</li>
             <li>Displaying a prominent notice on our platform</li>
           </ul>

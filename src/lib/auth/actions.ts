@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import type { UserMetadata } from '@/types/profile'
+import type { Provider } from '@supabase/supabase-js'
 import { serverSignInSchema, serverSignUpSchema } from '@/lib/validations/auth'
 import { sendEmail } from '@/lib/utils/email'
 import { decodeSupabaseToken } from '@/lib/auth/twoFactor'
@@ -251,7 +252,7 @@ export async function signInWithOAuth(provider: 'google' | 'facebook' | 'twitter
   const redirectUrl = `${siteUrl}/auth/callback${userType ? `?user_type=${userType}` : ''}`
   
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: provider as any,
+    provider: provider as Provider,
     options: {
       redirectTo: redirectUrl,
       ...(userType && {

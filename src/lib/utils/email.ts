@@ -71,9 +71,10 @@ export async function sendEmail({
 
       console.log('✅ Real email sent successfully via Gmail SMTP');
       return { success: true };
-    } catch (e: any) {
+    } catch (e) {
       console.error('❌ Exception occurred during Gmail SMTP call:', e);
-      return { success: false, error: e.message || 'Gmail SMTP error' };
+      const message = e instanceof Error ? e.message : 'Gmail SMTP error';
+      return { success: false, error: message };
     }
   }
 
@@ -103,9 +104,10 @@ export async function sendEmail({
         console.log('✅ Real email sent successfully via Resend API');
         return { success: true };
       }
-    } catch (e: any) {
+    } catch (e) {
       console.error('❌ Exception occurred during Resend API call:', e);
-      return { success: false, error: e.message || 'Resend Exception' };
+      const message = e instanceof Error ? e.message : 'Resend Exception';
+      return { success: false, error: message };
     }
   }
 

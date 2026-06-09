@@ -17,20 +17,32 @@ export function useUser() {
 
   useEffect(() => {
     const supabase = createSupabaseClient()
+    let active = true
 
-    // Get initial user
-    refreshUser()
+    async function getInitialUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (active) {
+        setUser(user)
+        setLoading(false)
+      }
+    }
 
-    // Listen for auth changes
+    getInitialUser()
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setUser(session?.user ?? null)
-        setLoading(false)
+        if (active) {
+          setUser(session?.user ?? null)
+          setLoading(false)
+        }
       }
     )
 
-    return () => subscription.unsubscribe()
-  }, [refreshUser])
+    return () => {
+      active = false
+      subscription.unsubscribe()
+    }
+  }, [])
 
   return { user, loading, refreshUser }
 }

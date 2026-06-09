@@ -169,7 +169,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
             Thanks {formData.fullName.split(' ')[0]}!
           </h3>
           <p className="text-slate-600 text-lg">
-            We've received your message and will get back to you within 24 hours.
+            We&apos;ve received your message and will get back to you within 24 hours.
           </p>
         </div>
       </div>
@@ -190,7 +190,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
             className={`gap-2 flex-1 sm:flex-initial ${userRole === 'client' ? 'bg-white text-slate-900 shadow-sm hover:bg-white' : ''}`}
           >
             <User className="w-4 h-4" />
-            <span className="text-xs sm:text-sm">I'm a Client</span>
+            <span className="text-xs sm:text-sm">I&apos;m a Client</span>
           </Button>
           <Button
             type="button"
@@ -200,7 +200,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
             className={`gap-2 flex-1 sm:flex-initial ${userRole === 'agent' ? 'bg-white text-slate-900 shadow-sm hover:bg-white' : ''}`}
           >
             <Building2 className="w-4 h-4" />
-            <span className="text-xs sm:text-sm">I'm an Agent</span>
+            <span className="text-xs sm:text-sm">I&apos;m an Agent</span>
           </Button>
         </div>
       </div>

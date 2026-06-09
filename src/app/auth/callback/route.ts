@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   if (code) {
     const cookieStore = await cookies()
     
-    let response = NextResponse.next()
+    const response = NextResponse.next()
     
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -8,7 +8,7 @@ export default function ContactHero() {
           Get in Touch with EstateFlow
         </h1>
         <p className="text-base md:text-lg lg:text-xl text-slate-300 mb-4 md:mb-6 leading-relaxed max-w-3xl mx-auto px-4">
-          Whether you're a property owner, buyer, or estate agent — we're here to help. 
+          Whether you&apos;re a property owner, buyer, or estate agent — we&apos;re here to help. 
           Reach out and our team will get back to you within 24 hours.
         </p>
         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 md:px-4 py-2 rounded-full text-xs md:text-sm">

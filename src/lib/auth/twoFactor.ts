@@ -31,10 +31,13 @@ export function decodeSupabaseToken(token: string): SupabaseJwtPayload | null {
     // Normalize AMR array to be a string array
     let amr: string[] = []
     if (Array.isArray(rawPayload.amr)) {
-      amr = rawPayload.amr.map((item: any) => {
+      amr = rawPayload.amr.map((item: unknown) => {
         if (typeof item === 'string') return item
-        if (item && typeof item === 'object' && typeof item.method === 'string') {
-          return item.method
+        if (item && typeof item === 'object' && 'method' in item) {
+          const obj = item as { method: unknown }
+          if (typeof obj.method === 'string') {
+            return obj.method
+          }
         }
         return ''
       }).filter(Boolean)

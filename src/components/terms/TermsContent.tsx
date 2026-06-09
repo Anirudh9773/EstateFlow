@@ -14,8 +14,8 @@ export default function TermsContent() {
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed">
-            Welcome to EstateFlow. These Terms of Service ("Terms") govern your access to and use of the EstateFlow 
-            platform, website, and services (collectively, the "Platform").
+            Welcome to EstateFlow. These Terms of Service (&quot;Terms&quot;) govern your access to and use of the EstateFlow 
+            platform, website, and services (collectively, the &quot;Platform&quot;).
           </p>
           <p className="text-slate-700 leading-relaxed">
             By accessing or using our Platform, you agree to be bound by these Terms. If you do not agree to these 
@@ -36,7 +36,7 @@ export default function TermsContent() {
             </div>
           </div>
           <p className="text-slate-700 leading-relaxed mb-4">
-            EstateFlow Ltd. ("EstateFlow", "we", "us", or "our") is a company registered in England and Wales. 
+            EstateFlow Ltd. (&quot;EstateFlow&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) is a company registered in England and Wales. 
             We operate an online property matching platform that connects property owners and buyers with verified, 
             local estate agents across the United Kingdom.
           </p>
@@ -214,7 +214,7 @@ export default function TermsContent() {
           </p>
           <ul className="list-disc pl-6 mb-4 text-slate-700 space-y-2">
             <li>
-              EstateFlow provides the Platform "as is" and "as available" without warranties of any kind, 
+              EstateFlow provides the Platform &quot;as is&quot; and &quot;as available&quot; without warranties of any kind, 
               either express or implied
             </li>
             <li>
@@ -288,7 +288,7 @@ export default function TermsContent() {
           </div>
           <p className="text-slate-700 leading-relaxed mb-4">
             We may update these Terms from time to time. When we make material changes, we will notify you by 
-            posting the updated Terms on our Platform with a new "Last updated" date and, where appropriate, 
+            posting the updated Terms on our Platform with a new &quot;Last updated&quot; date and, where appropriate, 
             by sending you an email notification.
           </p>
           <p className="text-slate-700 leading-relaxed mb-4">

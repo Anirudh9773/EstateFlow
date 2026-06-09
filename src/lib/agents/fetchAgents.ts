@@ -1,10 +1,56 @@
 import { createSupabaseClient } from '@/lib/supabaseClient'
 import type { Agent } from '@/types/agent'
 
+interface DbAgentRecord {
+  id: string
+  full_name: string
+  agency_name?: string | null
+  location?: string | null
+  postcode?: string | null
+  avatar?: string | null
+  bio?: string | null
+  specialisations?: string[] | null
+  coverage_areas?: string[] | null
+  tier?: 'local' | 'regional' | 'nationwide' | null
+  rating?: number | string | null
+  review_count?: number | null
+  leads_handled?: number | null
+  years_experience?: number | string | null
+  response_time?: string | null
+  verified?: boolean | null
+  featured?: boolean | null
+  commission?: number | string | null
+  fee?: string | null
+  trustpilot_username?: string | null
+  trustpilot_rating?: number | string | null
+  trustpilot_review_count?: number | null
+  allagents_username?: string | null
+  allagents_rating?: number | string | null
+  allagents_review_count?: number | null
+  google_place_id?: string | null
+  google_rating?: number | string | null
+  google_review_count?: number | null
+  ratings_last_synced_at?: string | null
+}
+
+function safeParseFloat(val: string | number | null | undefined, fallback: number): number {
+  if (val === undefined || val === null) return fallback;
+  if (typeof val === 'number') return val;
+  const parsed = parseFloat(val);
+  return isNaN(parsed) ? fallback : parsed;
+}
+
+function safeParseInt(val: string | number | null | undefined, fallback: number): number {
+  if (val === undefined || val === null) return fallback;
+  if (typeof val === 'number') return val;
+  const parsed = parseInt(val, 10);
+  return isNaN(parsed) ? fallback : parsed;
+}
+
 /**
  * Transform database agent record to Agent type for display
  */
-function transformDbAgentToAgent(dbAgent: any): Agent {
+function transformDbAgentToAgent(dbAgent: DbAgentRecord): Agent {
   return {
     id: dbAgent.id,
     name: dbAgent.full_name,
@@ -16,23 +62,23 @@ function transformDbAgentToAgent(dbAgent: any): Agent {
     specialisations: dbAgent.specialisations || [],
     coverageAreas: dbAgent.coverage_areas || [],
     tier: dbAgent.tier || 'local',
-    rating: parseFloat(dbAgent.rating) || 0,
+    rating: safeParseFloat(dbAgent.rating, 0),
     reviewCount: dbAgent.review_count || 0,
     leadsHandled: dbAgent.leads_handled || 0,
-    yearsExperience: parseInt(dbAgent.years_experience) || 0,
+    yearsExperience: safeParseInt(dbAgent.years_experience, 0),
     responseTime: dbAgent.response_time || '< 24 hours',
     verified: dbAgent.verified || false,
     featured: dbAgent.featured || false,
-    commission: parseFloat(dbAgent.commission) || 1.5,
+    commission: safeParseFloat(dbAgent.commission, 1.5),
     fee: dbAgent.fee || '1.5% + VAT',
     trustpilot_username: dbAgent.trustpilot_username,
-    trustpilot_rating: dbAgent.trustpilot_rating !== null ? parseFloat(dbAgent.trustpilot_rating) : null,
+    trustpilot_rating: dbAgent.trustpilot_rating != null ? safeParseFloat(dbAgent.trustpilot_rating, 0) : null,
     trustpilot_review_count: dbAgent.trustpilot_review_count,
     allagents_username: dbAgent.allagents_username,
-    allagents_rating: dbAgent.allagents_rating !== null ? parseFloat(dbAgent.allagents_rating) : null,
+    allagents_rating: dbAgent.allagents_rating != null ? safeParseFloat(dbAgent.allagents_rating, 0) : null,
     allagents_review_count: dbAgent.allagents_review_count,
     google_place_id: dbAgent.google_place_id,
-    google_rating: dbAgent.google_rating !== null ? parseFloat(dbAgent.google_rating) : null,
+    google_rating: dbAgent.google_rating != null ? safeParseFloat(dbAgent.google_rating, 0) : null,
     google_review_count: dbAgent.google_review_count,
     ratings_last_synced_at: dbAgent.ratings_last_synced_at,
   }
