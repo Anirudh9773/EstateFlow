@@ -77,6 +77,14 @@ export async function middleware(request: NextRequest) {
 
       // If not 2FA-verified and trying to access sign-in or sign-up, sign out to clear the stale session
       if (isAuthRoute) {
+        const isPrefetch =
+          request.headers.has('next-router-prefetch') ||
+          request.headers.get('purpose') === 'prefetch'
+
+        if (isPrefetch) {
+          return response
+        }
+
         const redirectUrl = new URL(request.nextUrl.pathname + request.nextUrl.search, request.url)
         const redirectResponse = NextResponse.redirect(redirectUrl)
         const clearCookiesSupabase = createServerClient(

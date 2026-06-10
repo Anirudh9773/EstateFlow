@@ -71,7 +71,7 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
 
         {/* Tabbed Categories */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 bg-transparent border-0 shadow-none p-0 h-auto">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 bg-transparent border-0 shadow-none p-0 w-full group-data-horizontal/tabs:h-auto">
             <TabsTrigger 
               value="all" 
               className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
