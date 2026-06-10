@@ -56,9 +56,21 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 - **ALWAYS use `pnpm`** - This project uses pnpm, not npm or yarn
 - Commands: `pnpm install`, `pnpm dev`, `pnpm build`
 
-### Recent Major Updates (April 2026)
+### Recent Major Updates (April 2026 & June 2026)
 
-#### Authentication System Overhaul
+#### Two-Factor Authentication (2FA) Security System (June 2026)
+- **OTP Generation & Verification**: Automatic custom 6-digit numeric OTP generation on credentials-based sign-in and sign-up.
+- **Verification Interface**: Implemented `/verify-2fa` page featuring automatic input focus shift, clipboard pasting support, 10-minute countdown timer, and secure code resending.
+- **Trusted Devices**: Added a 30-day "Trust this device" token system stored securely in cookies and database tables (`remembered_devices`).
+- **OAuth Exemption**: Explicit exemption for Google/Social logins from local 2FA to keep the login flow fast and frictionless.
+- **Middleware Integration**: Intercepts unauthorized/unverified sessions attempting to access protected routes, with built-in bypass for Next.js link prefetching to prevent unexpected sign-outs.
+
+#### Mobile UI, Navigation & Performance Improvements (June 2026)
+- **Responsive Category Tabs**: Resolved overlapping tab buttons on `/agents` and homepage filter views by applying high-specificity responsive layouts (`group-data-horizontal/tabs:h-auto`) allowing items to wrap smoothly.
+- **Lag-Free Mobile Drawer**: Upgraded header navigation menu to use viewport-bounded scrolling (`h-[calc(100dvh-4rem)]` with `overflow-y-auto` and `overscroll-y-contain`), managed by a body scroll lock to ensure a responsive, premium mobile experience.
+- **Safe SSR Cookie Hydration**: Wrapped cookie operations in `supabaseServer.ts` with `try/catch` handlers to prevent server component render crashes.
+
+#### Authentication System Overhaul (April 2026)
 - OAuth Integration for 3 providers (Google, Facebook, X/Twitter)
 - Reusable components: `OAuthButton`, `OAuthButtonsGroup`, `AuthForm`
 - Consolidated authentication forms (eliminated duplicates)
@@ -111,7 +123,8 @@ estateflow/
 │   │   │   ├── sign-up/              # Sign-up routes
 │   │   │   │   ├── client/           # Client registration
 │   │   │   │   └── agent/            # Agent registration
-│   │   │   └── forgot-password/      # Password reset
+│   │   │   ├── forgot-password/      # Password reset
+│   │   │   └── verify-2fa/           # 2FA security verification page
 │   │   │
 │   │   ├── agents/                   # Browse all agents (16 agents)
 │   │   ├── find-an-agent/            # Agent search with filters
@@ -203,8 +216,9 @@ estateflow/
 │   │   ├── supabaseClient.ts         # Browser Supabase client
 │   │   ├── supabaseServer.ts         # Server Supabase client
 │   │   ├── auth/
-│   │   │   ├── actions.ts            # Server actions (signUp, signIn, signOut)
-│   │   │   └── useUser.ts            # Client hook for user state
+│   │   │   ├── actions.ts            # Server actions (signUp, signIn, signOut, verify2faOtp)
+│   │   │   ├── useUser.ts            # Client hook for user state
+│   │   │   └── twoFactor.ts          # 2FA token decoding & verification helper functions
 │   │   ├── utils/                    # Utility functions
 │   │   │   └── cn.ts                 # Class name utility
 │   │   ├── constants.ts              # Route constants
@@ -262,6 +276,7 @@ estateflow/
 - `/sign-up/agent` - Agent registration
 - `/agent-login` - Agent authentication
 - `/forgot-password` - Password reset
+- `/verify-2fa` - 2FA Security OTP verification
 
 #### Protected Pages (Require Authentication)
 - `/agent-dashboard` - Agent management dashboard
@@ -337,6 +352,13 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 - `simple-agent-signin.tsx` - Agent sign-in form
 - `simple-agent-signup.tsx` - Agent sign-up form
 - `SignOutButton.tsx` - Sign-out button
+
+### Two-Factor Authentication (2FA)
+- **Status**: ✅ Configured and enforce-ready
+- **Trigger**: Automatically checks user token claims (`amr`) on credentials-based login.
+- **Exemptions**: Explicitly ignores OAuth/Google logins to maintain quick social sign-in.
+- **Trusted Devices**: Saves a 30-day device token via `remember_device_token` cookie when checked.
+- **Verification Page**: `/verify-2fa` coordinates entry validation, countdowns, and codes.
 
 **IMPORTANT**: 
 - See `SUPABASE_DATABASE_SETUP.md` for complete database schema and setup instructions
@@ -1063,6 +1085,25 @@ interface Agent {
 **Setup Guide**: See `GOOGLE_OAUTH_SETUP.md` for complete Google OAuth configuration
 **Implementation Details**: See `OAUTH_IMPLEMENTATION_SUMMARY.md` for technical details
 
+### Security Verification (2FA / OTP)
+
+**Route**: `/verify-2fa` (Client Component)
+
+**Location**: `src/app/(auth)/verify-2fa/page.tsx`
+
+**Key Mechanics**:
+- **Numeric Restriction**: Filters out all non-digit keypresses in each individual input field.
+- **Auto-Navigation**: Automatically moves keyboard focus to the next input cell when a digit is typed, and returns to the previous cell when Backspace is pressed.
+- **Pasting Support**: Intercepts standard clipboard copy-paste actions on the parent container, parses the first 6 digits, populates the boxes, and automatically triggers submit.
+- **Attempt Restrictions**: Blocks brute-force operations by locking code submission after 3 incorrect attempts.
+- **Time Window**: Verification codes expire after 10 minutes. Includes a countdown timer showing remaining minutes and seconds.
+- **Sign-Out Escape**: Includes a "Back to sign in" button that calls the Supabase `signOut` server action to clear any partial session and returns the user to `/sign-in` safely.
+
+**Database Schema Integration**:
+- `public.user_2fa_sessions`: Tracks active sessions that have successfully verified via 2FA. Checked in both actions and middleware.
+- `public.user_2fa_otps`: Temporary storage of hashed OTPs (`otp_hash`), attempt counts, and expiration dates.
+- `public.remembered_devices`: Stores secure tokens for trusted user devices, valid for 30 days.
+
 ---
 
 ## 🐛 Common Issues & Solutions
@@ -1224,6 +1265,44 @@ location.reload();
 **Solution 3: Add Sign-Out Functionality**
 - Use the `SignOutButton` component in your header
 - Or navigate to a protected route and sign out from there
+
+---
+
+### Issue: Immediately Signed Out / Session Lost During 2FA Verification
+
+**Symptoms**: When visiting `/verify-2fa` or entering the code, the browser redirects back to the sign-in page with a "Session not found" or "expired" state.
+
+**Diagnosis**: Next.js automatically pre-fetches `<Link>` routes in the background. If a page like the header contains links to `/sign-in` or `/sign-up`, Next.js fires background prefetch operations. Without proper checks, the middleware treats prefetch requests as standard routing attempts and executes destructive actions like signing out the user.
+
+**Solution**: The middleware must filter out Next.js prefetch queries and avoid clearing sessions when prefetching occurs:
+```typescript
+const isPrefetch =
+  request.headers.has('next-router-prefetch') ||
+  request.headers.get('purpose') === 'prefetch'
+
+if (isPrefetch) {
+  return response // Skip signout processing
+}
+```
+
+---
+
+### Issue: Cookie Settings Crashing Server Component Render
+
+**Symptoms**: Page crash or warnings when rendering Server Components: "Cookies can only be modified in a Server Action or Route Handler."
+
+**Diagnosis**: Next.js App Router prevents modifying cookies during standard server rendering cycles. Calls to `supabase.auth` inside Server Components may implicitly try to set session/refresh token cookies.
+
+**Solution**: Wrap the cookie modifier functions (`setAll`) inside a `try/catch` block inside `supabaseServer.ts` so that temporary write failures do not crash the layout render:
+```typescript
+try {
+  cookiesToSet.forEach(({ name, value, options }) =>
+    cookieStore.set(name, value, options)
+  )
+} catch {
+  // Safe to ignore in Server Components rendering
+}
+```
 
 ---
 
@@ -1536,6 +1615,13 @@ Before making ANY changes, verify:
 **Maintainer**: EstateFlow Development Team
 
 **Recent Changes**:
+- Implemented custom Two-Factor Authentication (2FA) security flow using 6-digit numeric OTPs.
+- Created `/verify-2fa` security verification UI with auto-focus cells, clipboard paste detection, and countdown timer.
+- Added a 30-day "Trust this device" system backed by `remembered_devices` tables and secure cookie tokens.
+- Fixed middleware to bypass destructive signout operations on Next.js prefetch headers.
+- Safe cookie mutation wrapping in `supabaseServer.ts` to prevent SSR layout render crashes.
+- Fixed mobile agent browsing category tabs overlapping on small viewports by enforcing wrapping configurations.
+- Redesigned mobile menu header drawer overlay with viewport-bounded scroll locks to fix laggy scrolling.
 - Added comprehensive form validation system (React Hook Form + Zod)
 - Implemented client-side and server-side validation for all auth forms
 - Fixed checkbox validation integration with shadcn/ui components

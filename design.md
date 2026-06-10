@@ -167,6 +167,29 @@ export default function PageName() {
 - **Min Height**: `min-h-[100px]`
 - **Resize**: `resize-y` or `resize-none`
 
+### 2FA OTP Input Digit Cell Styling
+- **Border**: `border-2 border-slate-300` (visible border)
+- **Focus State**: `focus:border-navy focus:ring-2 focus:ring-navy/20 focus:outline-none`
+- **Dimensions**: `w-12 h-14 sm:w-14 sm:h-16` (responsive box size)
+- **Text**: `text-center text-2xl font-bold text-navy bg-white transition-all`
+- **Disabled State**: `disabled:opacity-50 disabled:cursor-not-allowed`
+
+#### 2FA OTP Cell Pattern
+```tsx
+<div className="flex justify-between gap-2 sm:gap-3">
+  {otp.map((digit, index) => (
+    <input
+      key={index}
+      type="text"
+      inputMode="numeric"
+      maxLength={1}
+      value={digit}
+      className="w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold border-2 border-slate-300 rounded-lg focus:border-navy focus:ring-2 focus:ring-navy/20 focus:outline-none bg-white text-navy transition-all"
+    />
+  ))}
+</div>
+```
+
 ### Form Field Pattern
 ```tsx
 <div className="space-y-2">
@@ -397,6 +420,43 @@ Authentication forms follow a consistent split-screen layout pattern:
   </Alert>
 )}
 ```
+
+## Responsive Mobile Layout Patterns
+
+### 1. Wrapping Filter Tabs Pattern (Preventing Text Overlaps)
+To ensure horizontal filter tabs (such as agent filter lists) wrap cleanly into multiple lines on mobile screens without cutting off or overlapping:
+- **Rule**: Override default `@base-ui` height constraints (like the default `h-8` or `h-10` from theme selectors) using a high-specificity Tailwind modifier.
+- **Pattern**:
+  ```tsx
+  <Tabs.List className="flex flex-wrap gap-2 group-data-horizontal/tabs:h-auto h-auto w-full">
+    {/* Tab items */}
+  </Tabs.List>
+  ```
+
+### 2. Viewport-Bounded Mobile Navigation Drawer
+To guarantee scrollable, lag-free mobile header overlay menus on small viewports without page double-scrolling:
+- **Lock Parent Body Scroll**: When the drawer is open, add `overflow: hidden` to the document body using a React `useEffect`.
+- **Bound Drawer Height**: Constrain drawer height to the viewport height minus the header height.
+- **Enable Drawer-Only Scroll**: Use `overflow-y-auto` and `overscroll-y-contain`.
+- **Pattern**:
+  ```tsx
+  // Lock scroll utility
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
+  // JSX Drawer Layout
+  <div className="fixed top-16 left-0 w-full h-[calc(100dvh-4rem)] bg-white z-40 overflow-y-auto overscroll-y-contain p-6 md:hidden">
+    {/* Navigation list */}
+  </div>
+  ```
 
 ## Responsive Breakpoints
 - Mobile: Default styles
