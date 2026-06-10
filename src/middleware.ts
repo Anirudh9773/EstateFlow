@@ -74,38 +74,6 @@ export async function middleware(request: NextRequest) {
       if (isProtectedRoute) {
         return NextResponse.redirect(new URL('/verify-2fa', request.url))
       }
-
-      // If not 2FA-verified and trying to access sign-in or sign-up, sign out to clear the stale session
-      if (isAuthRoute) {
-        const isPrefetch =
-          request.headers.has('next-router-prefetch') ||
-          request.headers.get('purpose') === 'prefetch'
-
-        if (isPrefetch) {
-          return response
-        }
-
-        const redirectUrl = new URL(request.nextUrl.pathname + request.nextUrl.search, request.url)
-        const redirectResponse = NextResponse.redirect(redirectUrl)
-        const clearCookiesSupabase = createServerClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          {
-            cookies: {
-              getAll() {
-                return request.cookies.getAll()
-              },
-              setAll(cookiesToSet) {
-                cookiesToSet.forEach(({ name, value, options }) =>
-                  redirectResponse.cookies.set(name, value, options)
-                )
-              },
-            },
-          }
-        )
-        await clearCookiesSupabase.auth.signOut()
-        return redirectResponse
-      }
     } else {
       // If already verified, redirect away from /verify-2fa or standard auth pages
       if (is2faRoute || isAuthRoute) {
