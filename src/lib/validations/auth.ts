@@ -100,7 +100,7 @@ export const serverSignUpSchema = z.object({
   password: passwordSchema,
   fullName: fullNameSchema,
   phone: phoneSchema.optional(),
-  userType: z.enum(['client', 'agent']),
+  userType: z.enum(['client', 'agent', 'admin', 'semi-admin']),
   // Agent-specific fields (optional)
   agencyName: z.string().optional(),
   licenseNumber: z.string().optional(),

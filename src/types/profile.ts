@@ -38,6 +38,21 @@ export interface AgentProfile {
 }
 
 /**
+ * Staff Profile Interface
+ * Matches the structure of the public.staff table
+ */
+export interface StaffProfile {
+  id: string
+  user_id: string
+  full_name: string
+  email: string
+  phone: string | null
+  role: 'admin' | 'semi-admin'
+  created_at: string
+  updated_at: string
+}
+
+/**
  * User Metadata Interface
  * Defines the structure of auth.users.user_metadata (raw_user_meta_data)
  * This data is stored in Supabase Auth and used by the database trigger
@@ -45,7 +60,7 @@ export interface AgentProfile {
 export interface UserMetadata {
   full_name: string
   phone?: string
-  user_type: 'client' | 'agent'
+  user_type: 'client' | 'agent' | 'admin' | 'semi-admin'
   
   // Agent-specific fields (only present for agents)
   agency_name?: string

@@ -41,6 +41,8 @@ export default function SignInPage() {
         const userType = user.user_metadata?.user_type
         if (userType === 'agent') {
           router.replace('/agent-dashboard')
+        } else if (userType === 'admin' || userType === 'semi-admin') {
+          router.replace('/admin-dashboard')
         } else {
           router.replace('/')
         }
@@ -118,6 +120,8 @@ export default function SignInPage() {
       // This is necessary because Supabase auth state needs to propagate
       if (result.userType === 'agent') {
         window.location.href = '/agent-dashboard'
+      } else if (result.userType === 'admin' || result.userType === 'semi-admin') {
+        window.location.href = '/admin-dashboard'
       } else {
         window.location.href = '/'
       }

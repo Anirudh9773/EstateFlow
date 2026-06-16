@@ -18,7 +18,7 @@ export async function signUp(formData: {
   password: string
   fullName: string
   phone?: string
-  userType: 'client' | 'agent'
+  userType: 'client' | 'agent' | 'admin' | 'semi-admin'
   // Agent-specific fields (optional)
   agencyName?: string
   licenseNumber?: string
@@ -118,6 +118,21 @@ export async function signUp(formData: {
           return { error: `Failed to create profile: ${insertError.message}` }
         }
         console.log('✅ Agent profile created successfully:', insertData)
+      } else if (formData.userType === 'admin' || formData.userType === 'semi-admin') {
+        console.log('📝 Creating staff profile for:', formData.email)
+        const { data: insertData, error: insertError } = await supabaseAdmin.from('staff').insert({
+          user_id: data.user.id,
+          full_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone || null,
+          role: formData.userType,
+        }).select()
+        
+        if (insertError) {
+          console.error('❌ Error creating staff profile:', insertError)
+          return { error: `Failed to create profile: ${insertError.message}` }
+        }
+        console.log('✅ Staff profile created successfully:', insertData)
       }
     } catch (profileError) {
       console.error('❌ Exception creating profile:', profileError)
@@ -542,4 +557,75 @@ export async function isSession2faVerified() {
   
   if (!session) return false
   return isVerified
+}
+
+export async function createStaffMember(staffData: {
+  email: string
+  password: string
+  fullName: string
+  phone?: string
+  role: 'admin' | 'semi-admin'
+}) {
+  const supabase = await createSupabaseServerClient()
+  
+  // 1. Get current logged-in user
+  const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser()
+  if (userError || !currentUser) {
+    return { error: 'Not authenticated' }
+  }
+
+  // 2. Verify current user is an Admin
+  let adminCheckClient = supabase
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const { createClient } = await import('@supabase/supabase-js')
+    adminCheckClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+  }
+
+  const { data: currentStaff, error: staffError } = await adminCheckClient
+    .from('staff')
+    .select('role')
+    .eq('user_id', currentUser.id)
+    .maybeSingle()
+
+  if (staffError || !currentStaff || currentStaff.role !== 'admin') {
+    return { error: 'Unauthorized: Only admins can manage staff accounts' }
+  }
+
+  // 3. Create staff user using Admin client
+  const { data: newUserData, error: createError } = await adminCheckClient.auth.admin.createUser({
+    email: staffData.email,
+    password: staffData.password,
+    email_confirm: true,
+    user_metadata: {
+      full_name: staffData.fullName,
+      phone: staffData.phone,
+      user_type: staffData.role,
+    }
+  })
+
+  if (createError || !newUserData.user) {
+    return { error: createError?.message || 'Failed to create user' }
+  }
+
+  // 4. Manually insert profile into staff table (robust fallback)
+  const { error: insertError } = await adminCheckClient.from('staff').insert({
+    user_id: newUserData.user.id,
+    full_name: staffData.fullName,
+    email: staffData.email,
+    phone: staffData.phone || null,
+    role: staffData.role,
+  })
+
+  if (insertError) {
+    console.error('❌ Error creating staff profile:', insertError)
+    // Attempt to cleanup created auth user
+    await adminCheckClient.auth.admin.deleteUser(newUserData.user.id)
+    return { error: `Failed to create profile: ${insertError.message}` }
+  }
+
+  return { success: true }
 }
