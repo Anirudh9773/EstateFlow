@@ -37,7 +37,7 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
 
   return (
     <div className="min-h-screen bg-surface">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-8 max-w-7xl">
         {/* Page Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-navy mb-4">
@@ -74,25 +74,25 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
           <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 bg-transparent border-0 shadow-none p-0 w-full group-data-horizontal/tabs:h-auto">
             <TabsTrigger 
               value="all" 
-              className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
+              className="data-active:bg-navy data-active:text-gold data-active:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
             >
               All ({agents.length})
             </TabsTrigger>
             <TabsTrigger 
               value="local" 
-              className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
+              className="data-active:bg-navy data-active:text-gold data-active:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
             >
               Local ({localAgents.length})
             </TabsTrigger>
             <TabsTrigger 
               value="regional" 
-              className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
+              className="data-active:bg-navy data-active:text-gold data-active:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
             >
               Regional ({regionalAgents.length})
             </TabsTrigger>
             <TabsTrigger 
               value="nationwide" 
-              className="data-[state=active]:bg-navy data-[state=active]:text-gold data-[state=active]:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
+              className="data-active:bg-navy data-active:text-gold data-active:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg hover:border-gold/50"
             >
               Nationwide ({nationwideAgents.length})
             </TabsTrigger>

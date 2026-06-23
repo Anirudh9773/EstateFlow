@@ -72,7 +72,7 @@ export const agentSignUpSchema = z
       .max(50, 'License number must not exceed 50 characters'),
     areaOfOperation: z
       .string()
-      .min(1, 'Please select your area of operation'),
+      .min(1, 'Area of operation is required'),
     experience: z
       .string()
       .min(1, 'Please select your years of experience'),

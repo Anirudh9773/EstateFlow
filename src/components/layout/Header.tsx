@@ -69,6 +69,37 @@ export default function Header() {
   const showUserMenu = !!user && is2faVerified === true;
   const showLoading = loading || (!!user && is2faVerified === null);
 
+  const platformLinks = useMemo(() => {
+    const base = [
+      { label: 'How It Works', href: '/#how-it-works' },
+      { label: 'Find an Agent', href: '/find-an-agent' },
+    ];
+    if (!user || userType === 'client') {
+      base.push(
+        { label: 'Submit a Property', href: '/submit-property' },
+        { label: 'Pricing', href: '/pricing' }
+      );
+    }
+    return base;
+  }, [user, userType]);
+
+  const agentLinks = useMemo(() => {
+    if (!user) {
+      return [
+        { label: 'Agent Pricing', href: '/agent-pricing' },
+        { label: 'Join as an Agent', href: '/sign-up/agent' },
+      ];
+    }
+    if (userType === 'agent') {
+      return [
+        { label: 'Agent Pricing', href: '/agent-pricing' },
+        { label: 'Agent Dashboard', href: '/agent-dashboard' },
+      ];
+    }
+    return [];
+  }, [user, userType]);
+
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -124,19 +155,6 @@ export default function Header() {
       console.error('Sign out error:', error);
     }
   }, []);
-
-  const platformLinks = [
-    { label: 'How It Works', href: '/#how-it-works' },
-    { label: 'Find an Agent', href: '/find-an-agent' },
-    { label: 'Submit a Property', href: '/submit-property' },
-    { label: 'Pricing', href: '/pricing' },
-  ];
-
-  const agentLinks = [
-    { label: 'Agent Pricing', href: '/agent-pricing' },
-    { label: 'Join as an Agent', href: '/sign-up/agent' },
-    { label: 'Agent Dashboard', href: '/agent-dashboard' },
-  ];
 
   const companyLinks = [
     { label: 'About Us', href: '/about' },
@@ -217,31 +235,32 @@ export default function Header() {
               </div>
 
               {/* For Agents Dropdown */}
-              <div className="relative" ref={agentsDropdownRef}>
-                <button
-                  onClick={() => toggleDropdown('agents')}
-                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  aria-expanded={openDropdown === 'agents'}
-                  aria-haspopup="true"
-                >
-                  For Agents
-                 
-                </button>
-                {openDropdown === 'agents' && (
-                  <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-2 animate-fadeIn">
-                    {agentLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-                        onClick={() => setOpenDropdown(null)}
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {(!user || userType === 'agent') && (
+                <div className="relative" ref={agentsDropdownRef}>
+                  <button
+                    onClick={() => toggleDropdown('agents')}
+                    className="flex items-center gap-1 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    aria-expanded={openDropdown === 'agents'}
+                    aria-haspopup="true"
+                  >
+                    For Agents
+                  </button>
+                  {openDropdown === 'agents' && (
+                    <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-2 animate-fadeIn">
+                      {agentLinks.map((link) => (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          className="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Company Links */}
               {companyLinks.map((link) => (
@@ -258,13 +277,16 @@ export default function Header() {
             {/* Desktop Auth Section */}
             <div className="hidden lg:flex items-center gap-3">
               {/* Primary CTA */}
-              <Link
-                href="/submit-property"
-                className="px-3 sm:px-5 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors text-sm"
-              >
-                <span className="hidden sm:inline">Submit a Property</span>
-                <span className="sm:hidden">Submit</span>
-              </Link>
+              {(!user || userType === 'client') && (
+                <Button
+                  nativeButton={false}
+                  render={<Link href="/submit-property" />}
+                  className="bg-amber-500 text-white hover:bg-amber-600 font-medium"
+                >
+                  <span className="hidden sm:inline">Submit a Property</span>
+                  <span className="sm:hidden">Submit</span>
+                </Button>
+              )}
 
               {showLoading ? (
                 // Loading state
@@ -307,6 +329,26 @@ export default function Header() {
                           <span className="text-sm">Dashboard</span>
                         </Link>
                       )}
+                      {userType === 'client' && (
+                        <Link
+                          href="/client-dashboard"
+                          className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          <Building2 className="w-5 h-5 text-amber-600" />
+                          <span className="text-sm">Dashboard</span>
+                        </Link>
+                      )}
+                      {(userType === 'admin' || userType === 'semi-admin') && (
+                        <Link
+                          href="/admin-dashboard"
+                          className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          <Building2 className="w-5 h-5 text-indigo-600" />
+                          <span className="text-sm">Admin Dashboard</span>
+                        </Link>
+                      )}
                       <button
                         onClick={handleSignOut}
                         className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors w-full text-left"
@@ -321,18 +363,20 @@ export default function Header() {
                 // Not logged in - Show sign in/up buttons
                 <>
                   {/* Sign In Button */}
-                  <Link
-                    href="/sign-in"
-                    className="px-4 py-2 border-2 border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm"
+                  <Button
+                    nativeButton={false}
+                    variant="outline"
+                    render={<Link href="/sign-in" />}
+                    className="border-2 border-slate-300 text-slate-700 hover:bg-slate-50"
                   >
                     Sign In
-                  </Link>
+                  </Button>
 
                   {/* Sign Up Dropdown */}
                   <div className="relative" ref={signUpDropdownRef}>
-                    <button
+                    <Button
                       onClick={() => toggleDropdown('signup')}
-                      className="flex items-center gap-2 px-4 py-2 bg-navy text-gold rounded-lg font-medium hover:bg-navy/90 transition-colors text-sm"
+                      className="bg-navy text-gold hover:bg-navy/90 gap-2"
                       aria-expanded={openDropdown === 'signup'}
                       aria-haspopup="true"
                     >
@@ -342,7 +386,7 @@ export default function Header() {
                           openDropdown === 'signup' ? 'rotate-180' : ''
                         }`}
                       />
-                    </button>
+                    </Button>
                     {openDropdown === 'signup' && (
                       <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-slate-200 py-2 animate-fadeIn z-50">
                         <Link
@@ -410,21 +454,23 @@ export default function Header() {
               </div>
 
               {/* For Agents Section */}
-              <div className="mb-4">
-                <h3 className="px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  For Agents
-                </h3>
-                {agentLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="block px-4 py-2 text-slate-700 hover:bg-slate-50 transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
+              {(!user || userType === 'agent') && (
+                <div className="mb-4">
+                  <h3 className="px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    For Agents
+                  </h3>
+                  {agentLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="block px-4 py-2 text-slate-700 hover:bg-slate-50 transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
 
               {/* Company Section */}
               <div className="mb-4">
@@ -445,13 +491,21 @@ export default function Header() {
 
               <div className="border-t border-slate-200 pt-4 px-4">
                 {/* Primary CTA */}
-                <Link
-                  href="/submit-property"
-                  className="block w-full px-5 py-3 bg-amber-500 text-white rounded-lg text-center font-medium hover:bg-amber-600 transition-colors mb-4"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Submit a Property
-                </Link>
+                {(!user || userType === 'client') && (
+                  <Button
+                    nativeButton={false}
+                    size="lg"
+                    render={
+                      <Link
+                        href="/submit-property"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      />
+                    }
+                    className="w-full bg-amber-500 text-white hover:bg-amber-600 font-semibold mb-4 justify-center"
+                  >
+                    Submit a Property
+                  </Button>
+                )}
 
                 {showLoading ? (
                   // Loading state
@@ -485,6 +539,26 @@ export default function Header() {
                           <span className="text-sm font-medium">Dashboard</span>
                         </Link>
                       )}
+                      {userType === 'client' && (
+                        <Link
+                          href="/client-dashboard"
+                          className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors mb-2"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <Building2 className="w-4 h-4" />
+                          <span className="text-sm font-medium">Dashboard</span>
+                        </Link>
+                      )}
+                      {(userType === 'admin' || userType === 'semi-admin') && (
+                        <Link
+                          href="/admin-dashboard"
+                          className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mb-2"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <Building2 className="w-4 h-4" />
+                          <span className="text-sm font-medium">Admin Dashboard</span>
+                        </Link>
+                      )}
                       <button
                         onClick={handleSignOut}
                         className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -498,13 +572,20 @@ export default function Header() {
                   // Not logged in - Show sign in/up options
                   <>
                     {/* Sign In Button */}
-                    <Link
-                      href="/sign-in"
-                      className="block w-full px-5 py-3 border border-slate-200 rounded-lg text-center font-medium text-slate-700 hover:bg-slate-50 transition-colors mb-4"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    <Button
+                      nativeButton={false}
+                      variant="outline"
+                      size="lg"
+                      render={
+                        <Link
+                          href="/sign-in"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        />
+                      }
+                      className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold mb-4 justify-center"
                     >
                       Sign In
-                    </Link>
+                    </Button>
 
                     {/* Sign Up Section */}
                     <div>

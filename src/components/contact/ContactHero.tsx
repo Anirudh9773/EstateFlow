@@ -2,7 +2,7 @@ import { Mail } from 'lucide-react';
 
 export default function ContactHero() {
   return (
-    <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-12 md:py-16 lg:py-20">
+    <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-8 sm:py-12 md:py-16 lg:py-20">
       <div className="container mx-auto px-4 max-w-4xl text-center">
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
           Get in Touch with EstateFlow

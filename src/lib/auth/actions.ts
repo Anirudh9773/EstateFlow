@@ -629,3 +629,188 @@ export async function createStaffMember(staffData: {
 
   return { success: true }
 }
+
+export async function submitProperty(payload: {
+  intent: string
+  postcode: string
+  propertyType: string
+  bedroomCount: string
+  budget: number
+  timeline: string
+  clientName: string
+  clientEmail: string
+  clientPhone: string
+}) {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  
+  if (userError || !user) {
+    return { error: 'Not authenticated' }
+  }
+
+  const { data, error } = await supabase
+    .from('properties')
+    .insert({
+      client_id: user.id,
+      intent: payload.intent,
+      postcode: payload.postcode,
+      property_type: payload.propertyType,
+      bedroom_count: payload.bedroomCount,
+      budget: payload.budget,
+      timeline: payload.timeline,
+      client_name: payload.clientName,
+      client_email: payload.clientEmail,
+      client_phone: payload.clientPhone
+    })
+    .select()
+
+  if (error) {
+    console.error('Error inserting property:', error)
+    return { error: error.message }
+  }
+
+  revalidatePath('/client-dashboard')
+  return { success: true, data }
+}
+
+export async function getClientProperties() {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  
+  if (userError || !user) {
+    return { error: 'Not authenticated', data: [] }
+  }
+
+  const { data, error } = await supabase
+    .from('properties')
+    .select('*')
+    .eq('client_id', user.id)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    return { error: error.message, data: [] }
+  }
+
+  return { success: true, data }
+}
+
+export async function updateProperty(id: string, payload: {
+  intent: string
+  postcode: string
+  propertyType: string
+  bedroomCount: string
+  budget: number
+  timeline: string
+  clientName: string
+  clientEmail: string
+  clientPhone: string
+}) {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  
+  if (userError || !user) {
+    return { error: 'Not authenticated' }
+  }
+
+  const { data, error } = await supabase
+    .from('properties')
+    .update({
+      intent: payload.intent,
+      postcode: payload.postcode,
+      property_type: payload.propertyType,
+      bedroom_count: payload.bedroomCount,
+      budget: payload.budget,
+      timeline: payload.timeline,
+      client_name: payload.clientName,
+      client_email: payload.clientEmail,
+      client_phone: payload.clientPhone,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', id)
+    .eq('client_id', user.id)
+    .select()
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath('/client-dashboard')
+  return { success: true, data }
+}
+
+export async function deleteProperty(id: string) {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  
+  if (userError || !user) {
+    return { error: 'Not authenticated' }
+  }
+
+  const { error } = await supabase
+    .from('properties')
+    .delete()
+    .eq('id', id)
+    .eq('client_id', user.id)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath('/client-dashboard')
+  return { success: true }
+}
+
+export async function getAgentProperties() {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  
+  if (userError || !user) {
+    return { error: 'Not authenticated', data: [] }
+  }
+
+  // Get agent profile to read area of operation
+  const { data: agent, error: agentError } = await supabase
+    .from('agents')
+    .select('area_of_operation')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (agentError) {
+    console.error('Error fetching agent profile:', agentError)
+    return { error: agentError.message, data: [] }
+  }
+
+  // Fetch all properties
+  const { data: properties, error: propertiesError } = await supabase
+    .from('properties')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (propertiesError) {
+    return { error: propertiesError.message, data: [] }
+  }
+
+  if (!agent || !agent.area_of_operation) {
+    // If agent has no area of operation, return all properties as fallback
+    return { success: true, data: properties || [] }
+  }
+
+  const cleanArea = agent.area_of_operation.trim().toLowerCase()
+  
+  // Filter properties based on postcode matching
+  const matchedProperties = (properties || []).filter(property => {
+    if (!property.postcode) return false
+    const cleanPostcode = property.postcode.trim().toLowerCase()
+    
+    // Check if either postcode starts with, is included in, or matches
+    return (
+      cleanPostcode.includes(cleanArea) || 
+      cleanArea.includes(cleanPostcode) ||
+      cleanArea === 'all' || 
+      cleanArea === 'pan city' || 
+      cleanArea === 'pan-city'
+    )
+  })
+
+  return { success: true, data: matchedProperties }
+}

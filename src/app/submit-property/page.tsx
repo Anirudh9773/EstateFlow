@@ -15,12 +15,15 @@ import {
   CheckCircle, 
   ArrowRight, 
   Loader2, 
-  ChevronLeft 
+  ChevronLeft,
+  Plus,
+  Minus
 } from "lucide-react"
+import { submitProperty } from "@/lib/auth/actions"
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
 
-const TOTAL_STEPS = 6
+const TOTAL_STEPS = 5
 
 const trustItems = [
   "We've worked with over 1.4M happy home buyers & sellers",
@@ -68,16 +71,6 @@ export default function SubmitPropertyPage() {
     })
   }
 
-  const getNextStep = () => {
-    if (currentStep === 4 && (formData.intent === "selling" || formData.intent === "letting-selling")) return 6
-    return currentStep + 1
-  }
-
-  const getPrevStep = () => {
-    if (currentStep === 6 && (formData.intent === "selling" || formData.intent === "letting-selling")) return 4
-    return currentStep - 1
-  }
-
   const nextStep = () => setCurrentStep(s => Math.min(s + 1, TOTAL_STEPS))
   const prevStep = () => setCurrentStep(s => Math.max(s - 1, 1))
 
@@ -93,9 +86,25 @@ export default function SubmitPropertyPage() {
 
   const handleSubmit = () => {
     startTransition(async () => {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      console.log("Property submission data:", formData)
-      router.push("/agents")
+      const payload = {
+        intent: formData.intent,
+        postcode: formData.intent === "renting" ? formData.desiredPostcode : formData.propertyPostcode,
+        propertyType: formData.propertyTypes[0] || "House",
+        bedroomCount: formData.bedroomCounts[0] || "1 Bedroom",
+        budget: formData.intent === "renting" ? formData.monthlyBudget : formData.saleValue,
+        timeline: formData.intent === "renting" ? "Immediately" : (formData.saleTimeline[0] || "Immediately"),
+        clientName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
+        clientEmail: formData.email.trim(),
+        clientPhone: `${formData.countryCode} ${formData.phone.trim()}`
+      }
+      
+      const result = await submitProperty(payload)
+      if (result?.error) {
+        alert("Failed to submit property: " + result.error)
+        return
+      }
+      
+      router.push("/client-dashboard")
     })
   }
 
@@ -122,21 +131,21 @@ export default function SubmitPropertyPage() {
       />
       
       {/* Main content */}
-      <div className="relative min-h-screen flex items-center justify-center p-4">
-        <Card className="max-w-2xl w-full overflow-hidden">
+      <div className="relative min-h-screen flex items-center justify-center p-4 z-10">
+        <Card className="max-w-2xl w-full overflow-visible relative">
+          {/* Step badge - positioned above progress bar */}
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+            <span className="border border-green-700 text-green-700 text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full bg-white shadow-sm">
+              {currentStep === TOTAL_STEPS ? "Last Step!" : `Step ${currentStep} / ${TOTAL_STEPS}`}
+            </span>
+          </div>
+
           {/* Progress bar */}
-          <div className="h-1.5 bg-gray-200 relative">
+          <div className="h-1.5 bg-gray-200 relative rounded-t-xl overflow-hidden">
             <div 
               className="h-full bg-green-700 transition-all duration-500 ease-in-out"
               style={{ width: `${getProgress()}%` }}
             />
-            
-            {/* Step badge - positioned above progress bar */}
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-10">
-              <div className="border border-green-700 text-green-700 text-sm font-medium px-4 py-1 rounded-full bg-white shadow-sm">
-                {currentStep === 8 ? "Last Step!" : `Step ${currentStep} / ${TOTAL_STEPS}`}
-              </div>
-            </div>
           </div>
 
           {/* Card content */}
@@ -151,13 +160,11 @@ export default function SubmitPropertyPage() {
                 {currentStep === 3 && (formData.intent === "renting" ? "Property Type & Bedrooms" : formData.intent === "selling" ? "Property Details" : "Property Specifications")}
                 {currentStep === 4 && (formData.intent === "renting" ? "Maximum Monthly Budget" : formData.intent === "selling" ? "Sale Value & Timeline" : "Financial Details")}
                 {currentStep === 5 && "Personal Information"}
-                {currentStep === 6 && "Review & Submit"}
               </h1>
               
-              {currentStep !== 1 && currentStep !== 8 && (
+              {currentStep !== 1 && (
                 <p className="text-base text-gray-500 text-center mt-2">
-                                    {currentStep === 6 && "Our recommendations are free. No strings attached."}
-                  {currentStep === 7 && "Get a list of great local agents in your inbox today"}
+                  Our recommendations are free. No strings attached.
                 </p>
               )}
 
@@ -165,16 +172,18 @@ export default function SubmitPropertyPage() {
             </div>
           </div>
 
-          {/* Bottom navigation - Only show for steps 2-6, but no Next button on Step 5 */}
+          {/* Bottom navigation - Only show for steps 2-5, but no Next button on Step 5 */}
           {currentStep !== 1 && (
             <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 px-8 md:px-12">
               {/* Show Back button on steps 2-5 */}
               {currentStep !== 1 && (
                 <Button
+                  nativeButton={true}
                   variant="outline"
+                  size="lg"
                   onClick={prevStep}
                   disabled={currentStep === 1}
-                  className="flex items-center gap-2"
+                  className="w-36 flex items-center justify-center gap-2 border-slate-300 text-slate-700 hover:bg-slate-50"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Back
@@ -184,6 +193,8 @@ export default function SubmitPropertyPage() {
               {/* Only show Next button on steps 2-4, not on Step 5 */}
               {currentStep < 5 && (
                 <Button
+                  nativeButton={true}
+                  size="lg"
                   onClick={nextStep}
                   disabled={
                     (currentStep === 2 && formData.intent === "renting" && !formData.desiredPostcode.trim()) ||
@@ -194,7 +205,7 @@ export default function SubmitPropertyPage() {
                     (currentStep === 4 && formData.intent === "selling" && formData.saleTimeline.length === 0) ||
                     (currentStep === 4 && formData.intent === "letting-selling" && formData.saleTimeline.length === 0)
                   }
-                  className="bg-green-700 hover:bg-green-800 text-white px-8"
+                  className="bg-green-700 hover:bg-green-800 text-white w-36 flex items-center justify-center"
                 >
                   Next
                 </Button>
@@ -276,10 +287,10 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
           placeholder="Enter desired postcode (e.g., SW1A 1AA)"
           value={formData.desiredPostcode}
           onChange={e => update("desiredPostcode", e.target.value)}
-          className="h-14 text-lg border-green-700 focus-visible:ring-green-700"
+          className="h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy"
           autoFocus
         />
-              </div>
+      </div>
     )
   } else if (formData.intent === "selling") {
     return (
@@ -291,7 +302,7 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
           placeholder="Enter property postcode (e.g., SW1A 1AA)"
           value={formData.propertyPostcode}
           onChange={e => update("propertyPostcode", e.target.value)}
-          className="h-14 text-lg border-green-700 focus-visible:ring-green-700"
+          className="h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy"
           autoFocus
         />
       </div>
@@ -309,7 +320,7 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
             placeholder="Enter desired postcode (e.g., SW1A 1AA)"
             value={formData.desiredPostcode}
             onChange={e => update("desiredPostcode", e.target.value)}
-            className="h-14 text-lg border-green-700 focus-visible:ring-green-700 mb-4"
+            className="h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy mb-4"
           />
         </div>
         
@@ -322,11 +333,10 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
             placeholder="Enter property postcode (e.g., SW1A 1AA)"
             value={formData.propertyPostcode}
             onChange={e => update("propertyPostcode", e.target.value)}
-            className="h-14 text-lg border-green-700 focus-visible:ring-green-700"
+            className="h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy"
           />
         </div>
-        
-              </div>
+      </div>
     )
   } else {
     // Fallback for empty or invalid intent
@@ -340,7 +350,7 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
   }
 }
 
-function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) {
+function Step3({ formData, update, nextStep, prevStep }: any) {
   const propertyTypes = ["Flat", "House", "Bungalow", "Studio", "Penthouse", "Maisonette"]
   const bedroomCounts = ["Studio", "1 Bedroom", "2 Bedrooms", "3 Bedrooms", "4 Bedrooms", "5+ Bedrooms"]
 
@@ -354,7 +364,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
               <Button
                 key={type}
                 variant="outline"
-                onClick={() => toggleArrayField("propertyTypes", type)}
+                onClick={() => update("propertyTypes", [type])}
                 className={cn(
                   "h-12 text-sm font-medium transition-all",
                   formData.propertyTypes.includes(type)
@@ -375,7 +385,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
               <Button
                 key={count}
                 variant="outline"
-                onClick={() => toggleArrayField("bedroomCounts", count)}
+                onClick={() => update("bedroomCounts", [count])}
                 className={cn(
                   "h-12 text-sm font-medium transition-all",
                   formData.bedroomCounts.includes(count)
@@ -388,8 +398,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
             ))}
           </div>
         </div>
-        
-              </div>
+      </div>
     )
   } else if (formData.intent === "selling") {
     return (
@@ -401,7 +410,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
               <Button
                 key={type}
                 variant="outline"
-                onClick={() => toggleArrayField("propertyTypes", type)}
+                onClick={() => update("propertyTypes", [type])}
                 className={cn(
                   "h-12 text-sm font-medium transition-all",
                   formData.propertyTypes.includes(type)
@@ -422,7 +431,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
               <Button
                 key={count}
                 variant="outline"
-                onClick={() => toggleArrayField("bedroomCounts", count)}
+                onClick={() => update("bedroomCounts", [count])}
                 className={cn(
                   "h-12 text-sm font-medium transition-all",
                   formData.bedroomCounts.includes(count)
@@ -435,8 +444,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
             ))}
           </div>
         </div>
-        
-        </div>
+      </div>
     )
   } else if (formData.intent === "letting-selling") {
     // Letting & Selling - Show both sections
@@ -452,7 +460,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
                   <Button
                     key={`letting-${type}`}
                     variant="outline"
-                    onClick={() => toggleArrayField("propertyTypes", type)}
+                    onClick={() => update("propertyTypes", [type])}
                     className={cn(
                       "h-12 text-sm font-medium transition-all",
                       formData.propertyTypes.includes(type)
@@ -473,7 +481,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
                   <Button
                     key={`letting-${count}`}
                     variant="outline"
-                    onClick={() => toggleArrayField("bedroomCounts", count)}
+                    onClick={() => update("bedroomCounts", [count])}
                     className={cn(
                       "h-12 text-sm font-medium transition-all",
                       formData.bedroomCounts.includes(count)
@@ -499,7 +507,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
                   <Button
                     key={`selling-${type}`}
                     variant="outline"
-                    onClick={() => toggleArrayField("propertyTypes", type)}
+                    onClick={() => update("propertyTypes", [type])}
                     className={cn(
                       "h-12 text-sm font-medium transition-all",
                       formData.propertyTypes.includes(type)
@@ -520,7 +528,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
                   <Button
                     key={`selling-${count}`}
                     variant="outline"
-                    onClick={() => toggleArrayField("bedroomCounts", count)}
+                    onClick={() => update("bedroomCounts", [count])}
                     className={cn(
                       "h-12 text-sm font-medium transition-all",
                       formData.bedroomCounts.includes(count)
@@ -535,8 +543,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
             </div>
           </div>
         </div>
-        
-              </div>
+      </div>
     )
   } else {
     // Fallback for empty or invalid intent
@@ -550,7 +557,7 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
   }
 }
 
-function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) {
+function Step4({ formData, update, nextStep, prevStep }: any) {
   const formatBudget = (val: number) => {
     return `£${val.toLocaleString()} PCM`
   }
@@ -576,7 +583,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
             className="rounded-full"
             onClick={() => update("monthlyBudget", Math.max(100, formData.monthlyBudget - 100))}
           >
-            <ChevronLeft className="w-4 h-4" />
+            <Minus className="w-4 h-4" />
           </Button>
 
           <Button
@@ -585,7 +592,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
             className="rounded-full"
             onClick={() => update("monthlyBudget", Math.min(10000, formData.monthlyBudget + 100))}
           >
-            <ArrowRight className="w-4 h-4" />
+            <Plus className="w-4 h-4" />
           </Button>
         </div>
 
@@ -621,7 +628,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
               className="rounded-full"
               onClick={() => update("saleValue", Math.max(50000, formData.saleValue - 25000))}
             >
-              <ChevronLeft className="w-4 h-4" />
+              <Minus className="w-4 h-4" />
             </Button>
 
             <Button
@@ -630,7 +637,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
               className="rounded-full"
               onClick={() => update("saleValue", Math.min(5000000, formData.saleValue + 25000))}
             >
-              <ArrowRight className="w-4 h-4" />
+              <Plus className="w-4 h-4" />
             </Button>
           </div>
 
@@ -657,7 +664,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
               <Button
                 key={option}
                 variant="outline"
-                onClick={() => toggleArrayField("saleTimeline", option)}
+                onClick={() => update("saleTimeline", [option])}
                 className={cn(
                   "h-12 text-sm font-medium transition-all",
                   formData.saleTimeline.includes(option)
@@ -693,7 +700,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
                   className="rounded-full"
                   onClick={() => update("monthlyBudget", Math.max(100, formData.monthlyBudget - 100))}
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <Minus className="w-4 h-4" />
                 </Button>
 
                 <Button
@@ -702,7 +709,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
                   className="rounded-full"
                   onClick={() => update("monthlyBudget", Math.min(10000, formData.monthlyBudget + 100))}
                 >
-                  <ArrowRight className="w-4 h-4" />
+                  <Plus className="w-4 h-4" />
                 </Button>
               </div>
 
@@ -740,7 +747,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
                   className="rounded-full"
                   onClick={() => update("saleValue", Math.max(50000, formData.saleValue - 25000))}
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <Minus className="w-4 h-4" />
                 </Button>
 
                 <Button
@@ -749,7 +756,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
                   className="rounded-full"
                   onClick={() => update("saleValue", Math.min(5000000, formData.saleValue + 25000))}
                 >
-                  <ArrowRight className="w-4 h-4" />
+                  <Plus className="w-4 h-4" />
                 </Button>
               </div>
 
@@ -776,7 +783,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
                   <Button
                     key={`selling-${option}`}
                     variant="outline"
-                    onClick={() => toggleArrayField("saleTimeline", option)}
+                    onClick={() => update("saleTimeline", [option])}
                     className={cn(
                       "h-12 text-sm font-medium transition-all",
                       formData.saleTimeline.includes(option)
@@ -807,65 +814,112 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
 }
 
 function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: any) {
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
+
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }))
+  }
+
+  const isFirstNameValid = formData.firstName.trim().length > 0
+  const isLastNameValid = formData.lastName.trim().length > 0
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+  
+  // Standard phone validation (10 to 11 digits)
+  const phoneDigits = formData.phone.replace(/[\s-]/g, "")
+  const isPhoneValid = /^\d{10,11}$/.test(phoneDigits)
+
+  const isFormValid = isFirstNameValid && isLastNameValid && isEmailValid && isPhoneValid
+
   return (
     <div className="space-y-6">
-      
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4 mt-6">
-          <Input
-            placeholder="First Name"
-            value={formData.firstName}
-            onChange={e => update("firstName", e.target.value)}
-            autoFocus
-          />
-          <Input
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChange={e => update("lastName", e.target.value)}
-          />
+          <div className="flex flex-col gap-1 w-full">
+            <Input
+              placeholder="First Name"
+              value={formData.firstName}
+              onChange={e => update("firstName", e.target.value)}
+              onBlur={() => handleBlur("firstName")}
+              className={cn(
+                "h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
+                touched.firstName && !isFirstNameValid && "border-red-500 focus:border-red-500 focus:ring-red-200 focus-visible:border-red-500"
+              )}
+              autoFocus
+            />
+            {touched.firstName && !isFirstNameValid && (
+              <span className="text-xs text-red-500">First name is required</span>
+            )}
+          </div>
+          
+          <div className="flex flex-col gap-1 w-full">
+            <Input
+              placeholder="Last Name"
+              value={formData.lastName}
+              onChange={e => update("lastName", e.target.value)}
+              onBlur={() => handleBlur("lastName")}
+              className={cn(
+                "h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
+                touched.lastName && !isLastNameValid && "border-red-500 focus:border-red-500 focus:ring-red-200 focus-visible:border-red-500"
+              )}
+            />
+            {touched.lastName && !isLastNameValid && (
+              <span className="text-xs text-red-500">Last name is required</span>
+            )}
+          </div>
         </div>
 
-        <Input
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={e => update("email", e.target.value)}
-          className="h-14"
-        />
-
-        <div className="flex gap-2">
-          <Select value={formData.countryCode} onValueChange={(value) => update("countryCode", value)}>
-            <SelectTrigger className="w-28">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="+91">+91 ??</SelectItem>
-              <SelectItem value="+1">+1 ??</SelectItem>
-              <SelectItem value="+44">+44 ??</SelectItem>
-              <SelectItem value="+971">+971 ??</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex flex-col gap-1 w-full">
           <Input
-            type="tel"
-            placeholder="Phone Number"
-            value={formData.phone}
-            onChange={e => update("phone", e.target.value)}
-            className="flex-1 h-14"
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={e => update("email", e.target.value)}
+            onBlur={() => handleBlur("email")}
+            className={cn(
+              "h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
+              touched.email && !isEmailValid && "border-red-500 focus:border-red-500 focus:ring-red-200 focus-visible:border-red-500"
+            )}
           />
+          {touched.email && !isEmailValid && (
+            <span className="text-xs text-red-500">Please enter a valid email address</span>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1 w-full">
+          <div className="flex gap-2">
+            <Select value={formData.countryCode} onValueChange={(value) => update("countryCode", value)}>
+              <SelectTrigger className="w-28 h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                <SelectItem value="+91">+91</SelectItem>
+                <SelectItem value="+1">+1</SelectItem>
+                <SelectItem value="+44">+44</SelectItem>
+                <SelectItem value="+971">+971</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              type="tel"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={e => update("phone", e.target.value)}
+              onBlur={() => handleBlur("phone")}
+              className={cn(
+                "flex-1 h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
+                touched.phone && !isPhoneValid && "border-red-500 focus:border-red-500 focus:ring-red-200 focus-visible:border-red-500"
+              )}
+            />
+          </div>
+          {touched.phone && !isPhoneValid && (
+            <span className="text-xs text-red-500">Please enter a valid 10 or 11 digit phone number</span>
+          )}
         </div>
       </div>
 
-      
       <Button
         onClick={handleSubmit}
-        disabled={
-          !formData.firstName.trim() || 
-          !formData.lastName.trim() || 
-          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ||
-          formData.phone.length < 10 ||
-          isPending
-        }
-        className="w-full h-14 bg-green-700 hover:bg-green-800 text-white text-lg font-semibold mt-4"
+        disabled={!isFormValid || isPending}
+        className="w-full h-12 bg-green-700 hover:bg-green-800 text-white text-base font-semibold mt-4"
       >
         {isPending ? (
           <>
@@ -884,8 +938,7 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: an
         <span className="text-green-600 underline">Terms of Use</span> and{" "}
         <span className="text-green-600 underline">Privacy Policy</span>. EstateFlow and participating agents may contact me.
       </div>
-
-          </div>
+    </div>
   )
 }
 

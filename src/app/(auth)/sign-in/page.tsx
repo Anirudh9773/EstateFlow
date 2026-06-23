@@ -22,6 +22,19 @@ export default function SignInPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
 
+  // Reset loading states when page is shown (handles back-forward cache restores)
+  useEffect(() => {
+    const handlePageShow = () => {
+      setOauthLoading(false)
+      setLoading(false)
+    }
+
+    window.addEventListener("pageshow", handlePageShow)
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow)
+    }
+  }, [])
+
   // Redirect if already logged in (handling 2FA check first)
   useEffect(() => {
     async function checkAuthAndRedirect() {
@@ -194,6 +207,7 @@ export default function SignInPage() {
 
         <Button 
           type="submit" 
+          size="lg"
           className="w-full bg-navy text-gold hover:bg-navy/90" 
           disabled={loading || oauthLoading}
         >

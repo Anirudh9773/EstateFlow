@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -20,6 +20,19 @@ export default function SimpleClientSignUpForm() {
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
+
+  // Reset loading states when page is shown (handles back-forward cache restores)
+  useEffect(() => {
+    const handlePageShow = () => {
+      setOauthLoading(false)
+      setLoading(false)
+    }
+
+    window.addEventListener("pageshow", handlePageShow)
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow)
+    }
+  }, [])
 
   const {
     register,
@@ -204,6 +217,7 @@ export default function SimpleClientSignUpForm() {
 
       <Button 
         type="submit" 
+        size="lg"
         className="w-full bg-navy text-gold hover:bg-navy/90 font-medium" 
         disabled={loading || oauthLoading}
       >

@@ -182,9 +182,11 @@ export default function AgentDashboard() {
   const [searchTerm, setSearchTerm] = useState('')
   const { user } = useUser() // Get actual logged-in user
 
-  // Profile states
+  // Profile and Leads states
   const [profile, setProfile] = useState<any>(null)
   const [profileLoading, setProfileLoading] = useState(true)
+  const [leads, setLeads] = useState<any[]>([])
+  const [leadsLoading, setLeadsLoading] = useState(true)
   const [savingSettings, setSavingSettings] = useState(false)
   const [syncingRatings, setSyncingRatings] = useState(false)
   const hasLoadedRef = useRef(false)
@@ -216,11 +218,13 @@ export default function AgentDashboard() {
     }
   }, [])
 
-  // Load agent profile on mount
+  // Load agent profile & leads on mount
   useEffect(() => {
     if (hasLoadedRef.current) return
-    async function loadAgentProfile() {
+    async function loadAgentData() {
       if (!user) return
+      setProfileLoading(true)
+      setLeadsLoading(true)
       try {
         const supabase = createSupabaseClient()
         const { data, error } = await supabase
@@ -250,13 +254,21 @@ export default function AgentDashboard() {
           
           hasLoadedRef.current = true
         }
+
+        // Fetch matched properties as leads
+        const { getAgentProperties } = await import('@/lib/auth/actions')
+        const result = await getAgentProperties()
+        if (result?.success && result.data) {
+          setLeads(result.data)
+        }
       } catch (err) {
-        console.error('Error loading agent profile:', err)
+        console.error('Error loading agent dashboard data:', err)
       } finally {
         setProfileLoading(false)
+        setLeadsLoading(false)
       }
     }
-    loadAgentProfile()
+    loadAgentData()
   }, [user])
 
   const handleSaveSettings = async (e: React.FormEvent) => {
@@ -469,27 +481,13 @@ export default function AgentDashboard() {
         {/* Main Content */}
         <div className="flex-1 p-4 lg:p-8">
           {/* Header */}
-          <div className="mb-6 lg:mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-                  {sidebarItems.find(item => item.id === activeTab)?.label}
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Welcome back, {agentName}! Here's what's happening with your business.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 sm:gap-4">
-                <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
-                  <Search className="w-4 h-4 mr-2" />
-                  Search
-                </Button>
-                <Button size="sm" className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 flex-1 sm:flex-none">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New
-                </Button>
-              </div>
-            </div>
+          <div className="mb-6 lg:mb-8 border-b border-gray-200 pb-5">
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+              {sidebarItems.find(item => item.id === activeTab)?.label}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Welcome back, {agentName}! Here's what's happening with your business.
+            </p>
           </div>
 
           {/* Overview Tab */}
@@ -543,23 +541,38 @@ export default function AgentDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {mockLeads.slice(0, 3).map((lead) => (
-                        <div key={lead.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-gray-200 rounded-lg gap-2">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="font-medium text-gray-900 truncate">{lead.name}</p>
-                              <Badge className={getPriorityColor(lead.priority)}>
-                                {lead.priority}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-gray-600 truncate">{lead.property}</p>
-                            <p className="text-xs text-gray-500 mt-1">{lead.received}</p>
-                          </div>
-                          <Badge className={`${getStatusColor(lead.status)} flex-shrink-0`}>
-                            {lead.status}
-                          </Badge>
+                      {leadsLoading ? (
+                        <div className="flex flex-col items-center justify-center py-6 gap-2">
+                          <Loader2 className="w-6 h-6 animate-spin text-[var(--color-navy)]" />
+                          <span className="text-sm text-gray-500 font-medium">Loading matched leads...</span>
                         </div>
-                      ))}
+                      ) : leads.length === 0 ? (
+                        <div className="text-center py-6 text-sm text-gray-500">
+                          No matching leads in your area of operation ({profile?.area_of_operation || 'None'}).
+                        </div>
+                      ) : (
+                        leads.slice(0, 3).map((lead) => (
+                          <div key={lead.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border border-gray-200 rounded-lg gap-2">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="font-semibold text-slate-800 truncate">{lead.client_name}</p>
+                                <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-xs px-2 font-medium capitalize shrink-0">
+                                  {lead.intent === 'letting-selling' ? 'Letting & Selling' : lead.intent}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-gray-600 truncate">
+                                {lead.bedroom_count} {lead.property_type} in {lead.postcode}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Budget/Value: {lead.intent === 'renting' ? `£${lead.budget.toLocaleString()} PCM` : `£${lead.budget.toLocaleString()}`}
+                              </p>
+                            </div>
+                            <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 flex-shrink-0 capitalize px-2 font-semibold">
+                              {lead.timeline}
+                            </Badge>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -642,45 +655,93 @@ export default function AgentDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {mockLeads.map((lead) => (
-                          <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50">
-                            <td className="p-3">
-                              <div>
-                                <p className="font-medium text-gray-900">{lead.name}</p>
-                                <p className="text-sm text-gray-600">{lead.email}</p>
-                              </div>
-                            </td>
-                            <td className="p-3">
-                              <p className="text-sm text-gray-900">{lead.property}</p>
-                            </td>
-                            <td className="p-3">
-                              <p className="text-sm font-medium text-gray-900">{lead.budget}</p>
-                            </td>
-                            <td className="p-3">
-                              <Badge className={getStatusColor(lead.status)}>
-                                {lead.status}
-                              </Badge>
-                            </td>
-                            <td className="p-3">
-                              <Badge className={getPriorityColor(lead.priority)}>
-                                {lead.priority}
-                              </Badge>
-                            </td>
-                            <td className="p-3">
-                              <p className="text-sm text-gray-600">{lead.received}</p>
-                            </td>
-                            <td className="p-3">
-                              <div className="flex items-center gap-2">
-                                <Button variant="outline" size="sm">
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                  <MessageSquare className="w-4 h-4" />
-                                </Button>
+                        {leadsLoading ? (
+                          <tr>
+                            <td colSpan={7} className="text-center p-8">
+                              <div className="flex items-center justify-center gap-2">
+                                <Loader2 className="w-5 h-5 animate-spin text-[var(--color-navy)]" />
+                                <span className="text-sm text-gray-500">Loading leads...</span>
                               </div>
                             </td>
                           </tr>
-                        ))}
+                        ) : leads.length === 0 ? (
+                          <tr>
+                            <td colSpan={7} className="text-center p-8 text-sm text-gray-500">
+                              No matching leads found in your area of operation ({profile?.area_of_operation || 'None'}).
+                            </td>
+                          </tr>
+                        ) : (
+                          leads
+                            .filter(lead => {
+                              if (!searchTerm) return true
+                              const term = searchTerm.toLowerCase()
+                              return (
+                                lead.client_name?.toLowerCase().includes(term) ||
+                                lead.client_email?.toLowerCase().includes(term) ||
+                                lead.postcode?.toLowerCase().includes(term) ||
+                                lead.property_type?.toLowerCase().includes(term)
+                              )
+                            })
+                            .map((lead) => (
+                              <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                <td className="p-3">
+                                  <div>
+                                    <p className="font-semibold text-slate-800">{lead.client_name}</p>
+                                    <p className="text-sm text-slate-500 flex items-center gap-1.5 mt-0.5">
+                                      <Mail className="w-3.5 h-3.5 text-slate-400" />
+                                      {lead.client_email}
+                                    </p>
+                                    <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                      <Phone className="w-3.5 h-3.5 text-slate-400" />
+                                      {lead.client_phone}
+                                    </p>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <p className="text-sm text-slate-800 font-semibold">{lead.bedroom_count} {lead.property_type}</p>
+                                  <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                    {lead.postcode}
+                                  </p>
+                                </td>
+                                <td className="p-3">
+                                  <p className="text-sm font-bold text-slate-900">
+                                    {lead.intent === 'renting' ? `£${lead.budget.toLocaleString()} PCM` : `£${lead.budget.toLocaleString()}`}
+                                  </p>
+                                </td>
+                                <td className="p-3">
+                                  <Badge className={
+                                    lead.intent === 'selling' 
+                                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                      : 'bg-blue-50 text-blue-700 border border-blue-200'
+                                  }>
+                                    {lead.intent === 'letting-selling' ? 'Letting & Selling' : lead.intent}
+                                  </Badge>
+                                </td>
+                                <td className="p-3">
+                                  <Badge className="bg-amber-50 text-amber-700 border border-amber-200">
+                                    {lead.timeline}
+                                  </Badge>
+                                </td>
+                                <td className="p-3">
+                                  <p className="text-xs text-slate-400 flex items-center gap-1">
+                                    <Calendar className="w-3.5 h-3.5" />
+                                    {new Date(lead.created_at).toLocaleDateString()}
+                                  </p>
+                                </td>
+                                <td className="p-3">
+                                  <div className="flex items-center gap-2">
+                                    <a href={`mailto:${lead.client_email}`} className="inline-flex items-center justify-center rounded-md border border-slate-200 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-800">
+                                      <Mail className="w-4 h-4" />
+                                    </a>
+                                    <a href={`tel:${lead.client_phone}`} className="inline-flex items-center justify-center rounded-md border border-slate-200 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-800">
+                                      <Phone className="w-4 h-4" />
+                                    </a>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                        )}
                       </tbody>
                     </table>
                   </div>

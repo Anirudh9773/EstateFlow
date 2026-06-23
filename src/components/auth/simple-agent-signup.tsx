@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -22,6 +22,19 @@ export default function SimpleAgentSignUpForm() {
   const [oauthLoading, setOauthLoading] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
 
+  // Reset loading states when page is shown (handles back-forward cache restores)
+  useEffect(() => {
+    const handlePageShow = () => {
+      setOauthLoading(false)
+      setLoading(false)
+    }
+
+    window.addEventListener("pageshow", handlePageShow)
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow)
+    }
+  }, [])
+
   const {
     register,
     handleSubmit,
@@ -38,7 +51,6 @@ export default function SimpleAgentSignUpForm() {
     },
   })
 
-  const areaOfOperation = watch("areaOfOperation")
   const experience = watch("experience")
   const termsAccepted = watch("terms")
 
@@ -173,21 +185,12 @@ export default function SimpleAgentSignUpForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">Area of Operation</label>
-          <Select 
-            value={areaOfOperation} 
-            onValueChange={(value) => setValue("areaOfOperation", value || "", { shouldValidate: true })}
-          >
-            <SelectTrigger className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20">
-              <SelectValue placeholder="Select your area" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="north">North Zone</SelectItem>
-              <SelectItem value="south">South Zone</SelectItem>
-              <SelectItem value="east">East Zone</SelectItem>
-              <SelectItem value="west">West Zone</SelectItem>
-              <SelectItem value="pan-city">Pan City</SelectItem>
-            </SelectContent>
-          </Select>
+          <Input
+            type="text"
+            placeholder="e.g. SW1A or Kensington"
+            className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            {...register("areaOfOperation")}
+          />
           {errors.areaOfOperation && (
             <p className="text-sm text-red-600">{errors.areaOfOperation.message}</p>
           )}
@@ -286,6 +289,7 @@ export default function SimpleAgentSignUpForm() {
 
       <Button 
         type="submit" 
+        size="lg"
         className="w-full bg-emerald-600 text-white hover:bg-emerald-700 font-medium" 
         disabled={loading || oauthLoading}
       >
