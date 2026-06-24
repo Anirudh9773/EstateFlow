@@ -1,7 +1,27 @@
+"use client"
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { SITE_TAGLINE, SITE_EMAIL, SITE_PHONE, SITE_ADDRESS, ROUTES } from '@/lib/constants'
 
 export default function Footer() {
+  const pathname = usePathname()
+
+  // Hide footer on specific pages like submit-property and auth pages
+  const hideFooterRoutes = [
+    '/submit-property',
+    '/sign-in',
+    '/sign-up/client',
+    '/sign-up/agent',
+    '/forgot-password',
+    '/verify-2fa',
+    '/agent-login'
+  ]
+
+  if (hideFooterRoutes.includes(pathname)) {
+    return null
+  }
+
   const platformLinks = [
     { label: 'How it works', href: '/#how-it-works' },
     { label: 'Find an agent', href: ROUTES.findAgent },

@@ -120,7 +120,7 @@ export default function SubmitPropertyPage() {
   }
 
   return (
-    <div className={cn("min-h-screen", dmSans.variable)} style={{ fontFamily: "var(--font-dm-sans)" }}>
+    <div className={cn("min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)]", dmSans.variable)} style={{ fontFamily: "var(--font-dm-sans)" }}>
       {/* Background overlay */}
       <div className="fixed inset-0 bg-[#0F172A]/80" />
       <div 
@@ -131,7 +131,7 @@ export default function SubmitPropertyPage() {
       />
       
       {/* Main content */}
-      <div className="relative min-h-screen flex items-center justify-center p-4 z-10">
+      <div className="relative min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)] flex items-center justify-center pt-10 pb-4 px-4 sm:p-6 md:p-8 z-10">
         <Card className="max-w-2xl w-full overflow-visible relative">
           {/* Step badge - positioned above progress bar */}
           <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">

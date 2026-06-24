@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, User, Building2, LogOut } from 'lucide-react';
 import { useUser } from '@/lib/auth/useUser';
 import { Button } from '@/components/ui/button';
 
 export default function Header() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -164,7 +166,15 @@ export default function Header() {
   return (
     <>
       {/* Trust Bar */}
-      {showTrustBar && (
+      {showTrustBar && ![
+        '/submit-property',
+        '/sign-in',
+        '/sign-up/client',
+        '/sign-up/agent',
+        '/forgot-password',
+        '/verify-2fa',
+        '/agent-login'
+      ].includes(pathname) && (
         <div className="bg-slate-900 text-white text-xs sm:text-sm py-2">
           <div className="container mx-auto px-4 flex items-center justify-center relative">
             <span className="flex items-center gap-2 text-center">

@@ -28,17 +28,19 @@ export default function AgentFilterTabs({ agents }: AgentFilterTabsProps) {
   return (
     <Tabs defaultValue="all" className="w-full">
       {/* Tab List */}
-      <TabsList className="inline-flex w-full max-w-2xl mx-auto mb-8 sm:mb-10 rounded-full p-1.5 bg-slate-100/80 gap-1.5 group-data-horizontal/tabs:h-auto border border-slate-200/50 shadow-sm">
-        {cities.map((city) => (
-          <TabsTrigger
-            key={city.value}
-            value={city.value}
-            className="data-active:bg-navy data-active:text-gold text-text-secondary hover:text-navy rounded-full px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 border-0 whitespace-nowrap cursor-pointer shadow-none data-active:shadow-md"
-          >
-            {city.label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
+      <div className="w-full overflow-x-auto scrollbar-none flex sm:justify-center -mx-4 px-4 sm:mx-0 sm:px-0">
+        <TabsList className="inline-flex min-w-max max-w-2xl mb-8 sm:mb-10 rounded-full p-1.5 bg-slate-100/80 gap-1.5 group-data-horizontal/tabs:h-auto border border-slate-200/50 shadow-sm">
+          {cities.map((city) => (
+            <TabsTrigger
+              key={city.value}
+              value={city.value}
+              className="data-active:bg-navy data-active:text-gold text-text-secondary hover:text-navy rounded-full px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 border-0 whitespace-nowrap cursor-pointer shadow-none data-active:shadow-md"
+            >
+              {city.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
 
       {/* Tab Content */}
       {cities.map((city) => {

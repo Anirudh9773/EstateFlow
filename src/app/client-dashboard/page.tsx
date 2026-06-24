@@ -73,6 +73,22 @@ export default function ClientDashboard() {
     e.preventDefault()
     if (!editingProperty) return
 
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingProperty.clientEmail)
+    const phoneDigits = editingProperty.clientPhone.replace(/\D/g, "")
+    
+    if (!editingProperty.clientName.trim()) {
+      toast.error('Client name is required')
+      return
+    }
+    if (!isEmailValid) {
+      toast.error('Please enter a valid email address')
+      return
+    }
+    if (phoneDigits.length < 10) {
+      toast.error('Please enter a valid phone number (minimum 10 digits)')
+      return
+    }
+
     startTransition(async () => {
       try {
         const payload = {

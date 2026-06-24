@@ -648,6 +648,37 @@ export async function submitProperty(payload: {
     return { error: 'Not authenticated' }
   }
 
+  // Server-side validation
+  if (!payload.intent || !['renting', 'selling', 'letting-selling'].includes(payload.intent)) {
+    return { error: 'Invalid property intent' }
+  }
+  if (!payload.postcode || payload.postcode.trim().length < 3) {
+    return { error: 'Invalid postcode (minimum 3 characters)' }
+  }
+  if (!payload.propertyType || payload.propertyType.trim().length === 0) {
+    return { error: 'Property type is required' }
+  }
+  if (!payload.bedroomCount || payload.bedroomCount.trim().length === 0) {
+    return { error: 'Bedroom count is required' }
+  }
+  if (typeof payload.budget !== 'number' || payload.budget <= 0) {
+    return { error: 'Invalid budget or property value' }
+  }
+  if (!payload.timeline || payload.timeline.trim().length === 0) {
+    return { error: 'Timeline is required' }
+  }
+  if (!payload.clientName || payload.clientName.trim().length === 0) {
+    return { error: 'Client name is required' }
+  }
+  if (!payload.clientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.clientEmail)) {
+    return { error: 'Invalid email address format' }
+  }
+  const cleanPhone = payload.clientPhone.replace(/[\s-]/g, "")
+  const digitsOnly = cleanPhone.replace(/\D/g, "")
+  if (digitsOnly.length < 10) {
+    return { error: 'Invalid phone number (minimum 10 digits required)' }
+  }
+
   const { data, error } = await supabase
     .from('properties')
     .insert({
@@ -710,6 +741,37 @@ export async function updateProperty(id: string, payload: {
   
   if (userError || !user) {
     return { error: 'Not authenticated' }
+  }
+
+  // Server-side validation
+  if (!payload.intent || !['renting', 'selling', 'letting-selling'].includes(payload.intent)) {
+    return { error: 'Invalid property intent' }
+  }
+  if (!payload.postcode || payload.postcode.trim().length < 3) {
+    return { error: 'Invalid postcode (minimum 3 characters)' }
+  }
+  if (!payload.propertyType || payload.propertyType.trim().length === 0) {
+    return { error: 'Property type is required' }
+  }
+  if (!payload.bedroomCount || payload.bedroomCount.trim().length === 0) {
+    return { error: 'Bedroom count is required' }
+  }
+  if (typeof payload.budget !== 'number' || payload.budget <= 0) {
+    return { error: 'Invalid budget or property value' }
+  }
+  if (!payload.timeline || payload.timeline.trim().length === 0) {
+    return { error: 'Timeline is required' }
+  }
+  if (!payload.clientName || payload.clientName.trim().length === 0) {
+    return { error: 'Client name is required' }
+  }
+  if (!payload.clientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.clientEmail)) {
+    return { error: 'Invalid email address format' }
+  }
+  const cleanPhone = payload.clientPhone.replace(/[\s-]/g, "")
+  const digitsOnly = cleanPhone.replace(/\D/g, "")
+  if (digitsOnly.length < 10) {
+    return { error: 'Invalid phone number (minimum 10 digits required)' }
   }
 
   const { data, error } = await supabase
