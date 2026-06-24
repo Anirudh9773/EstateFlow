@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { 
-  HeartHandshake, 
-  Landmark, 
+  Key, 
+  Home, 
   Building2, 
   CheckCircle, 
   ArrowRight, 
@@ -224,23 +224,17 @@ function Step1({ formData, update, nextStep }: any) {
     { 
       label: "Renting", 
       value: "renting", 
-      icon: <div className="w-12 h-12 mb-4 flex items-center justify-center">
-        <HeartHandshake className="w-8 h-8" />
-      </div>
+      icon: <Key className="w-10 h-10" />
     },
     { 
       label: "Selling", 
       value: "selling", 
-      icon: <div className="w-12 h-12 mb-4 flex items-center justify-center">
-        <Landmark className="w-8 h-8" />
-      </div>
+      icon: <Home className="w-10 h-10" />
     },
     { 
       label: "Letting & Selling", 
       value: "letting-selling", 
-      icon: <div className="w-12 h-12 mb-4 flex items-center justify-center">
-        <Building2 className="w-8 h-8" />
-      </div>
+      icon: <Building2 className="w-10 h-10" />
     }
   ]
 
@@ -254,11 +248,13 @@ function Step1({ formData, update, nextStep }: any) {
             className={cn(
               "cursor-pointer flex flex-col items-center justify-center py-8 px-4 transition-all",
               formData.intent === value
-                ? "border-2 border-green-700 shadow-md"
-                : "border border-gray-200 hover:border-green-500"
+                ? "border-2 border-green-700 shadow-md bg-green-50/10"
+                : "border border-gray-200 hover:border-green-500 hover:bg-slate-50/50"
             )}
           >
-            <div className={cn("w-12 h-12 mb-4", formData.intent === value ? "text-green-700" : "text-gray-400")} />
+            <div className={cn("w-12 h-12 mb-4 flex items-center justify-center transition-colors", formData.intent === value ? "text-green-700" : "text-gray-400")}>
+              {icon}
+            </div>
             <span className="font-semibold text-[#1a2e1a] text-center">{label}</span>
           </Card>
         ))}

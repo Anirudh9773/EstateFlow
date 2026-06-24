@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, User, Building2, LogOut } from 'lucide-react';
 import { useUser } from '@/lib/auth/useUser';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/logo';
 
 export default function Header() {
   const pathname = usePathname();
@@ -202,13 +203,7 @@ export default function Header() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
-              <span className="text-xl sm:text-2xl group-hover:scale-110 transition-transform">🏡</span>
-              <div className="flex flex-col">
-                <span className="text-lg sm:text-xl font-bold text-slate-900">EstateFlow</span>
-                <span className="text-xs text-slate-500 hidden lg:block">
-                  Where properties meet the right agent
-                </span>
-              </div>
+              <Logo showSubtitle={true} className="h-7 w-7 transition-transform group-hover:scale-105" />
             </Link>
 
             {/* Desktop Navigation */}

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { SITE_TAGLINE, SITE_EMAIL, SITE_PHONE, SITE_ADDRESS, ROUTES } from '@/lib/constants'
+import { Logo } from '@/components/logo'
 
 export default function Footer() {
   const pathname = usePathname()
@@ -54,43 +55,8 @@ export default function Footer() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 pb-8 sm:pb-12 border-b border-slate-200">
             {/* Brand column */}
             <div className="col-span-1 sm:col-span-2 md:col-span-1">
-              <div className="mb-3 flex items-center gap-2">
-                {/* Property icon */}
-                <svg
-                  className="h-5"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect
-                    x="2"
-                    y="4"
-                    width="10"
-                    height="12"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    className="text-navy"
-                  />
-                  <rect
-                    x="8"
-                    y="4"
-                    width="10"
-                    height="12"
-                    fill="currentColor"
-                    className="text-navy/10"
-                  />
-                  <path
-                    d="M14 10L17 10M17 10L15.5 8.5M17 10L15.5 11.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-navy"
-                  />
-                </svg>
-                <span className="text-lg font-semibold text-navy">
-                  EstateFlow
-                </span>
+              <div className="mb-3">
+                <Logo className="h-6 w-6" />
               </div>
               <p className="text-slate-600 text-sm mb-4">{SITE_TAGLINE}</p>
               
