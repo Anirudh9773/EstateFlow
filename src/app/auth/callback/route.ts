@@ -41,6 +41,26 @@ export async function GET(request: NextRequest) {
       }
     )
 
+    // Helper function to return redirect response with copied cookies
+    const redirectWithCookies = (urlStr: string) => {
+      const redirectUrl = new URL(urlStr, request.url)
+      const redirectResponse = NextResponse.redirect(redirectUrl)
+      
+      response.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie.name, cookie.value, {
+          path: cookie.path,
+          domain: cookie.domain,
+          secure: cookie.secure,
+          httpOnly: cookie.httpOnly,
+          maxAge: cookie.maxAge,
+          expires: cookie.expires,
+          sameSite: cookie.sameSite,
+        })
+      })
+      
+      return redirectResponse
+    }
+
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
@@ -59,7 +79,7 @@ export async function GET(request: NextRequest) {
       
       if (amr.includes('recovery')) {
         console.log('➡️  Detected password recovery session. Redirecting to reset-password')
-        return NextResponse.redirect(new URL('/reset-password', request.url))
+        return redirectWithCookies('/reset-password')
       }
     }
 
@@ -174,16 +194,16 @@ export async function GET(request: NextRequest) {
 
     if (next) {
       console.log('➡️  Redirecting to next path:', next)
-      return NextResponse.redirect(new URL(next, request.url))
+      return redirectWithCookies(next)
     }
 
     if (metadata?.user_type === 'agent') {
       console.log('➡️  Redirecting to agent dashboard')
-      return NextResponse.redirect(new URL('/agent-dashboard', request.url))
+      return redirectWithCookies('/agent-dashboard')
     }
 
     console.log('➡️  Redirecting to homepage')
-    return NextResponse.redirect(new URL('/', request.url))
+    return redirectWithCookies('/')
   }
 
   console.log('⚠️  No code provided, redirecting to sign-in')
