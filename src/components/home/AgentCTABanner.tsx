@@ -77,8 +77,8 @@ export default function AgentCTABanner() {
                 ))}
               </ul>
 
-              <Link href={ROUTES.pricing}>
-                <Button className="w-full bg-gold text-navy hover:bg-gold/90 font-medium">
+              <Link href="/agent-pricing">
+                <Button className="w-full bg-gold text-navy hover:bg-gold/90 font-medium cursor-pointer">
                   See all pricing plans
                 </Button>
               </Link>

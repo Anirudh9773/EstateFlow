@@ -177,10 +177,10 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 lg:p-12">
+    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-6 lg:p-8">
       {/* Role Selector */}
-      <div className="mb-4 sm:mb-6 md:mb-8">
-        <p className="text-xs md:text-sm font-medium text-slate-700 mb-3">Who are you contacting us as?</p>
+      <div className="mb-4 sm:mb-5">
+        <p className="text-xs md:text-sm font-medium text-slate-700 mb-2">Who are you contacting us as?</p>
         <div className="inline-flex bg-slate-100 rounded-lg p-1 w-full sm:w-auto">
           <Button
             type="button"
@@ -206,51 +206,29 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
-        {/* Full Name */}
-        <div>
-          <Label htmlFor="fullName">
-            Full Name <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            type="text"
-            id="fullName"
-            value={formData.fullName}
-            onChange={(e) => handleChange('fullName', e.target.value)}
-            className={`mt-2 ${errors.fullName ? 'border-red-500' : ''}`}
-            placeholder={userRole === 'client' ? 'John Smith' : 'Jane Doe'}
-            aria-invalid={!!errors.fullName}
-          />
-          {errors.fullName && (
-            <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
-          )}
-        </div>
-
-        {/* Agency Name (Agents only) */}
-        {userRole === 'agent' && (
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+        {/* Row 1: Name and Email */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <Label htmlFor="agencyName">
-              Agency Name <span className="text-red-500">*</span>
+            <Label htmlFor="fullName" className="text-xs font-semibold text-slate-600">
+              Full Name <span className="text-red-500">*</span>
             </Label>
             <Input
               type="text"
-              id="agencyName"
-              value={formData.agencyName}
-              onChange={(e) => handleChange('agencyName', e.target.value)}
-              className={`mt-2 ${errors.agencyName ? 'border-red-500' : ''}`}
-              placeholder="Your Estate Agency Ltd."
-              aria-invalid={!!errors.agencyName}
+              id="fullName"
+              value={formData.fullName}
+              onChange={(e) => handleChange('fullName', e.target.value)}
+              className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.fullName ? 'border-red-500' : ''}`}
+              placeholder={userRole === 'client' ? 'John Smith' : 'Jane Doe'}
+              aria-invalid={!!errors.fullName}
             />
-            {errors.agencyName && (
-              <p className="mt-1 text-sm text-red-600">{errors.agencyName}</p>
+            {errors.fullName && (
+              <p className="mt-0.5 text-xs text-red-600">{errors.fullName}</p>
             )}
           </div>
-        )}
 
-        {/* Email and Phone */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
           <div>
-            <Label htmlFor="email">
+            <Label htmlFor="email" className="text-xs font-semibold text-slate-600">
               Email Address <span className="text-red-500">*</span>
             </Label>
             <Input
@@ -258,17 +236,20 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
               id="email"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              className={`mt-2 ${errors.email ? 'border-red-500' : ''}`}
+              className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.email ? 'border-red-500' : ''}`}
               placeholder={userRole === 'client' ? 'john@example.com' : 'jane@agency.co.uk'}
               aria-invalid={!!errors.email}
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              <p className="mt-0.5 text-xs text-red-600">{errors.email}</p>
             )}
           </div>
+        </div>
 
+        {/* Row 2: Phone and Postcode (Client) OR Phone and Agency Name (Agent) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <Label htmlFor="phone">
+            <Label htmlFor="phone" className="text-xs font-semibold text-slate-600">
               Phone Number {userRole === 'agent' && <span className="text-red-500">*</span>}
             </Label>
             <Input
@@ -276,65 +257,105 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
               id="phone"
               value={formData.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
-              className="mt-2"
+              className="h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
               placeholder="07123 456789"
             />
           </div>
-        </div>
 
-        {/* Postcode */}
-        <div>
-          <Label htmlFor="postcode">
-            {userRole === 'client' ? 'Postcode' : 'Coverage Postcode Area'}{' '}
-            <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            type="text"
-            id="postcode"
-            value={formData.postcode}
-            onChange={(e) => handleChange('postcode', e.target.value)}
-            className={`mt-2 ${errors.postcode ? 'border-red-500' : ''}`}
-            placeholder={userRole === 'client' ? 'SW1A 1AA' : 'SW1, SW2, SW3'}
-            aria-invalid={!!errors.postcode}
-          />
-          {errors.postcode && (
-            <p className="mt-1 text-sm text-red-600">{errors.postcode}</p>
+          {userRole === 'agent' ? (
+            <div>
+              <Label htmlFor="agencyName" className="text-xs font-semibold text-slate-600">
+                Agency Name <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                type="text"
+                id="agencyName"
+                value={formData.agencyName}
+                onChange={(e) => handleChange('agencyName', e.target.value)}
+                className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.agencyName ? 'border-red-500' : ''}`}
+                placeholder="Your Estate Agency Ltd."
+                aria-invalid={!!errors.agencyName}
+              />
+              {errors.agencyName && (
+                <p className="mt-0.5 text-xs text-red-600">{errors.agencyName}</p>
+              )}
+            </div>
+          ) : (
+            <div>
+              <Label htmlFor="postcode" className="text-xs font-semibold text-slate-600">
+                Postcode <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                type="text"
+                id="postcode"
+                value={formData.postcode}
+                onChange={(e) => handleChange('postcode', e.target.value)}
+                className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.postcode ? 'border-red-500' : ''}`}
+                placeholder="SW1A 1AA"
+                aria-invalid={!!errors.postcode}
+              />
+              {errors.postcode && (
+                <p className="mt-0.5 text-xs text-red-600">{errors.postcode}</p>
+              )}
+            </div>
           )}
         </div>
 
-        {/* Subject */}
-        <div>
-          <Label htmlFor="subject">
-            Subject <span className="text-red-500">*</span>
-          </Label>
-          <Select value={formData.subject} onValueChange={(value) => handleChange('subject', value || '')}>
-            <SelectTrigger className={`w-full mt-2 ${errors.subject ? 'border-red-500' : ''}`}>
-              <SelectValue placeholder="Select a subject..." />
-            </SelectTrigger>
-            <SelectContent>
-              {subjects.map((subject) => (
-                <SelectItem key={subject} value={subject}>
-                  {subject}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.subject && (
-            <p className="mt-1 text-sm text-red-600">{errors.subject}</p>
+        {/* Row 3: Subject (Client, full-width) OR Postcode and Subject (Agent, grid-cols-2) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          {userRole === 'agent' && (
+            <div>
+              <Label htmlFor="postcode" className="text-xs font-semibold text-slate-600">
+                Coverage Postcode Area <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                type="text"
+                id="postcode"
+                value={formData.postcode}
+                onChange={(e) => handleChange('postcode', e.target.value)}
+                className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.postcode ? 'border-red-500' : ''}`}
+                placeholder="SW1, SW2, SW3"
+                aria-invalid={!!errors.postcode}
+              />
+              {errors.postcode && (
+                <p className="mt-0.5 text-xs text-red-600">{errors.postcode}</p>
+              )}
+            </div>
           )}
+
+          <div className={userRole === 'agent' ? "" : "sm:col-span-2"}>
+            <Label htmlFor="subject" className="text-xs font-semibold text-slate-600">
+              Subject <span className="text-red-500">*</span>
+            </Label>
+            <Select value={formData.subject} onValueChange={(value) => handleChange('subject', value || '')}>
+              <SelectTrigger className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 w-full ${errors.subject ? 'border-red-500' : ''}`}>
+                <SelectValue placeholder="Select a subject..." />
+              </SelectTrigger>
+              <SelectContent>
+                {subjects.map((subject) => (
+                  <SelectItem key={subject} value={subject}>
+                    {subject}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.subject && (
+              <p className="mt-0.5 text-xs text-red-600">{errors.subject}</p>
+            )}
+          </div>
         </div>
 
-        {/* Message */}
+        {/* Row 4: Message */}
         <div>
-          <Label htmlFor="message">
+          <Label htmlFor="message" className="text-xs font-semibold text-slate-600">
             Message <span className="text-red-500">*</span>
           </Label>
           <Textarea
             id="message"
-            rows={6}
+            rows={3}
             value={formData.message}
             onChange={(e) => handleChange('message', e.target.value)}
-            className={`mt-2 resize-none ${errors.message ? 'border-red-500' : ''}`}
+            className={`mt-1 resize-none border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.message ? 'border-red-500' : ''}`}
             placeholder={
               userRole === 'client'
                 ? 'Tell us about your property or what you need help with...'
@@ -343,7 +364,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
             aria-invalid={!!errors.message}
           />
           {errors.message && (
-            <p className="mt-1 text-sm text-red-600">{errors.message}</p>
+            <p className="mt-0.5 text-xs text-red-600">{errors.message}</p>
           )}
         </div>
 
@@ -351,7 +372,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
         <Button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full h-12 gap-2 ${
+          className={`w-full h-11 gap-2 cursor-pointer ${
             userRole === 'client'
               ? 'bg-amber-500 hover:bg-amber-600'
               : 'bg-emerald-600 hover:bg-emerald-700'
@@ -364,7 +385,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
             </>
           ) : (
             <>
-              <Send className="w-5 h-5" />
+              <Send className="w-4 h-4" />
               Send Message
             </>
           )}

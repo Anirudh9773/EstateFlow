@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import OAuthButtonsGroup from "@/components/auth/OAuthButtonsGroup"
 import { signInWithOAuth } from "@/lib/auth/actions"
 import { useUser } from "@/lib/auth/useUser"
+import { Logo } from "@/components/logo"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -146,17 +147,22 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Show logo on mobile only since LeftPanel is hidden */}
+      <div className="flex lg:hidden justify-center mb-2">
+        <Logo showSubtitle={false} className="h-8 w-8" />
+      </div>
+
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <h1 className="text-xl font-bold tracking-tight">Welcome back</h1>
+        <p className="text-muted-foreground text-xs mt-0.5">
           Sign in to your account
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Email</label>
+      <form onSubmit={onSubmit} className="space-y-3">
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-600">Email Address</label>
           <Input
             type="email"
             placeholder="you@example.com"
@@ -167,8 +173,8 @@ export default function SignInPage() {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Password</label>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-600">Password</label>
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
@@ -196,11 +202,11 @@ export default function SignInPage() {
               onCheckedChange={(checked) => setRememberMe(checked as boolean)}
               className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy"
             />
-            <label htmlFor="remember-me" className="text-sm">
+            <label htmlFor="remember-me" className="text-xs">
               Remember me
             </label>
           </div>
-          <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
+          <Link href="/forgot-password" className="text-xs text-blue-600 hover:underline">
             Forgot password?
           </Link>
         </div>

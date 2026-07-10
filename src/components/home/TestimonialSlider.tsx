@@ -52,7 +52,7 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
             spaceBetween: 24,
           },
         }}
-        className="!pb-12"
+        className="!pb-12 !overflow-visible"
       >
         {testimonials.map((testimonial) => (
           <SwiperSlide key={testimonial.id}>

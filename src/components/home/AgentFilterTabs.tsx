@@ -34,7 +34,7 @@ export default function AgentFilterTabs({ agents }: AgentFilterTabsProps) {
             <TabsTrigger
               key={city.value}
               value={city.value}
-              className="data-active:bg-navy data-active:text-gold text-text-secondary hover:text-navy rounded-full px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 border-0 whitespace-nowrap cursor-pointer shadow-none data-active:shadow-md"
+              className="data-active:bg-navy data-active:text-gold text-text-secondary hover:text-navy data-active:hover:text-gold rounded-full px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 border-0 whitespace-nowrap cursor-pointer shadow-none data-active:shadow-md"
             >
               {city.label}
             </TabsTrigger>

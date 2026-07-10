@@ -33,9 +33,9 @@ export default function AgentCard({ agent }: AgentCardProps) {
             )}
           </div>
           <p className="text-text-secondary text-xs sm:text-sm truncate">{agent.agency}</p>
-          <div className="mt-2">
-            <Link href={`${ROUTES.agents}/${agent.id}`}>
-              <Button variant="outline" className="border-navy text-navy hover:bg-navy hover:text-gold text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4">
+          <div className="mt-2 flex justify-end sm:block">
+            <Link href={`${ROUTES.agents}/${agent.id}`} className="w-auto">
+              <Button variant="outline" className="border-navy text-navy hover:bg-navy hover:text-gold text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4 cursor-pointer">
                 View profile
               </Button>
             </Link>

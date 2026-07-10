@@ -164,6 +164,20 @@ export default function Header() {
     { label: 'Contact', href: '/contact' },
   ];
 
+  const hideHeaderRoutes = [
+    '/submit-property',
+    '/sign-in',
+    '/sign-up/client',
+    '/sign-up/agent',
+    '/forgot-password',
+    '/verify-2fa',
+    '/agent-login'
+  ];
+
+  if (hideHeaderRoutes.includes(pathname)) {
+    return null;
+  }
+
   return (
     <>
       {/* Trust Bar */}
@@ -212,7 +226,7 @@ export default function Header() {
               <div className="relative" ref={platformDropdownRef}>
                 <button
                   onClick={() => toggleDropdown('platform')}
-                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
                   aria-expanded={openDropdown === 'platform'}
                   aria-haspopup="true"
                 >
@@ -244,7 +258,7 @@ export default function Header() {
                 <div className="relative" ref={agentsDropdownRef}>
                   <button
                     onClick={() => toggleDropdown('agents')}
-                    className="flex items-center gap-1 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    className="flex items-center gap-1 text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
                     aria-expanded={openDropdown === 'agents'}
                     aria-haspopup="true"
                   >
@@ -301,7 +315,7 @@ export default function Header() {
                 <div className="relative" ref={userMenuDropdownRef}>
                   <button
                     onClick={() => toggleDropdown('usermenu')}
-                    className="flex items-center gap-2 px-4 py-2 border-2 border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm"
+                    className="flex items-center gap-2 px-4 py-2 border-2 border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm cursor-pointer"
                     aria-expanded={openDropdown === 'usermenu'}
                     aria-haspopup="true"
                   >
@@ -356,7 +370,7 @@ export default function Header() {
                       )}
                       <button
                         onClick={handleSignOut}
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors w-full text-left"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors w-full text-left cursor-pointer"
                       >
                         <LogOut className="w-5 h-5 text-red-600" />
                         <span className="text-sm">Sign Out</span>
@@ -381,7 +395,7 @@ export default function Header() {
                   <div className="relative" ref={signUpDropdownRef}>
                     <Button
                       onClick={() => toggleDropdown('signup')}
-                      className="bg-navy text-gold hover:bg-navy/90 gap-2"
+                      className="bg-navy text-gold hover:bg-navy/90 gap-2 cursor-pointer"
                       aria-expanded={openDropdown === 'signup'}
                       aria-haspopup="true"
                     >
@@ -430,7 +444,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-slate-700 hover:text-slate-900 transition-colors"
+              className="lg:hidden p-2 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
               aria-label="Toggle mobile menu"
               aria-expanded={isMobileMenuOpen}
             >

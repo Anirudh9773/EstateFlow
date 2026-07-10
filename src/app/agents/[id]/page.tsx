@@ -4,6 +4,9 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { toast } from 'sonner'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { 
@@ -395,6 +398,11 @@ export default function PublicAgentProfilePage() {
   
   const [agent, setAgent] = useState<Agent | null>(null)
   const [loading, setLoading] = useState(true)
+  
+  const [isContactOpen, setIsContactOpen] = useState(false)
+  const [isCallbackOpen, setIsCallbackOpen] = useState(false)
+  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: '' })
+  const [callbackForm, setCallbackForm] = useState({ name: '', phone: '', time: 'morning' })
 
   useEffect(() => {
     async function loadAgent() {
@@ -521,11 +529,18 @@ export default function PublicAgentProfilePage() {
                 <p className="text-gray-700 mb-4">{agent.bio}</p>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90">
+                  <Button 
+                    onClick={() => setIsContactOpen(true)}
+                    className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 cursor-pointer"
+                  >
                     <Mail className="w-4 h-4 mr-2" />
                     Contact Agent
                   </Button>
-                  <Button variant="outline" className="border-navy text-navy hover:bg-navy hover:text-gold">
+                  <Button 
+                    onClick={() => setIsCallbackOpen(true)}
+                    variant="outline" 
+                    className="border-navy text-navy hover:bg-navy hover:text-gold cursor-pointer"
+                  >
                     <Phone className="w-4 h-4 mr-2" />
                     Request Callback
                   </Button>
@@ -802,17 +817,154 @@ export default function PublicAgentProfilePage() {
               Get in touch today to discuss your property needs. {agent.name} typically responds within {agent.responseTime}.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90">
+              <Button 
+                onClick={() => setIsContactOpen(true)}
+                className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 cursor-pointer"
+              >
                 <Mail className="w-4 h-4 mr-2" />
-                Send Message
+                Contact Agent
               </Button>
-              <Button variant="outline" className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)] hover:text-[var(--color-navy)]">
+              <Button 
+                onClick={() => setIsCallbackOpen(true)}
+                variant="outline" 
+                className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)] hover:text-[var(--color-navy)] cursor-pointer"
+              >
                 <Phone className="w-4 h-4 mr-2" />
                 Request Callback
               </Button>
             </div>
           </CardContent>
         </Card>
+        {/* Contact Agent Modal */}
+        <Dialog open={isContactOpen} onOpenChange={setIsContactOpen}>
+          <DialogContent className="max-w-md bg-white p-6 rounded-lg">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-navy">Contact {agent.name}</DialogTitle>
+              <DialogDescription className="text-slate-500 text-sm">
+                Send a secure message. {agent.name} typically responds in {agent.responseTime}.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              toast.success(`Message sent successfully! ${agent.name} will contact you shortly.`);
+              setIsContactOpen(false);
+              setContactForm({ name: '', email: '', phone: '', message: '' });
+            }} className="space-y-4 mt-4">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-500">Your Name</label>
+                <Input 
+                  type="text" 
+                  required 
+                  placeholder="John Doe" 
+                  value={contactForm.name}
+                  onChange={e => setContactForm({...contactForm, name: e.target.value})}
+                  className="border border-slate-300 focus:border-navy" 
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-500">Email Address</label>
+                <Input 
+                  type="email" 
+                  required 
+                  placeholder="john@example.com" 
+                  value={contactForm.email}
+                  onChange={e => setContactForm({...contactForm, email: e.target.value})}
+                  className="border border-slate-300 focus:border-navy" 
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-500">Phone Number</label>
+                <Input 
+                  type="tel" 
+                  placeholder="07123 456789" 
+                  value={contactForm.phone}
+                  onChange={e => setContactForm({...contactForm, phone: e.target.value})}
+                  className="border border-slate-300 focus:border-navy" 
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-500">Message</label>
+                <textarea 
+                  required 
+                  rows={4}
+                  placeholder={`Hello ${agent.name}, I would like to discuss...`} 
+                  value={contactForm.message}
+                  onChange={e => setContactForm({...contactForm, message: e.target.value})}
+                  className="w-full border border-slate-300 rounded-lg p-2 focus:outline-none focus:border-navy text-sm resize-none" 
+                />
+              </div>
+              <div className="flex gap-3 justify-end pt-2">
+                <Button type="button" variant="outline" onClick={() => setIsContactOpen(false)} className="cursor-pointer">
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-navy text-gold hover:bg-navy/90 cursor-pointer">
+                  Send Message
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Request Callback Modal */}
+        <Dialog open={isCallbackOpen} onOpenChange={setIsCallbackOpen}>
+          <DialogContent className="max-w-md bg-white p-6 rounded-lg">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-navy">Request Callback</DialogTitle>
+              <DialogDescription className="text-slate-500 text-sm">
+                Leave your number and {agent.name} will call you back.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              toast.success(`Callback requested successfully! ${agent.name} will call you back.`);
+              setIsCallbackOpen(false);
+              setCallbackForm({ name: '', phone: '', time: 'morning' });
+            }} className="space-y-4 mt-4">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-500">Your Name</label>
+                <Input 
+                  type="text" 
+                  required 
+                  placeholder="John Doe" 
+                  value={callbackForm.name}
+                  onChange={e => setCallbackForm({...callbackForm, name: e.target.value})}
+                  className="border border-slate-300 focus:border-navy" 
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-500">Phone Number</label>
+                <Input 
+                  type="tel" 
+                  required 
+                  placeholder="07123 456789" 
+                  value={callbackForm.phone}
+                  onChange={e => setCallbackForm({...callbackForm, phone: e.target.value})}
+                  className="border border-slate-300 focus:border-navy" 
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-500">Preferred Time to Call</label>
+                <select 
+                  value={callbackForm.time}
+                  onChange={e => setCallbackForm({...callbackForm, time: e.target.value})}
+                  className="w-full border border-slate-300 rounded-lg p-2 focus:outline-none focus:border-navy text-sm bg-white"
+                >
+                  <option value="morning">Morning (9am - 12pm)</option>
+                  <option value="afternoon">Afternoon (12pm - 4pm)</option>
+                  <option value="evening">Evening (4pm - 7pm)</option>
+                </select>
+              </div>
+              <div className="flex gap-3 justify-end pt-2">
+                <Button type="button" variant="outline" onClick={() => setIsCallbackOpen(false)} className="cursor-pointer">
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-navy text-gold hover:bg-navy/90 cursor-pointer">
+                  Request Call
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )

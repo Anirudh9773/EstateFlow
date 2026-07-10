@@ -38,23 +38,23 @@ export default function ContactInfoCards() {
       {contactInfo.map((info, index) => {
         const Icon = info.icon;
         const content = (
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-start gap-3 sm:gap-4">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <Icon className="w-4 h-4 sm:w-5 h-5 text-amber-600" />
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                <h3 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">
                   {info.title}
                 </h3>
-                <p className="text-base sm:text-lg font-semibold text-slate-900 mb-1 break-words">
+                <p className="text-sm sm:text-base font-semibold text-slate-900 mb-0.5 break-words">
                   {info.value}
                 </p>
-                <p className="text-xs sm:text-sm text-slate-600">{info.description}</p>
+                <p className="text-[11px] sm:text-xs text-slate-600">{info.description}</p>
                 {info.subDescription && (
-                  <p className="text-xs text-slate-500 mt-1">{info.subDescription}</p>
+                  <p className="text-[10px] text-slate-500 mt-0.5">{info.subDescription}</p>
                 )}
               </div>
             </div>
@@ -63,7 +63,7 @@ export default function ContactInfoCards() {
 
         if (info.href) {
           return (
-            <a key={index} href={info.href}>
+            <a key={index} href={info.href} className="block">
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 {content}
               </Card>

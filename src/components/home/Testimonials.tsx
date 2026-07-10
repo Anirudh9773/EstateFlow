@@ -18,7 +18,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
           <GoldDivider className="mx-auto mt-4 sm:mt-5" />
         </div>
 
-        <div className="relative px-0 sm:px-8 md:px-12">
+        <div className="relative px-4 sm:px-8 md:px-12">
           <TestimonialSlider testimonials={testimonials} />
         </div>
       </div>

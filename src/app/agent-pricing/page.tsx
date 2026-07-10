@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useUser } from "@/lib/auth/useUser"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -166,9 +167,49 @@ const comparisonData = [
   }
 ]
 
+const faqs = [
+  {
+    question: 'How do I receive leads?',
+    answer: 'When a client submits their property details matching your coverage area and tier, you will receive an email notification and the lead will appear instantly on your Agent Dashboard.'
+  },
+  {
+    question: 'Can I change my postcode coverage area?',
+    answer: 'Yes! You can update your postcodes or regional areas at any time directly through your account settings in the dashboard.'
+  },
+  {
+    question: 'Is there a contract commitment?',
+    answer: 'No, all plans are billed month-to-month and you can cancel, upgrade, or downgrade your subscription at any time.'
+  },
+  {
+    question: 'What are the commission rates?',
+    answer: 'You retain your standard commission rates as agreed directly with clients. EstateFlow does not take a percentage of your commission or charge referral fees.'
+  },
+  {
+    question: 'How does the visibility boost work?',
+    answer: 'City, State, and National plans feature higher ranking search priority, custom profile options, and advertising campaigns targeting active sellers in your area.'
+  }
+]
+
 export default function AgentPricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
   const [selectedPlan, setSelectedPlan] = useState<string>("City Agent")
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
+  const { user } = useUser()
+
+  const handleSelectPlan = async (e: React.MouseEvent) => {
+    if (user) {
+      const userType = user.user_metadata?.user_type
+      if (userType === 'agent') {
+        e.preventDefault()
+        window.location.href = '/agent-dashboard'
+      } else {
+        e.preventDefault()
+        const { signOut } = await import('@/lib/auth/actions')
+        await signOut()
+        window.location.href = '/sign-up/agent'
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-surface">
@@ -291,7 +332,9 @@ export default function AgentPricingPage() {
                 </div>
 
                 <Button 
-                  className={`w-full mt-auto ${
+                  render={<Link href="/sign-up/agent" onClick={handleSelectPlan} />}
+                  nativeButton={false}
+                  className={`w-full mt-auto cursor-pointer ${
                     selectedPlan === tier.category
                       ? "bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90" 
                       : "bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90"
@@ -371,6 +414,51 @@ export default function AgentPricingPage() {
           </Card>
         </div>
 
+        {/* FAQ Section */}
+        <section className="py-16 bg-white rounded-lg mb-12">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold text-[var(--color-navy)] mb-3">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-[var(--color-text-secondary)] text-lg">
+                Everything you need to know about growing your business with EstateFlow
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {faqs.map((faq, index) => {
+                const isOpen = openFaqIndex === index;
+                return (
+                  <Card 
+                    key={index} 
+                    className="border border-[var(--color-ef-border)] bg-white overflow-hidden transition-all duration-200"
+                  >
+                    <button
+                      onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                      className="w-full flex items-center justify-between p-4 sm:p-6 text-left font-semibold text-[var(--color-navy)] hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                      <span className="text-base sm:text-lg">{faq.question}</span>
+                      <span className="ml-4 shrink-0 text-[var(--color-gold)] text-xl font-bold transition-transform duration-200">
+                        {isOpen ? '−' : '+'}
+                      </span>
+                    </button>
+                    <div 
+                      className={`transition-all duration-300 ease-in-out ${
+                        isOpen ? 'max-h-[300px] border-t border-slate-100' : 'max-h-0 overflow-hidden'
+                      }`}
+                    >
+                      <p className="p-4 sm:p-6 text-[var(--color-text-secondary)] leading-relaxed text-sm sm:text-base bg-slate-50/30">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <div className="text-center p-8 bg-[var(--color-navy)] text-white rounded-lg">
           <h2 className="text-2xl font-bold mb-4 text-[var(--color-gold)]">Ready to Grow Your Agency?</h2>
@@ -379,10 +467,19 @@ export default function AgentPricingPage() {
             and connect with qualified leads.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-6 py-3">
+            <Button 
+              render={<Link href="/sign-up/agent" onClick={handleSelectPlan} />}
+              nativeButton={false}
+              className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-6 py-3 cursor-pointer"
+            >
               Get Started Now
             </Button>
-            <Button variant="outline" className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-6 py-3">
+            <Button 
+              render={<Link href="/contact" />}
+              nativeButton={false}
+              variant="outline" 
+              className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-6 py-3 cursor-pointer"
+            >
               Schedule Demo
             </Button>
           </div>

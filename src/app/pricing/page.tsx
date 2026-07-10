@@ -12,6 +12,7 @@ import { ROUTES } from '@/lib/constants'
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
   const [selectedPlan, setSelectedPlan] = useState<string>('Professional')
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
 
   // Client Pricing Tiers
   const clientPricing = [
@@ -245,8 +246,14 @@ export default function PricingPage() {
                       ))}
                     </div>
 
-                    <Button 
-                      className={`w-full mt-auto ${
+                     <Button 
+                      render={
+                        tier.price === 'Custom' 
+                          ? <Link href="/contact" /> 
+                          : <Link href="/submit-property" />
+                      }
+                      nativeButton={false}
+                      className={`w-full mt-auto cursor-pointer ${
                         selectedPlan === tier.category
                           ? "bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90" 
                           : "bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90"
@@ -324,19 +331,35 @@ export default function PricingPage() {
             </p>
           </div>
 
-          <div className="space-y-6">
-            {faqs.map((faq, index) => (
-              <Card key={index} className="border border-[var(--color-ef-border)] bg-white">
-                <CardContent className="p-4 sm:p-6">
-                  <h3 className="text-base sm:text-lg font-semibold text-[var(--color-navy)] mb-3">
-                    {faq.question}
-                  </h3>
-                  <p className="text-[var(--color-text-secondary)] leading-relaxed text-sm sm:text-base">
-                    {faq.answer}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="space-y-4">
+            {faqs.map((faq, index) => {
+              const isOpen = openFaqIndex === index;
+              return (
+                <Card 
+                  key={index} 
+                  className="border border-[var(--color-ef-border)] bg-white overflow-hidden transition-all duration-200"
+                >
+                  <button
+                    onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                    className="w-full flex items-center justify-between p-4 sm:p-6 text-left font-semibold text-[var(--color-navy)] hover:bg-slate-50 transition-colors cursor-pointer"
+                  >
+                    <span className="text-base sm:text-lg">{faq.question}</span>
+                    <span className="ml-4 shrink-0 text-[var(--color-gold)] text-xl font-bold transition-transform duration-200">
+                      {isOpen ? '−' : '+'}
+                    </span>
+                  </button>
+                  <div 
+                    className={`transition-all duration-300 ease-in-out ${
+                      isOpen ? 'max-h-[300px] border-t border-slate-100' : 'max-h-0 overflow-hidden'
+                    }`}
+                  >
+                    <p className="p-4 sm:p-6 text-[var(--color-text-secondary)] leading-relaxed text-sm sm:text-base bg-slate-50/30">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -350,11 +373,20 @@ export default function PricingPage() {
           <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
             Join thousands of homeowners and agents who trust EstateFlow for their property needs.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3">
+           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              render={<Link href="/submit-property" />}
+              nativeButton={false}
+              className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer"
+            >
               Submit Your Property
             </Button>
-            <Button variant="outline" className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-8 py-3">
+            <Button 
+              render={<Link href="/sign-up/agent" />}
+              nativeButton={false}
+              variant="outline" 
+              className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-8 py-3 cursor-pointer"
+            >
               Join as an Agent
             </Button>
           </div>

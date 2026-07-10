@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import type { Agent } from '@/types/agent'
 import AgentCard from '@/components/agents/AgentCard'
 import { Button } from '@/components/ui/button'
@@ -218,7 +219,11 @@ export default function FindAgentClient({ agents }: FindAgentClientProps) {
           <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
             Submit your property details and we'll match you with the perfect agents from our network.
           </p>
-          <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3">
+          <Button 
+            render={<Link href="/submit-property" />}
+            nativeButton={false}
+            className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer"
+          >
             Submit Your Property
           </Button>
         </div>
