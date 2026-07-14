@@ -335,7 +335,7 @@ export async function send2faOtp(userId: string, email: string) {
   }
 
   // Send the email
-  await sendEmail({
+  const emailResult = await sendEmail({
     to: email,
     subject: 'Your EstateFlow 2FA Verification Code',
     html: `
@@ -353,6 +353,29 @@ export async function send2faOtp(userId: string, email: string) {
     `,
     code: otp,
   })
+
+  // Set dev OTP cookie if running in development mode or on localhost
+  // Check if we are in a dev/testing environment
+  const isDev = process.env.NODE_ENV === 'development' || 
+                process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost') || 
+                process.env.ENABLE_DEV_OTP === 'true';
+
+  if (isDev) {
+    try {
+      const cookieStore = await cookies()
+      cookieStore.set('dev_last_otp', otp, { maxAge: 600, httpOnly: false }) // httpOnly: false allows client-side reading
+    } catch (cookieErr) {
+      console.error('Failed to set dev_last_otp cookie:', cookieErr)
+    }
+  }
+
+  if (!emailResult.success) {
+    if (isDev) {
+      console.warn('⚠️ Email send failed, but allowing login in dev mode since OTP is saved to cookie/logs:', emailResult.error)
+      return { success: true }
+    }
+    return { error: `Failed to send verification email: ${emailResult.error || 'Unknown error'}` }
+  }
 
   return { success: true }
 }
@@ -534,7 +557,7 @@ export async function isSession2faVerified() {
 
   // Write debug log
   try {
-    const logDir = 'd:\\Anirudh\'s Project\\estateflow\\scratch'
+    const logDir = path.join(process.cwd(), 'scratch')
     if (!fs.existsSync(logDir)) {
       fs.mkdirSync(logDir, { recursive: true })
     }

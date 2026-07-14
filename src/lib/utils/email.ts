@@ -28,7 +28,7 @@ export async function sendEmail({
   if (code) {
     console.log(`🔑 Verification Code: ${code}`);
     try {
-      const otpFile = 'd:\\Anirudh\'s Project\\estateflow\\scratch\\last_otp.txt'
+      const otpFile = path.join(process.cwd(), 'scratch', 'last_otp.txt')
       const dir = path.dirname(otpFile)
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true })
@@ -73,8 +73,12 @@ export async function sendEmail({
       return { success: true };
     } catch (e) {
       console.error('❌ Exception occurred during Gmail SMTP call:', e);
-      const message = e instanceof Error ? e.message : 'Gmail SMTP error';
-      return { success: false, error: message };
+      if (process.env.RESEND_API_KEY) {
+        console.log('🔄 Gmail SMTP failed. Falling back to Resend API...');
+      } else {
+        const message = e instanceof Error ? e.message : 'Gmail SMTP error';
+        return { success: false, error: message };
+      }
     }
   }
 

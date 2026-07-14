@@ -19,8 +19,17 @@ export default function Verify2faPage() {
   const [timeLeft, setTimeLeft] = useState(600) // 10 minutes in seconds
   const [showResend, setShowResend] = useState(false)
   const [rememberDevice, setRememberDevice] = useState(false)
+  const [devOtp, setDevOtp] = useState<string | null>(null)
   
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  // Read the dev_last_otp cookie if present
+  useEffect(() => {
+    const match = document.cookie.match(/(?:^|; )dev_last_otp=([^;]*)/)
+    if (match && match[1]) {
+      setDevOtp(match[1])
+    }
+  }, [])
 
   // Focus the first input on component mount
   useEffect(() => {
@@ -185,6 +194,15 @@ export default function Verify2faPage() {
           Please enter the 6-digit verification code sent to your registered email address.
         </p>
       </div>
+
+      {devOtp && (
+        <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-100 py-3">
+          <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-gold animate-pulse" />
+          <AlertDescription className="text-xs font-semibold">
+            🔧 Dev Helper: Since email sending is restricted on unverified/free domains, you can use this OTP to test: <span className="font-mono text-sm px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900 rounded border border-amber-200 dark:border-amber-800 text-amber-950 dark:text-amber-50">{devOtp}</span>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {error && (
         <Alert variant="destructive" className="border-red-200 bg-red-50 text-red-900">
