@@ -96,10 +96,15 @@ export async function signUp(formData: {
         }).select()
         
         if (insertError) {
-          console.error('❌ Error creating client profile:', insertError)
-          return { error: `Failed to create profile: ${insertError.message}` }
+          if (insertError.code === '23505') {
+            console.log('✅ Client profile already exists (created by database trigger)')
+          } else {
+            console.error('❌ Error creating client profile:', insertError)
+            return { error: `Failed to create profile: ${insertError.message}` }
+          }
+        } else {
+          console.log('✅ Client profile created manually:', insertData)
         }
-        console.log('✅ Client profile created successfully:', insertData)
       } else if (formData.userType === 'agent') {
         console.log('📝 Creating agent profile for:', formData.email)
         const { data: insertData, error: insertError } = await supabaseAdmin.from('agents').insert({
@@ -114,10 +119,15 @@ export async function signUp(formData: {
         }).select()
         
         if (insertError) {
-          console.error('❌ Error creating agent profile:', insertError)
-          return { error: `Failed to create profile: ${insertError.message}` }
+          if (insertError.code === '23505') {
+            console.log('✅ Agent profile already exists (created by database trigger)')
+          } else {
+            console.error('❌ Error creating agent profile:', insertError)
+            return { error: `Failed to create profile: ${insertError.message}` }
+          }
+        } else {
+          console.log('✅ Agent profile created manually:', insertData)
         }
-        console.log('✅ Agent profile created successfully:', insertData)
       } else if (formData.userType === 'admin' || formData.userType === 'semi-admin') {
         console.log('📝 Creating staff profile for:', formData.email)
         const { data: insertData, error: insertError } = await supabaseAdmin.from('staff').insert({
@@ -129,10 +139,15 @@ export async function signUp(formData: {
         }).select()
         
         if (insertError) {
-          console.error('❌ Error creating staff profile:', insertError)
-          return { error: `Failed to create profile: ${insertError.message}` }
+          if (insertError.code === '23505') {
+            console.log('✅ Staff profile already exists (created by database trigger)')
+          } else {
+            console.error('❌ Error creating staff profile:', insertError)
+            return { error: `Failed to create profile: ${insertError.message}` }
+          }
+        } else {
+          console.log('✅ Staff profile created manually:', insertData)
         }
-        console.log('✅ Staff profile created successfully:', insertData)
       }
     } catch (profileError) {
       console.error('❌ Exception creating profile:', profileError)
