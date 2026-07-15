@@ -375,6 +375,13 @@ export async function send2faOtp(userId: string, email: string) {
                 process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost') || 
                 process.env.ENABLE_DEV_OTP === 'true';
 
+  console.log('🔍 send2faOtp Environment Status:', {
+    nodeEnv: process.env.NODE_ENV,
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+    enableDevOtp: process.env.ENABLE_DEV_OTP,
+    isDev: isDev
+  })
+
   if (isDev) {
     try {
       const cookieStore = await cookies()
