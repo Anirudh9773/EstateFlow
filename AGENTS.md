@@ -56,7 +56,14 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 - **ALWAYS use `pnpm`** - This project uses pnpm, not npm or yarn
 - Commands: `pnpm install`, `pnpm dev`, `pnpm build`
 
-### Recent Major Updates (April 2026 & June 2026)
+### Recent Major Updates (April 2026, June 2026 & July 2026)
+
+#### Real-time Postcode, Phone & Price Bounds Validation & Letting Intent System (July 2026)
+- **Shared Property Validations**: Implemented a shared validation module (`src/lib/validations/property.ts`) enforcing standard UK postcode regex, phone formatting (rejecting letters), and budget constraints (£50k-£5M for selling, £100-£10k PCM for renting/letting).
+- **Inline Postcode Wizard warnings**: Integrated inline warnings in Step 2 of the property submission wizard and disabled the Next button until a valid UK postcode is entered.
+- **Real-Time Phone Filter**: Blocked typing letters inside phone input fields dynamically in both Step 5 of the wizard and the client dashboard edit modal.
+- **Stand-alone Letting Intent**: Added support for "Letting" intent to the property creation wizard, matching PCM budgets, dashboard badge listings, and agent lead views.
+- **2FA Timer Expiration Recovery**: Stored OTP expiry in `otp_expires_at` cookie and loaded it on `/verify-2fa` mount to preserve the countdown timer across page refreshes.
 
 #### Two-Factor Authentication (2FA) Security System (June 2026)
 - **OTP Generation & Verification**: Automatic custom 6-digit numeric OTP generation on credentials-based sign-in and sign-up.

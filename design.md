@@ -165,7 +165,12 @@ export default function PageName() {
 - **Border**: `border border-slate-300`
 - **Focus State**: `focus:border-navy focus:ring-2 focus:ring-navy/20`
 - **Min Height**: `min-h-[100px]`
-- **Resize**: `resize-y` or `resize-none`
+### Real-Time Sanitization & Form Validations (UK Format)
+- **UK Postcode Regex**: `^[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9][A-Z]{2}$` (case-insensitive, optional space). Used both on front-end step entry and back-end server actions.
+- **Phone Character Filter**: Real-time filtering allowing only digits, spaces, plus `+`, hyphens `-`, and parentheses `()`. Any letters are blocked from entry in real-time.
+- **Budget Bounds**:
+  - Selling / Letting & Selling: £50,000 to £5,000,000.
+  - Renting / Letting: £100 to £10,000 PCM.
 
 ### 2FA OTP Input Digit Cell Styling
 - **Border**: `border-2 border-slate-300` (visible border)
