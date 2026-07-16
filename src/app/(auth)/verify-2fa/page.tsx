@@ -31,6 +31,25 @@ export default function Verify2faPage() {
     }
   }, [])
 
+  // Read the otp_expires_at cookie if present to restore countdown on refresh
+  useEffect(() => {
+    const match = document.cookie.match(/(?:^|; )otp_expires_at=([^;]*)/)
+    if (match && match[1]) {
+      try {
+        const expiry = new Date(decodeURIComponent(match[1]))
+        const diff = Math.floor((expiry.getTime() - Date.now()) / 1000)
+        if (diff > 0) {
+          setTimeLeft(diff)
+        } else {
+          setTimeLeft(0)
+          setShowResend(true)
+        }
+      } catch (e) {
+        console.error("Failed to parse otp_expires_at cookie:", e)
+      }
+    }
+  }, [])
+
   // Focus the first input on component mount
   useEffect(() => {
     inputRefs.current[0]?.focus()

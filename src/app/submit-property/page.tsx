@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { 
   Key, 
   Home, 
+  Building,
   Building2, 
   CheckCircle, 
   ArrowRight, 
@@ -20,6 +21,7 @@ import {
   Minus
 } from "lucide-react"
 import { submitProperty } from "@/lib/auth/actions"
+import { validatePostcode } from "@/lib/validations/property"
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
 
@@ -91,7 +93,7 @@ export default function SubmitPropertyPage() {
         postcode: formData.intent === "renting" ? formData.desiredPostcode : formData.propertyPostcode,
         propertyType: formData.propertyTypes[0] || "House",
         bedroomCount: formData.bedroomCounts[0] || "1 Bedroom",
-        budget: formData.intent === "renting" ? formData.monthlyBudget : formData.saleValue,
+        budget: (formData.intent === "renting" || formData.intent === "letting") ? formData.monthlyBudget : formData.saleValue,
         timeline: formData.intent === "renting" ? "Immediately" : (formData.saleTimeline[0] || "Immediately"),
         clientName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
         clientEmail: formData.email.trim(),
@@ -197,12 +199,16 @@ export default function SubmitPropertyPage() {
                   size="lg"
                   onClick={nextStep}
                   disabled={
-                    (currentStep === 2 && formData.intent === "renting" && !formData.desiredPostcode.trim()) ||
-                    (currentStep === 2 && formData.intent === "selling" && !formData.propertyPostcode.trim()) ||
-                    (currentStep === 2 && formData.intent === "letting-selling" && (!formData.desiredPostcode.trim() || !formData.propertyPostcode.trim())) ||
+                    (currentStep === 2 && formData.intent === "renting" && (!formData.desiredPostcode.trim() || !validatePostcode(formData.desiredPostcode))) ||
+                    (currentStep === 2 && (formData.intent === "selling" || formData.intent === "letting") && (!formData.propertyPostcode.trim() || !validatePostcode(formData.propertyPostcode))) ||
+                    (currentStep === 2 && formData.intent === "letting-selling" && (
+                      !formData.desiredPostcode.trim() || !validatePostcode(formData.desiredPostcode) ||
+                      !formData.propertyPostcode.trim() || !validatePostcode(formData.propertyPostcode)
+                    )) ||
                     (currentStep === 3 && formData.propertyTypes.length === 0) ||
                     (currentStep === 3 && formData.bedroomCounts.length === 0) ||
                     (currentStep === 4 && formData.intent === "selling" && formData.saleTimeline.length === 0) ||
+                    (currentStep === 4 && formData.intent === "letting" && formData.saleTimeline.length === 0) ||
                     (currentStep === 4 && formData.intent === "letting-selling" && formData.saleTimeline.length === 0)
                   }
                   className="bg-green-700 hover:bg-green-800 text-white w-36 flex items-center justify-center"
@@ -227,6 +233,11 @@ function Step1({ formData, update, nextStep }: any) {
       icon: <Key className="w-10 h-10" />
     },
     { 
+      label: "Letting", 
+      value: "letting", 
+      icon: <Building className="w-10 h-10" />
+    },
+    { 
       label: "Selling", 
       value: "selling", 
       icon: <Home className="w-10 h-10" />
@@ -240,7 +251,7 @@ function Step1({ formData, update, nextStep }: any) {
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {options.map(({ label, value, icon }) => (
           <Card
             key={value}
@@ -273,6 +284,9 @@ function Step1({ formData, update, nextStep }: any) {
 }
 
 function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) {
+  const isDesiredValid = !formData.desiredPostcode.trim() || validatePostcode(formData.desiredPostcode)
+  const isPropertyValid = !formData.propertyPostcode.trim() || validatePostcode(formData.propertyPostcode)
+
   if (formData.intent === "renting") {
     return (
       <div className="space-y-6">
@@ -283,12 +297,18 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
           placeholder="Enter desired postcode (e.g., SW1A 1AA)"
           value={formData.desiredPostcode}
           onChange={e => update("desiredPostcode", e.target.value)}
-          className="h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy"
+          className={cn(
+            "h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
+            !isDesiredValid && "border-red-500 focus:border-red-500 focus:ring-red-200"
+          )}
           autoFocus
         />
+        {!isDesiredValid && (
+          <p className="text-xs text-red-600 mt-1">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
+        )}
       </div>
     )
-  } else if (formData.intent === "selling") {
+  } else if (formData.intent === "selling" || formData.intent === "letting") {
     return (
       <div className="space-y-6">
         <div className="text-sm text-gray-500 mt-6">
@@ -298,9 +318,15 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
           placeholder="Enter property postcode (e.g., SW1A 1AA)"
           value={formData.propertyPostcode}
           onChange={e => update("propertyPostcode", e.target.value)}
-          className="h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy"
+          className={cn(
+            "h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
+            !isPropertyValid && "border-red-500 focus:border-red-500 focus:ring-red-200"
+          )}
           autoFocus
         />
+        {!isPropertyValid && (
+          <p className="text-xs text-red-600 mt-1">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
+        )}
       </div>
     )
   } else if (formData.intent === "letting-selling") {
@@ -316,8 +342,14 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
             placeholder="Enter desired postcode (e.g., SW1A 1AA)"
             value={formData.desiredPostcode}
             onChange={e => update("desiredPostcode", e.target.value)}
-            className="h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy mb-4"
+            className={cn(
+              "h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy mb-4",
+              !isDesiredValid && "border-red-500 focus:border-red-500 focus:ring-red-200"
+            )}
           />
+          {!isDesiredValid && (
+            <p className="text-xs text-red-600 mt-1 mb-3">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
+          )}
         </div>
         
         <div>
@@ -329,8 +361,14 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
             placeholder="Enter property postcode (e.g., SW1A 1AA)"
             value={formData.propertyPostcode}
             onChange={e => update("propertyPostcode", e.target.value)}
-            className="h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy"
+            className={cn(
+              "h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
+              !isPropertyValid && "border-red-500 focus:border-red-500 focus:ring-red-200"
+            )}
           />
+          {!isPropertyValid && (
+            <p className="text-xs text-red-600 mt-1">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
+          )}
         </div>
       </div>
     )
@@ -396,7 +434,7 @@ function Step3({ formData, update, nextStep, prevStep }: any) {
         </div>
       </div>
     )
-  } else if (formData.intent === "selling") {
+  } else if (formData.intent === "selling" || formData.intent === "letting") {
     return (
       <div className="space-y-8">
         <div>
@@ -605,6 +643,75 @@ function Step4({ formData, update, nextStep, prevStep }: any) {
         <div className="flex justify-between text-sm text-gray-400 mt-1">
           <span>£100 PCM</span>
           <span>£10,000 PCM</span>
+        </div>
+      </div>
+    )
+  } else if (formData.intent === "letting") {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Estimated Monthly Rent</h3>
+          <div className="text-3xl font-bold text-[#1a2e1a] text-center mb-4">
+            {formatBudget(formData.monthlyBudget)}
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <Button
+              nativeButton={true}
+              variant="outline"
+              size="icon"
+              className="rounded-full"
+              onClick={() => update("monthlyBudget", Math.max(100, formData.monthlyBudget - 100))}
+            >
+              <Minus className="w-4 h-4" />
+            </Button>
+
+            <Button
+              nativeButton={true}
+              variant="outline"
+              size="icon"
+              className="rounded-full"
+              onClick={() => update("monthlyBudget", Math.min(10000, formData.monthlyBudget + 100))}
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <input
+            type="range"
+            min={100}
+            max={10000}
+            step={100}
+            value={formData.monthlyBudget}
+            onChange={e => update("monthlyBudget", Number(e.target.value))}
+            className="w-full accent-green-700 h-2 cursor-pointer mt-4"
+          />
+
+          <div className="flex justify-between text-sm text-gray-400 mt-1">
+            <span>£100 PCM</span>
+            <span>£10,000 PCM</span>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Preferred Letting Timeline</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {timelineOptions.map((option) => (
+              <Button
+                key={option}
+                variant="outline"
+                onClick={() => update("saleTimeline", [option])}
+                className={cn(
+                  "h-12 text-sm font-medium transition-all",
+                  formData.saleTimeline.includes(option)
+                    ? "border-2 border-green-700 text-green-700 bg-green-50"
+                    : "border-gray-200 text-gray-700 hover:border-green-400"
+                )}
+              >
+                {option}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -898,7 +1005,12 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: an
               type="tel"
               placeholder="Phone Number"
               value={formData.phone}
-              onChange={e => update("phone", e.target.value)}
+              onChange={e => {
+                const val = e.target.value;
+                if (/^[0-9+\s-()]*$/.test(val)) {
+                  update("phone", val);
+                }
+              }}
               onBlur={() => handleBlur("phone")}
               className={cn(
                 "flex-1 h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",

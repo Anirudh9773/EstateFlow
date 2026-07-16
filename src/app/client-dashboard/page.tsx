@@ -26,6 +26,7 @@ import {
 import { getClientProperties, updateProperty, deleteProperty } from '@/lib/auth/actions'
 import { toast } from 'sonner'
 import { useUser } from '@/lib/auth/useUser'
+import { validatePostcode, validatePhone, validatePriceBounds } from '@/lib/validations/property'
 
 export default function ClientDashboard() {
   const { user } = useUser()
@@ -73,19 +74,29 @@ export default function ClientDashboard() {
     e.preventDefault()
     if (!editingProperty) return
 
-    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingProperty.clientEmail)
-    const phoneDigits = editingProperty.clientPhone.replace(/\D/g, "")
-    
     if (!editingProperty.clientName.trim()) {
       toast.error('Client name is required')
       return
     }
-    if (!isEmailValid) {
+    
+    if (!editingProperty.clientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingProperty.clientEmail)) {
       toast.error('Please enter a valid email address')
       return
     }
-    if (phoneDigits.length < 10) {
-      toast.error('Please enter a valid phone number (minimum 10 digits)')
+
+    if (!validatePostcode(editingProperty.postcode)) {
+      toast.error('Please enter a valid UK postcode (e.g., SW1A 1AA)')
+      return
+    }
+
+    if (!validatePhone(editingProperty.clientPhone)) {
+      toast.error('Please enter a valid phone number (must be at least 10 digits and only include numbers/symbols)')
+      return
+    }
+
+    const priceCheck = validatePriceBounds(editingProperty.intent, Number(editingProperty.budget))
+    if (!priceCheck.isValid) {
+      toast.error(priceCheck.error || 'Invalid price bounds')
       return
     }
 
@@ -143,7 +154,7 @@ export default function ClientDashboard() {
   }
 
   const formatBudget = (intent: string, amount: number) => {
-    if (intent === 'renting') {
+    if (intent === 'renting' || intent === 'letting') {
       return `£${amount.toLocaleString()} PCM`
     }
     if (amount >= 1000000) {
@@ -205,11 +216,11 @@ export default function ClientDashboard() {
                     <Badge className={
                       property.intent === 'selling' 
                         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 font-semibold px-3 py-1 text-xs capitalize'
-                        : property.intent === 'renting'
+                        : (property.intent === 'renting' || property.intent === 'letting')
                         ? 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-50 font-semibold px-3 py-1 text-xs capitalize'
                         : 'bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-50 font-semibold px-3 py-1 text-xs capitalize'
                     }>
-                      {property.intent === 'letting-selling' ? 'Letting & Selling' : property.intent}
+                      {property.intent === 'letting-selling' ? 'Letting & Selling' : property.intent === 'letting' ? 'Letting' : property.intent}
                     </Badge>
                     <span className="text-xs text-slate-400 flex items-center gap-1 font-medium">
                       <Calendar className="w-3.5 h-3.5" />
@@ -338,6 +349,7 @@ export default function ClientDashboard() {
                       </SelectTrigger>
                       <SelectContent className="bg-white">
                         <SelectItem value="renting">Renting</SelectItem>
+                        <SelectItem value="letting">Letting</SelectItem>
                         <SelectItem value="selling">Selling</SelectItem>
                         <SelectItem value="letting-selling">Letting & Selling</SelectItem>
                       </SelectContent>
@@ -458,7 +470,12 @@ export default function ClientDashboard() {
                       type="text"
                       className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 h-11"
                       value={editingProperty.clientPhone}
-                      onChange={(e) => setEditingProperty({ ...editingProperty, clientPhone: e.target.value })}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (/^[0-9+\s-()]*$/.test(val)) {
+                          setEditingProperty({ ...editingProperty, clientPhone: val });
+                        }
+                      }}
                       required
                     />
                   </div>

@@ -12,6 +12,7 @@ import crypto from 'crypto'
 import { cookies } from 'next/headers'
 import fs from 'fs'
 import path from 'path'
+import { validatePostcode, validatePhone, validatePriceBounds } from '@/lib/validations/property'
 
 export async function signUp(formData: {
   email: string
@@ -88,65 +89,95 @@ export async function signUp(formData: {
 
       if (formData.userType === 'client') {
         console.log('📝 Creating client profile for:', formData.email)
-        const { data: insertData, error: insertError } = await supabaseAdmin.from('clients').insert({
-          user_id: data.user.id,
-          full_name: formData.fullName,
-          email: formData.email,
-          phone: formData.phone || null,
-        }).select()
-        
-        if (insertError) {
-          if (insertError.code === '23505') {
-            console.log('✅ Client profile already exists (created by database trigger)')
-          } else {
-            console.error('❌ Error creating client profile:', insertError)
-            return { error: `Failed to create profile: ${insertError.message}` }
-          }
+        const { data: existingClient } = await supabaseAdmin
+          .from('clients')
+          .select('id')
+          .eq('user_id', data.user.id)
+          .maybeSingle()
+
+        if (existingClient) {
+          console.log('✅ Client profile already exists (created by database trigger)')
         } else {
-          console.log('✅ Client profile created manually:', insertData)
+          const { data: insertData, error: insertError } = await supabaseAdmin.from('clients').insert({
+            user_id: data.user.id,
+            full_name: formData.fullName,
+            email: formData.email,
+            phone: formData.phone || null,
+          }).select()
+          
+          if (insertError) {
+            if (insertError.code === '23505' || insertError.message.includes('unique constraint')) {
+              console.log('✅ Client profile already exists (raced trigger constraint)')
+            } else {
+              console.error('❌ Error creating client profile:', insertError)
+              return { error: `Failed to create profile: ${insertError.message}` }
+            }
+          } else {
+            console.log('✅ Client profile created manually:', insertData)
+          }
         }
       } else if (formData.userType === 'agent') {
         console.log('📝 Creating agent profile for:', formData.email)
-        const { data: insertData, error: insertError } = await supabaseAdmin.from('agents').insert({
-          user_id: data.user.id,
-          full_name: formData.fullName,
-          email: formData.email,
-          phone: formData.phone || null,
-          agency_name: formData.agencyName || null,
-          license_number: formData.licenseNumber || null,
-          area_of_operation: formData.areaOfOperation || null,
-          years_experience: formData.yearsExperience || null,
-        }).select()
-        
-        if (insertError) {
-          if (insertError.code === '23505') {
-            console.log('✅ Agent profile already exists (created by database trigger)')
-          } else {
-            console.error('❌ Error creating agent profile:', insertError)
-            return { error: `Failed to create profile: ${insertError.message}` }
-          }
+        const { data: existingAgent } = await supabaseAdmin
+          .from('agents')
+          .select('id')
+          .eq('user_id', data.user.id)
+          .maybeSingle()
+
+        if (existingAgent) {
+          console.log('✅ Agent profile already exists (created by database trigger)')
         } else {
-          console.log('✅ Agent profile created manually:', insertData)
+          const { data: insertData, error: insertError } = await supabaseAdmin.from('agents').insert({
+            user_id: data.user.id,
+            full_name: formData.fullName,
+            email: formData.email,
+            phone: formData.phone || null,
+            agency_name: formData.agencyName || null,
+            license_number: formData.licenseNumber || null,
+            area_of_operation: formData.areaOfOperation || null,
+            years_experience: formData.yearsExperience || null,
+          }).select()
+          
+          if (insertError) {
+            if (insertError.code === '23505' || insertError.message.includes('unique constraint')) {
+              console.log('✅ Agent profile already exists (raced trigger constraint)')
+            } else {
+              console.error('❌ Error creating agent profile:', insertError)
+              return { error: `Failed to create profile: ${insertError.message}` }
+            }
+          } else {
+            console.log('✅ Agent profile created manually:', insertData)
+          }
         }
       } else if (formData.userType === 'admin' || formData.userType === 'semi-admin') {
         console.log('📝 Creating staff profile for:', formData.email)
-        const { data: insertData, error: insertError } = await supabaseAdmin.from('staff').insert({
-          user_id: data.user.id,
-          full_name: formData.fullName,
-          email: formData.email,
-          phone: formData.phone || null,
-          role: formData.userType,
-        }).select()
-        
-        if (insertError) {
-          if (insertError.code === '23505') {
-            console.log('✅ Staff profile already exists (created by database trigger)')
-          } else {
-            console.error('❌ Error creating staff profile:', insertError)
-            return { error: `Failed to create profile: ${insertError.message}` }
-          }
+        const { data: existingStaff } = await supabaseAdmin
+          .from('staff')
+          .select('id')
+          .eq('user_id', data.user.id)
+          .maybeSingle()
+
+        if (existingStaff) {
+          console.log('✅ Staff profile already exists (created by database trigger)')
         } else {
-          console.log('✅ Staff profile created manually:', insertData)
+          const { data: insertData, error: insertError } = await supabaseAdmin.from('staff').insert({
+            user_id: data.user.id,
+            full_name: formData.fullName,
+            email: formData.email,
+            phone: formData.phone || null,
+            role: formData.userType,
+          }).select()
+          
+          if (insertError) {
+            if (insertError.code === '23505' || insertError.message.includes('unique constraint')) {
+              console.log('✅ Staff profile already exists (raced trigger constraint)')
+            } else {
+              console.error('❌ Error creating staff profile:', insertError)
+              return { error: `Failed to create profile: ${insertError.message}` }
+            }
+          } else {
+            console.log('✅ Staff profile created manually:', insertData)
+          }
         }
       }
     } catch (profileError) {
@@ -349,6 +380,14 @@ export async function send2faOtp(userId: string, email: string) {
     return { error: 'Failed to generate 2FA code' }
   }
 
+  // Set cookie storing the expiry time for the frontend countdown timer
+  try {
+    const cookieStore = await cookies()
+    cookieStore.set('otp_expires_at', expiresAt.toISOString(), { maxAge: 600, httpOnly: false, path: '/' })
+  } catch (cookieErr) {
+    console.error('Failed to set otp_expires_at cookie:', cookieErr)
+  }
+
   // Send the email
   const emailResult = await sendEmail({
     to: email,
@@ -526,7 +565,11 @@ export async function resend2faOtp() {
 export async function resetPasswordForEmail(email: string) {
   const supabase = await createSupabaseServerClient()
   
-  const redirectTo = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`
+  let siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  if (process.env.VERCEL_URL && (siteUrl.includes('localhost') || !siteUrl)) {
+    siteUrl = `https://${process.env.VERCEL_URL}`
+  }
+  const redirectTo = `${siteUrl}/auth/callback`
   
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo,
@@ -700,11 +743,11 @@ export async function submitProperty(payload: {
   }
 
   // Server-side validation
-  if (!payload.intent || !['renting', 'selling', 'letting-selling'].includes(payload.intent)) {
+  if (!payload.intent || !['renting', 'selling', 'letting', 'letting-selling'].includes(payload.intent)) {
     return { error: 'Invalid property intent' }
   }
-  if (!payload.postcode || payload.postcode.trim().length < 3) {
-    return { error: 'Invalid postcode (minimum 3 characters)' }
+  if (!validatePostcode(payload.postcode)) {
+    return { error: 'Invalid UK postcode format' }
   }
   if (!payload.propertyType || payload.propertyType.trim().length === 0) {
     return { error: 'Property type is required' }
@@ -712,8 +755,9 @@ export async function submitProperty(payload: {
   if (!payload.bedroomCount || payload.bedroomCount.trim().length === 0) {
     return { error: 'Bedroom count is required' }
   }
-  if (typeof payload.budget !== 'number' || payload.budget <= 0) {
-    return { error: 'Invalid budget or property value' }
+  const priceCheck = validatePriceBounds(payload.intent, payload.budget)
+  if (!priceCheck.isValid) {
+    return { error: priceCheck.error }
   }
   if (!payload.timeline || payload.timeline.trim().length === 0) {
     return { error: 'Timeline is required' }
@@ -724,10 +768,8 @@ export async function submitProperty(payload: {
   if (!payload.clientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.clientEmail)) {
     return { error: 'Invalid email address format' }
   }
-  const cleanPhone = payload.clientPhone.replace(/[\s-]/g, "")
-  const digitsOnly = cleanPhone.replace(/\D/g, "")
-  if (digitsOnly.length < 10) {
-    return { error: 'Invalid phone number (minimum 10 digits required)' }
+  if (!validatePhone(payload.clientPhone)) {
+    return { error: 'Invalid phone number. Must contain at least 10 digits and only numbers/phone symbols.' }
   }
 
   const { data, error } = await supabase
@@ -795,11 +837,11 @@ export async function updateProperty(id: string, payload: {
   }
 
   // Server-side validation
-  if (!payload.intent || !['renting', 'selling', 'letting-selling'].includes(payload.intent)) {
+  if (!payload.intent || !['renting', 'selling', 'letting', 'letting-selling'].includes(payload.intent)) {
     return { error: 'Invalid property intent' }
   }
-  if (!payload.postcode || payload.postcode.trim().length < 3) {
-    return { error: 'Invalid postcode (minimum 3 characters)' }
+  if (!validatePostcode(payload.postcode)) {
+    return { error: 'Invalid UK postcode format' }
   }
   if (!payload.propertyType || payload.propertyType.trim().length === 0) {
     return { error: 'Property type is required' }
@@ -807,8 +849,9 @@ export async function updateProperty(id: string, payload: {
   if (!payload.bedroomCount || payload.bedroomCount.trim().length === 0) {
     return { error: 'Bedroom count is required' }
   }
-  if (typeof payload.budget !== 'number' || payload.budget <= 0) {
-    return { error: 'Invalid budget or property value' }
+  const priceCheck = validatePriceBounds(payload.intent, payload.budget)
+  if (!priceCheck.isValid) {
+    return { error: priceCheck.error }
   }
   if (!payload.timeline || payload.timeline.trim().length === 0) {
     return { error: 'Timeline is required' }
@@ -819,10 +862,8 @@ export async function updateProperty(id: string, payload: {
   if (!payload.clientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.clientEmail)) {
     return { error: 'Invalid email address format' }
   }
-  const cleanPhone = payload.clientPhone.replace(/[\s-]/g, "")
-  const digitsOnly = cleanPhone.replace(/\D/g, "")
-  if (digitsOnly.length < 10) {
-    return { error: 'Invalid phone number (minimum 10 digits required)' }
+  if (!validatePhone(payload.clientPhone)) {
+    return { error: 'Invalid phone number. Must contain at least 10 digits and only numbers/phone symbols.' }
   }
 
   const { data, error } = await supabase

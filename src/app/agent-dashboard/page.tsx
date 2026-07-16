@@ -557,14 +557,14 @@ export default function AgentDashboard() {
                               <div className="flex items-center gap-2 mb-1">
                                 <p className="font-semibold text-slate-800 truncate">{lead.client_name}</p>
                                 <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-xs px-2 font-medium capitalize shrink-0">
-                                  {lead.intent === 'letting-selling' ? 'Letting & Selling' : lead.intent}
+                                  {lead.intent === 'letting-selling' ? 'Letting & Selling' : lead.intent === 'letting' ? 'Letting' : lead.intent}
                                 </Badge>
                               </div>
                               <p className="text-sm text-gray-600 truncate">
                                 {lead.bedroom_count} {lead.property_type} in {lead.postcode}
                               </p>
                               <p className="text-xs text-gray-500 mt-1">
-                                Budget/Value: {lead.intent === 'renting' ? `£${lead.budget.toLocaleString()} PCM` : `£${lead.budget.toLocaleString()}`}
+                                Budget/Value: {(lead.intent === 'renting' || lead.intent === 'letting') ? `£${lead.budget.toLocaleString()} PCM` : `£${lead.budget.toLocaleString()}`}
                               </p>
                             </div>
                             <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 flex-shrink-0 capitalize px-2 font-semibold">
@@ -706,16 +706,18 @@ export default function AgentDashboard() {
                                 </td>
                                 <td className="p-3">
                                   <p className="text-sm font-bold text-slate-900">
-                                    {lead.intent === 'renting' ? `£${lead.budget.toLocaleString()} PCM` : `£${lead.budget.toLocaleString()}`}
+                                    {(lead.intent === 'renting' || lead.intent === 'letting') ? `£${lead.budget.toLocaleString()} PCM` : `£${lead.budget.toLocaleString()}`}
                                   </p>
                                 </td>
                                 <td className="p-3">
                                   <Badge className={
                                     lead.intent === 'selling' 
                                       ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                                      : 'bg-blue-50 text-blue-700 border border-blue-200'
+                                      : (lead.intent === 'renting' || lead.intent === 'letting')
+                                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                      : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
                                   }>
-                                    {lead.intent === 'letting-selling' ? 'Letting & Selling' : lead.intent}
+                                    {lead.intent === 'letting-selling' ? 'Letting & Selling' : lead.intent === 'letting' ? 'Letting' : lead.intent}
                                   </Badge>
                                 </td>
                                 <td className="p-3">

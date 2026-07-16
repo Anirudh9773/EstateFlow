@@ -119,7 +119,15 @@ export default function SimpleAgentSignUpForm() {
 
       {serverError && (
         <Alert variant="destructive" className="py-2">
-          <AlertDescription className="text-xs">{serverError}</AlertDescription>
+          <AlertDescription className="text-xs">
+            {serverError.toLowerCase().includes('already registered') || serverError.toLowerCase().includes('already exists') ? (
+              <span>
+                An account with this email already exists. <Link href={`/sign-in?email=${encodeURIComponent(watch('email') || '')}`} className="underline font-semibold text-navy hover:text-navy/80">Sign in instead</Link>.
+              </span>
+            ) : (
+              serverError
+            )}
+          </AlertDescription>
         </Alert>
       )}
 

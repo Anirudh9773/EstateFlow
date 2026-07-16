@@ -23,6 +23,17 @@ export default function SignInPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
 
+  // Read email from search params to pre-fill if redirected from signup
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      const emailParam = params.get("email")
+      if (emailParam) {
+        setEmail(emailParam)
+      }
+    }
+  }, [])
+
   // Reset loading states when page is shown (handles back-forward cache restores)
   useEffect(() => {
     const handlePageShow = () => {
