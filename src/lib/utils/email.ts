@@ -25,18 +25,24 @@ export async function sendEmail({
   console.log(`To: ${to}`);
   console.log(`Subject: ${subject}`);
   
+  const isDev = process.env.NODE_ENV === 'development' || 
+                process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost') || 
+                process.env.ENABLE_DEV_OTP === 'true';
+
   if (code) {
     console.log(`🔑 Verification Code: ${code}`);
-    try {
-      const otpFile = path.join(process.cwd(), 'scratch', 'last_otp.txt')
-      const dir = path.dirname(otpFile)
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true })
+    if (isDev) {
+      try {
+        const otpFile = path.join(process.cwd(), 'scratch', 'last_otp.txt')
+        const dir = path.dirname(otpFile)
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true })
+        }
+        fs.writeFileSync(otpFile, code)
+        console.log(`💾 Saved OTP code to: ${otpFile}`)
+      } catch (e) {
+        console.error('Failed to write last_otp.txt:', e)
       }
-      fs.writeFileSync(otpFile, code)
-      console.log(`💾 Saved OTP code to: ${otpFile}`)
-    } catch (e) {
-      console.error('Failed to write last_otp.txt:', e)
     }
   } else {
     // Fallback: extract 6-digit OTP code if present

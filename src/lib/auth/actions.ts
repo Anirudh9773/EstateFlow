@@ -385,7 +385,7 @@ export async function send2faOtp(userId: string, email: string) {
   if (isDev) {
     try {
       const cookieStore = await cookies()
-      cookieStore.set('dev_last_otp', otp, { maxAge: 600, httpOnly: false }) // httpOnly: false allows client-side reading
+      cookieStore.set('dev_last_otp', otp, { maxAge: 600, httpOnly: false, path: '/' }) // httpOnly: false allows client-side reading
     } catch (cookieErr) {
       console.error('Failed to set dev_last_otp cookie:', cookieErr)
     }
@@ -577,27 +577,33 @@ export async function isSession2faVerified() {
     }
   }
 
-  // Write debug log
-  try {
-    const logDir = path.join(process.cwd(), 'scratch')
-    if (!fs.existsSync(logDir)) {
-      fs.mkdirSync(logDir, { recursive: true })
+  // Write debug log in dev/testing environments only
+  const isDevEnv = process.env.NODE_ENV === 'development' || 
+                   process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost') || 
+                   process.env.ENABLE_DEV_OTP === 'true';
+
+  if (isDevEnv) {
+    try {
+      const logDir = path.join(process.cwd(), 'scratch')
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true })
+      }
+      fs.appendFileSync(
+        path.join(logDir, 'debug.log'),
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          hasSession: !!session,
+          email: session?.user?.email,
+          amr,
+          sid,
+          isPasswordLogin,
+          isVerified,
+          rememberTokenPresent: !!rememberToken,
+        }, null, 2) + '\n'
+      )
+    } catch (err) {
+      console.error('Failed to write debug log:', err)
     }
-    fs.appendFileSync(
-      path.join(logDir, 'debug.log'),
-      JSON.stringify({
-        timestamp: new Date().toISOString(),
-        hasSession: !!session,
-        email: session?.user?.email,
-        amr,
-        sid,
-        isPasswordLogin,
-        isVerified,
-        rememberTokenPresent: !!rememberToken,
-      }, null, 2) + '\n'
-    )
-  } catch (err) {
-    console.error('Failed to write debug log:', err)
   }
   
   if (!session) return false
