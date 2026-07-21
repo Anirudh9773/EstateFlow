@@ -54,35 +54,66 @@ export async function sendEmail({
   
   console.log(`==================================================\n`);
 
-  // 1. Check if Gmail SMTP credentials are provided
+  // 1. Check if SMTP credentials are provided
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpPort = process.env.SMTP_PORT;
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASS;
 
+  console.log('🔍 Email dispatch config check:', {
+    hasSmtpHost: !!smtpHost,
+    hasSmtpPort: !!smtpPort,
+    hasSmtpUser: !!smtpUser,
+    hasSmtpPass: !!smtpPass,
+    hasResendKey: !!process.env.RESEND_API_KEY,
+  });
+
   if (smtpUser && smtpPass) {
     try {
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
-      });
+      const secure = process.env.SMTP_SECURE === 'true' || 
+                     (smtpPort ? Number(smtpPort) === 465 : false);
+
+      const transportConfig: any = smtpHost
+        ? {
+            host: smtpHost,
+            port: Number(smtpPort || 587),
+            secure,
+            auth: {
+              user: smtpUser,
+              pass: smtpPass,
+            },
+            tls: {
+              rejectUnauthorized: false,
+            },
+          }
+        : {
+            service: 'gmail',
+            auth: {
+              user: smtpUser,
+              pass: smtpPass,
+            },
+          };
+
+      const transporter = nodemailer.createTransport(transportConfig);
+
+      const fromEmail = process.env.SMTP_FROM || smtpUser;
+      const fromName = process.env.SMTP_FROM_NAME || 'EstateFlow';
 
       await transporter.sendMail({
-        from: `"EstateFlow" <${smtpUser}>`,
+        from: `"${fromName}" <${fromEmail}>`,
         to,
         subject,
         html,
       });
 
-      console.log('✅ Real email sent successfully via Gmail SMTP');
+      console.log(`✅ Real email sent successfully via ${smtpHost ? 'Custom SMTP' : 'Gmail SMTP'}`);
       return { success: true };
     } catch (e) {
-      console.error('❌ Exception occurred during Gmail SMTP call:', e);
+      console.error('❌ Exception occurred during SMTP dispatch:', e);
       if (process.env.RESEND_API_KEY) {
-        console.log('🔄 Gmail SMTP failed. Falling back to Resend API...');
+        console.log('🔄 SMTP failed. Falling back to Resend API...');
       } else {
-        const message = e instanceof Error ? e.message : 'Gmail SMTP error';
+        const message = e instanceof Error ? e.message : 'SMTP error';
         return { success: false, error: message };
       }
     }
