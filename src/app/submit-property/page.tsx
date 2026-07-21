@@ -174,50 +174,56 @@ export default function SubmitPropertyPage() {
             </div>
           </div>
 
-          {/* Bottom navigation - Only show for steps 2-5, but no Next button on Step 5 */}
-          {currentStep !== 1 && (
-            <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 px-8 md:px-12">
-              {/* Show Back button on steps 2-5 */}
-              {currentStep !== 1 && (
-                <Button
-                  nativeButton={true}
-                  variant="outline"
-                  size="lg"
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className="w-36 flex items-center justify-center gap-2 border-slate-300 text-slate-700 hover:bg-slate-50"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  Back
-                </Button>
-              )}
+          {/* Bottom navigation */}
+          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 px-8 md:px-12">
+            {/* Show Cancel button on step 1, Back button on steps 2-5 */}
+            {currentStep === 1 ? (
+              <Button
+                nativeButton={true}
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  window.location.href = '/client-dashboard'
+                }}
+                className="w-36 flex items-center justify-center gap-2 border-slate-300 text-slate-700 hover:bg-slate-50"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Cancel
+              </Button>
+            ) : (
+              <Button
+                nativeButton={true}
+                variant="outline"
+                size="lg"
+                onClick={prevStep}
+                className="w-36 flex items-center justify-center gap-2 border-slate-300 text-slate-700 hover:bg-slate-50"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Back
+              </Button>
+            )}
 
-              {/* Only show Next button on steps 2-4, not on Step 5 */}
-              {currentStep < 5 && (
-                <Button
-                  nativeButton={true}
-                  size="lg"
-                  onClick={nextStep}
-                  disabled={
-                    (currentStep === 2 && formData.intent === "renting" && (!formData.desiredPostcode.trim() || !validatePostcode(formData.desiredPostcode))) ||
-                    (currentStep === 2 && (formData.intent === "selling" || formData.intent === "letting") && (!formData.propertyPostcode.trim() || !validatePostcode(formData.propertyPostcode))) ||
-                    (currentStep === 2 && formData.intent === "letting-selling" && (
-                      !formData.desiredPostcode.trim() || !validatePostcode(formData.desiredPostcode) ||
-                      !formData.propertyPostcode.trim() || !validatePostcode(formData.propertyPostcode)
-                    )) ||
-                    (currentStep === 3 && formData.propertyTypes.length === 0) ||
-                    (currentStep === 3 && formData.bedroomCounts.length === 0) ||
-                    (currentStep === 4 && formData.intent === "selling" && formData.saleTimeline.length === 0) ||
-                    (currentStep === 4 && formData.intent === "letting" && formData.saleTimeline.length === 0) ||
-                    (currentStep === 4 && formData.intent === "letting-selling" && formData.saleTimeline.length === 0)
-                  }
-                  className="bg-green-700 hover:bg-green-800 text-white w-36 flex items-center justify-center"
-                >
-                  Next
-                </Button>
-              )}
-            </div>
-          )}
+            {/* Only show Next button on steps 2-4, not on Step 1 or Step 5 */}
+            {currentStep > 1 && currentStep < 5 && (
+              <Button
+                nativeButton={true}
+                size="lg"
+                onClick={nextStep}
+                disabled={
+                  (currentStep === 2 && formData.intent === "renting" && (!formData.desiredPostcode.trim() || !validatePostcode(formData.desiredPostcode))) ||
+                  (currentStep === 2 && (formData.intent === "selling" || formData.intent === "letting" || formData.intent === "letting-selling") && (!formData.propertyPostcode.trim() || !validatePostcode(formData.propertyPostcode))) ||
+                  (currentStep === 3 && formData.propertyTypes.length === 0) ||
+                  (currentStep === 3 && formData.bedroomCounts.length === 0) ||
+                  (currentStep === 4 && formData.intent === "selling" && formData.saleTimeline.length === 0) ||
+                  (currentStep === 4 && formData.intent === "letting" && formData.saleTimeline.length === 0) ||
+                  (currentStep === 4 && formData.intent === "letting-selling" && formData.saleTimeline.length === 0)
+                }
+                className="bg-green-700 hover:bg-green-800 text-white w-36 flex items-center justify-center"
+              >
+                Next
+              </Button>
+            )}
+          </div>
         </Card>
       </div>
     </div>
@@ -308,7 +314,7 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
         )}
       </div>
     )
-  } else if (formData.intent === "selling" || formData.intent === "letting") {
+  } else if (formData.intent === "selling" || formData.intent === "letting" || formData.intent === "letting-selling") {
     return (
       <div className="space-y-6">
         <div className="text-sm text-gray-500 mt-6">
@@ -327,49 +333,6 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
         {!isPropertyValid && (
           <p className="text-xs text-red-600 mt-1">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
         )}
-      </div>
-    )
-  } else if (formData.intent === "letting-selling") {
-    // Letting & Selling - Show both sections
-    return (
-      <div className="space-y-8">
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Letting Details</h3>
-          <div className="text-sm text-gray-500 mb-2">
-            Desired postcode for rental:
-          </div>
-          <Input
-            placeholder="Enter desired postcode (e.g., SW1A 1AA)"
-            value={formData.desiredPostcode}
-            onChange={e => update("desiredPostcode", e.target.value)}
-            className={cn(
-              "h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy mb-4",
-              !isDesiredValid && "border-red-500 focus:border-red-500 focus:ring-red-200"
-            )}
-          />
-          {!isDesiredValid && (
-            <p className="text-xs text-red-600 mt-1 mb-3">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
-          )}
-        </div>
-        
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Selling Details</h3>
-          <div className="text-sm text-gray-500 mb-2">
-            Property postcode to sell:
-          </div>
-          <Input
-            placeholder="Enter property postcode (e.g., SW1A 1AA)"
-            value={formData.propertyPostcode}
-            onChange={e => update("propertyPostcode", e.target.value)}
-            className={cn(
-              "h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
-              !isPropertyValid && "border-red-500 focus:border-red-500 focus:ring-red-200"
-            )}
-          />
-          {!isPropertyValid && (
-            <p className="text-xs text-red-600 mt-1">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
-          )}
-        </div>
       </div>
     )
   } else {
@@ -434,7 +397,7 @@ function Step3({ formData, update, nextStep, prevStep }: any) {
         </div>
       </div>
     )
-  } else if (formData.intent === "selling" || formData.intent === "letting") {
+  } else if (formData.intent === "selling" || formData.intent === "letting" || formData.intent === "letting-selling") {
     return (
       <div className="space-y-8">
         <div>
@@ -476,105 +439,6 @@ function Step3({ formData, update, nextStep, prevStep }: any) {
                 {count}
               </Button>
             ))}
-          </div>
-        </div>
-      </div>
-    )
-  } else if (formData.intent === "letting-selling") {
-    // Letting & Selling - Show both sections
-    return (
-      <div className="space-y-8">
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Letting Details</h3>
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-base font-medium text-gray-700 mb-3">Property Type</h4>
-              <div className="grid grid-cols-2 gap-3">
-                {propertyTypes.map((type) => (
-                  <Button
-                    key={`letting-${type}`}
-                    variant="outline"
-                    onClick={() => update("propertyTypes", [type])}
-                    className={cn(
-                      "h-12 text-sm font-medium transition-all",
-                      formData.propertyTypes.includes(type)
-                        ? "border-2 border-green-700 text-green-700 bg-green-50"
-                        : "border-gray-200 text-gray-700 hover:border-green-400"
-                    )}
-                  >
-                    {type}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-base font-medium text-gray-700 mb-3">Number of Bedrooms</h4>
-              <div className="grid grid-cols-2 gap-3">
-                {bedroomCounts.map((count) => (
-                  <Button
-                    key={`letting-${count}`}
-                    variant="outline"
-                    onClick={() => update("bedroomCounts", [count])}
-                    className={cn(
-                      "h-12 text-sm font-medium transition-all",
-                      formData.bedroomCounts.includes(count)
-                        ? "border-2 border-green-700 text-green-700 bg-green-50"
-                        : "border-gray-200 text-gray-700 hover:border-green-400"
-                    )}
-                  >
-                    {count}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Selling Details</h3>
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-base font-medium text-gray-700 mb-3">Property Type</h4>
-              <div className="grid grid-cols-2 gap-3">
-                {propertyTypes.map((type) => (
-                  <Button
-                    key={`selling-${type}`}
-                    variant="outline"
-                    onClick={() => update("propertyTypes", [type])}
-                    className={cn(
-                      "h-12 text-sm font-medium transition-all",
-                      formData.propertyTypes.includes(type)
-                        ? "border-2 border-green-700 text-green-700 bg-green-50"
-                        : "border-gray-200 text-gray-700 hover:border-green-400"
-                    )}
-                  >
-                    {type}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-base font-medium text-gray-700 mb-3">Number of Bedrooms</h4>
-              <div className="grid grid-cols-2 gap-3">
-                {bedroomCounts.map((count) => (
-                  <Button
-                    key={`selling-${count}`}
-                    variant="outline"
-                    onClick={() => update("bedroomCounts", [count])}
-                    className={cn(
-                      "h-12 text-sm font-medium transition-all",
-                      formData.bedroomCounts.includes(count)
-                        ? "border-2 border-green-700 text-green-700 bg-green-50"
-                        : "border-gray-200 text-gray-700 hover:border-green-400"
-                    )}
-                  >
-                    {count}
-                  </Button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>

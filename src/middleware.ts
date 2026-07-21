@@ -32,8 +32,10 @@ export async function middleware(request: NextRequest) {
   // 1. Redirect to sign-in if not authenticated and accessing protected routes or verify-2fa
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin-dashboard')
   const isAgentRoute = request.nextUrl.pathname.startsWith('/agent-dashboard')
+  const isClientRoute = request.nextUrl.pathname.startsWith('/client-dashboard')
   const isProtectedRoute =
     isAgentRoute ||
+    isClientRoute ||
     request.nextUrl.pathname.startsWith('/submit-property') ||
     isAdminRoute
 
@@ -74,6 +76,15 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(dest, request.url))
     }
 
+    if (isClientRoute && userType !== 'client') {
+      const dest = (userType === 'admin' || userType === 'semi-admin')
+        ? '/admin-dashboard'
+        : userType === 'agent'
+        ? '/agent-dashboard'
+        : '/'
+      return NextResponse.redirect(new URL(dest, request.url))
+    }
+
     let isVerified = true
     if (isPasswordLogin && sid) {
       const { isUser2faVerified } = await import('@/lib/auth/twoFactor')
@@ -105,6 +116,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/agent-dashboard/:path*',
+    '/client-dashboard/:path*',
     '/submit-property/:path*',
     '/admin-dashboard/:path*',
     '/sign-in',

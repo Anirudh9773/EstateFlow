@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Mail, Lock, Phone, MapPin } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -20,7 +21,7 @@ const contactInfo = [
     icon: Phone,
     title: 'Call Us',
     value: '0800 123 4567',
-    description: 'Mon–Fri, 9am–6pm GMT',
+    description: 'Mon–Fri, 9am–6pm GMT', // fallback
     href: 'tel:08001234567',
   },
   {
@@ -33,10 +34,31 @@ const contactInfo = [
 ];
 
 export default function ContactInfoCards() {
+  const [timezone, setTimezone] = useState('GMT');
+
+  useEffect(() => {
+    try {
+      const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/London',
+        timeZoneName: 'short'
+      }).formatToParts(new Date());
+      const tzPart = parts.find(part => part.type === 'timeZoneName');
+      if (tzPart) {
+        setTimezone(tzPart.value);
+      }
+    } catch (e) {
+      setTimezone('GMT/BST');
+    }
+  }, []);
+
   return (
     <div className="space-y-3 sm:space-y-4">
       {contactInfo.map((info, index) => {
         const Icon = info.icon;
+        const displayDescription = info.title === 'Call Us' 
+          ? `Mon–Fri, 9am–6pm ${timezone}` 
+          : info.description;
+
         const content = (
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-3 sm:gap-4">
@@ -52,7 +74,7 @@ export default function ContactInfoCards() {
                 <p className="text-sm sm:text-base font-semibold text-slate-900 mb-0.5 break-words">
                   {info.value}
                 </p>
-                <p className="text-[11px] sm:text-xs text-slate-600">{info.description}</p>
+                <p className="text-[11px] sm:text-xs text-slate-600">{displayDescription}</p>
                 {info.subDescription && (
                   <p className="text-[10px] text-slate-500 mt-0.5">{info.subDescription}</p>
                 )}

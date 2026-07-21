@@ -279,7 +279,7 @@ export default function PricingPage() {
             <p className="text-[var(--color-text-secondary)] text-lg max-w-2xl mx-auto mb-8">
               Grow your business with qualified leads and powerful tools
             </p>
-            <Link href={ROUTES.pricing}>
+            <Link href="/agent-pricing">
               <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-6">
                 View Detailed Agent Pricing <ArrowRight className="ml-2 h-4 w-4" />
               </Button>

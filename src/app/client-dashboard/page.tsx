@@ -29,10 +29,12 @@ import { useUser } from '@/lib/auth/useUser'
 import { validatePostcode, validatePhone, validatePriceBounds } from '@/lib/validations/property'
 
 export default function ClientDashboard() {
-  const { user } = useUser()
+  const { user, loading: authLoading } = useUser()
   const [properties, setProperties] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
+
+  const isCurrentlyLoading = loading || authLoading
   
   // CRUD states
   const [editingProperty, setEditingProperty] = useState<any | null>(null)
@@ -56,10 +58,14 @@ export default function ClientDashboard() {
   }
 
   useEffect(() => {
-    if (user) {
-      fetchProperties()
+    if (!authLoading) {
+      if (user) {
+        fetchProperties()
+      } else {
+        window.location.href = '/sign-in'
+      }
     }
-  }, [user])
+  }, [user, authLoading])
 
   const handleEditClick = (property: any) => {
     setEditingProperty({
@@ -185,7 +191,7 @@ export default function ClientDashboard() {
         </div>
 
         {/* Dashboard Content */}
-        {loading ? (
+        {isCurrentlyLoading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="w-10 h-10 text-amber-500 animate-spin" />
             <p className="text-slate-500 font-medium">Loading your dashboard...</p>
