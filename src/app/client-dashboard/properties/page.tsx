@@ -47,7 +47,7 @@ export default function ClientPropertiesPage() {
     } catch (err) {
       console.error('Error fetching properties:', err)
       toast.error('An error occurred while loading your properties')
-    } font-medium: finally {
+    } finally {
       setLoading(false)
     }
   }
