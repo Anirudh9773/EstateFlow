@@ -32,9 +32,11 @@ import {
   Loader2
 } from 'lucide-react'
 import { getInitials } from '@/lib/utils/getInitials'
+import { useRouter } from 'next/navigation'
 import { useUser } from '@/lib/auth/useUser'
 import { createSupabaseClient } from '@/lib/supabaseClient'
 import { syncAgentRatings } from '@/lib/agents/ratings'
+import { validatePhone } from '@/lib/validations/property'
 import { toast } from 'sonner'
 import { RefreshCw } from 'lucide-react'
 
@@ -178,6 +180,7 @@ const stats = [
 ]
 
 export default function AgentDashboard() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('overview')
   const [searchTerm, setSearchTerm] = useState('')
   const { user } = useUser() // Get actual logged-in user
@@ -276,17 +279,61 @@ export default function AgentDashboard() {
     if (!profile) return
     setSavingSettings(true)
 
+    // Validation Checks
+    if (!fullName || !fullName.trim()) {
+      toast.error('Full name is required')
+      setSavingSettings(false)
+      return
+    }
+
+    if (phone && phone.trim() !== '' && !validatePhone(phone)) {
+      toast.error('Please enter a valid phone number (minimum 10 digits)')
+      setSavingSettings(false)
+      return
+    }
+
+    const checkRating = (val: string, name: string) => {
+      if (val !== '') {
+        const num = parseFloat(val)
+        if (isNaN(num) || num < 0 || num > 5) {
+          toast.error(`${name} rating score must be between 0.0 and 5.0`)
+          return false
+        }
+      }
+      return true
+    }
+
+    const checkReviewCount = (val: string, name: string) => {
+      if (val !== '') {
+        const num = Number(val)
+        if (isNaN(num) || num < 0 || !Number.isInteger(num)) {
+          toast.error(`${name} review count must be a non-negative whole number`)
+          return false
+        }
+      }
+      return true
+    }
+
+    if (!checkRating(trustpilotRating, 'Trustpilot')) return setSavingSettings(false)
+    if (!checkReviewCount(trustpilotReviewCount, 'Trustpilot')) return setSavingSettings(false)
+
+    if (!checkRating(allagentsRating, 'allAgents')) return setSavingSettings(false)
+    if (!checkReviewCount(allagentsReviewCount, 'allAgents')) return setSavingSettings(false)
+
+    if (!checkRating(googleRating, 'Google')) return setSavingSettings(false)
+    if (!checkReviewCount(googleReviewCount, 'Google')) return setSavingSettings(false)
+
     try {
       const supabase = createSupabaseClient()
       
       const updates = {
-        full_name: fullName,
-        agency_name: agencyName,
-        phone: phone || null,
-        bio: bio || null,
-        trustpilot_username: trustpilotUsername || null,
-        allagents_username: allagentsUsername || null,
-        google_place_id: googlePlaceId || null,
+        full_name: fullName.trim(),
+        agency_name: agencyName.trim() || null,
+        phone: phone.trim() || null,
+        bio: bio.trim() || null,
+        trustpilot_username: trustpilotUsername.trim() || null,
+        allagents_username: allagentsUsername.trim() || null,
+        google_place_id: googlePlaceId.trim() || null,
         
         // Convert input values to numbers or nulls
         trustpilot_rating: trustpilotRating !== '' ? parseFloat(trustpilotRating) : null,
@@ -757,7 +804,10 @@ export default function AgentDashboard() {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-900">Property Listings</h2>
-                <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90">
+                <Button 
+                  onClick={() => router.push('/submit-property')}
+                  className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 font-semibold"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Listing
                 </Button>
@@ -941,7 +991,12 @@ export default function AgentDashboard() {
                           <input
                             type="tel"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={(e) => {
+                              const val = e.target.value
+                              if (/^[0-9+\s-()]*$/.test(val)) {
+                                setPhone(val)
+                              }
+                            }}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]"
                           />
                         </div>
