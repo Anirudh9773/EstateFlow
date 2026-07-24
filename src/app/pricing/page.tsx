@@ -374,21 +374,19 @@ export default function PricingPage() {
             Join thousands of homeowners and agents who trust EstateFlow for their property needs.
           </p>
            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              render={<Link href="/submit-property" />}
-              nativeButton={false}
-              className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer"
-            >
-              Submit Your Property
-            </Button>
-            <Button 
-              render={<Link href="/sign-up/agent" />}
-              nativeButton={false}
-              variant="outline" 
-              className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-8 py-3 cursor-pointer"
-            >
-              Join as an Agent
-            </Button>
+            <Link href="/submit-property">
+              <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer">
+                Submit Your Property
+              </Button>
+            </Link>
+            <Link href="/sign-up/agent">
+              <Button 
+                variant="outline" 
+                className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-8 py-3 cursor-pointer"
+              >
+                Join as an Agent
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

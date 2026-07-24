@@ -467,21 +467,22 @@ export default function AgentPricingPage() {
             and connect with qualified leads.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              render={<Link href="/sign-up/agent" onClick={handleSelectPlan} />}
-              nativeButton={false}
-              className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-6 py-3 cursor-pointer"
-            >
-              Get Started Now
-            </Button>
-            <Button 
-              render={<Link href="/contact" />}
-              nativeButton={false}
-              variant="outline" 
-              className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-6 py-3 cursor-pointer"
-            >
-              Schedule Demo
-            </Button>
+            <Link href="/sign-up/agent">
+              <Button 
+                onClick={handleSelectPlan}
+                className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-6 py-3 cursor-pointer"
+              >
+                Get Started Now
+              </Button>
+            </Link>
+            <Link href="/contact">
+              <Button 
+                variant="outline" 
+                className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-6 py-3 cursor-pointer"
+              >
+                Schedule Demo
+              </Button>
+            </Link>
           </div>
           <p className="mt-4 text-sm opacity-75">
             Flexible monthly plans · Cancel anytime · No setup fees
