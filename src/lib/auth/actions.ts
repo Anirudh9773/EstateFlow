@@ -106,7 +106,8 @@ export async function signUp(formData: {
           }).select()
           
           if (insertError) {
-            if (insertError.code === '23505' || insertError.message.includes('unique constraint')) {
+            const errStr = (insertError.message || '').toLowerCase()
+            if (insertError.code === '23505' || errStr.includes('unique constraint') || errStr.includes('duplicate key')) {
               console.log('✅ Client profile already exists (raced trigger constraint)')
             } else {
               console.error('❌ Error creating client profile:', insertError)
@@ -139,7 +140,8 @@ export async function signUp(formData: {
           }).select()
           
           if (insertError) {
-            if (insertError.code === '23505' || insertError.message.includes('unique constraint')) {
+            const errStr = (insertError.message || '').toLowerCase()
+            if (insertError.code === '23505' || errStr.includes('unique constraint') || errStr.includes('duplicate key')) {
               console.log('✅ Agent profile already exists (raced trigger constraint)')
             } else {
               console.error('❌ Error creating agent profile:', insertError)
@@ -169,7 +171,8 @@ export async function signUp(formData: {
           }).select()
           
           if (insertError) {
-            if (insertError.code === '23505' || insertError.message.includes('unique constraint')) {
+            const errStr = (insertError.message || '').toLowerCase()
+            if (insertError.code === '23505' || errStr.includes('unique constraint') || errStr.includes('duplicate key')) {
               console.log('✅ Staff profile already exists (raced trigger constraint)')
             } else {
               console.error('❌ Error creating staff profile:', insertError)
@@ -183,6 +186,20 @@ export async function signUp(formData: {
     } catch (profileError) {
       console.error('❌ Exception creating profile:', profileError)
       return { error: 'Failed to create user profile. Please try again.' }
+    }
+
+    // Ensure session is active so user passes middleware on /verify-2fa
+    try {
+      const { data: { session: currentSession } } = await supabase.auth.getSession()
+      if (!currentSession && data.user) {
+        console.log('🔑 Establishing session after signup...')
+        await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        })
+      }
+    } catch (sessErr) {
+      console.error('⚠️ Could not establish post-signup session:', sessErr)
     }
 
     // Automatically send 2FA OTP on sign up
