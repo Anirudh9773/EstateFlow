@@ -49,6 +49,7 @@ export async function middleware(request: NextRequest) {
     const amr = payload?.amr || []
     const sid = payload?.sid
     const isPasswordLogin = amr.includes('password')
+    const isRecoverySession = amr.includes('recovery')
     const userType = user.user_metadata?.user_type
 
     console.log('🔍 Middleware Auth Status:', {
@@ -56,9 +57,22 @@ export async function middleware(request: NextRequest) {
       amr,
       sid: sid ? 'Present' : 'Missing',
       isPasswordLogin,
+      isRecoverySession,
       path: request.nextUrl.pathname,
       userType
     })
+
+    // SECURITY: If this is a password recovery session (from a reset link),
+    // restrict access to ONLY the reset-password page. The user must complete
+    // the password reset before getting full access to the app.
+    if (isRecoverySession) {
+      const isResetRoute = request.nextUrl.pathname.startsWith('/reset-password')
+      if (!isResetRoute) {
+        return NextResponse.redirect(new URL('/reset-password', request.url))
+      }
+      // Allow access to /reset-password and return early
+      return response
+    }
 
     const isAuthRoute =
       request.nextUrl.pathname.startsWith('/sign-in') ||
@@ -122,5 +136,6 @@ export const config = {
     '/sign-in',
     '/sign-up/:path*',
     '/verify-2fa',
+    '/reset-password',
   ],
 }

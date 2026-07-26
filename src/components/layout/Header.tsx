@@ -7,6 +7,7 @@ import { Menu, X, ChevronDown, User, Building2, LogOut } from 'lucide-react';
 import { useUser } from '@/lib/auth/useUser';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
+import { toast } from 'sonner';
 
 export default function Header() {
   const pathname = usePathname();
@@ -152,10 +153,12 @@ export default function Header() {
     try {
       const { signOut } = await import('@/lib/auth/actions');
       await signOut();
+      toast.success('Signed out successfully');
       // Use hard reload for sign out to ensure clean state
       window.location.href = '/';
     } catch (error) {
       console.error('Sign out error:', error);
+      toast.error('An error occurred during sign out');
     }
   }, []);
 

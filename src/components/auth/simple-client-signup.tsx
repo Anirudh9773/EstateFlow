@@ -14,6 +14,7 @@ import OAuthButtonsGroup from "./OAuthButtonsGroup"
 import { signInWithOAuth } from "@/lib/auth/actions"
 import { clientSignUpSchema, type ClientSignUpFormData } from "@/lib/validations/auth"
 import { Logo } from "@/components/logo"
+import { toast } from "sonner"
 
 export default function SimpleClientSignUpForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -92,6 +93,7 @@ export default function SimpleClientSignUpForm() {
       }
       
       // Success - redirect to 2FA verification page
+      toast.success('Account created successfully!')
       window.location.href = '/verify-2fa'
     } catch (error) {
       console.error('Sign up error:', error)
@@ -143,6 +145,15 @@ export default function SimpleClientSignUpForm() {
             placeholder="+44 7700 900000"
             className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
             {...register("phone")}
+            onChange={(e) => {
+              const val = e.target.value
+              if (/^[0-9+\s\-()]*$/.test(val)) {
+                e.target.value = val
+                register("phone").onChange(e)
+              } else {
+                e.preventDefault()
+              }
+            }}
           />
           {errors.phone && (
             <p className="text-xs text-red-600">{errors.phone.message}</p>

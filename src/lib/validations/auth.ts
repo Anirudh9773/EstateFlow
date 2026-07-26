@@ -17,8 +17,12 @@ const passwordSchema = z
 const phoneSchema = z
   .string()
   .min(1, 'Phone number is required')
-  .regex(/^[\d\s\+\-\(\)]+$/, 'Please enter a valid phone number')
-  .min(10, 'Phone number must be at least 10 digits')
+  .max(20, 'Phone number is too long')
+  .regex(/^[\d\s\+\-\(\)]+$/, 'Phone number can only contain digits, spaces, +, -, (, )')
+  .refine((val) => {
+    const digits = val.replace(/\D/g, '')
+    return digits.length >= 10 && digits.length <= 15
+  }, 'Phone number must contain between 10 and 15 digits')
 
 const fullNameSchema = z
   .string()

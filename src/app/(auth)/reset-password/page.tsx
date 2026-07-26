@@ -60,8 +60,15 @@ export default function ResetPasswordPage() {
       } else {
         setSuccess(true)
         toast.success("Password reset successfully!")
+        // Sign out the recovery session to force a clean re-login
+        try {
+          const { signOut } = await import('@/lib/auth/actions')
+          await signOut()
+        } catch (signOutErr) {
+          console.error("Error signing out after password reset:", signOutErr)
+        }
         setTimeout(() => {
-          router.replace("/sign-in")
+          window.location.href = "/sign-in"
         }, 3000)
       }
     } catch (err) {

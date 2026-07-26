@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Logo } from '@/components/logo'
+import { Logo, LogoIcon } from '@/components/logo'
 import { useUser } from '@/lib/auth/useUser'
 import { signOut } from '@/lib/auth/actions'
 import { getInitials } from '@/lib/utils/getInitials'
@@ -67,7 +67,7 @@ export default function ClientDashboardLayout({
           {/* Logo Header */}
           <div className="flex items-center justify-between mb-8">
             <Link href="/" className="flex items-center gap-3">
-              <Logo showSubtitle={false} className="h-8 w-8 text-gold" />
+              <LogoIcon className="h-8 w-8 text-gold" />
               <span className="font-bold text-lg tracking-tight text-white font-heading">
                 Estate<span className="text-gold">Flow</span>
               </span>
@@ -82,7 +82,7 @@ export default function ClientDashboardLayout({
 
           {/* Quick Submit Property CTA */}
           <Link href="/submit-property" className="block mb-6">
-            <Button className="w-full bg-gold text-navy hover:bg-gold/90 font-semibold shadow-sm flex items-center justify-center gap-2">
+            <Button className="w-full bg-gold text-navy hover:bg-gold/90 hover:text-navy font-semibold shadow-sm flex items-center justify-center gap-2">
               <Plus className="w-4 h-4" />
               Submit Property
             </Button>
@@ -111,30 +111,6 @@ export default function ClientDashboardLayout({
               )
             })}
           </nav>
-        </div>
-
-        {/* User Profile & Sign Out Footer */}
-        <div className="p-4 border-t border-slate-800 bg-slate-950/50">
-          <div className="flex items-center gap-3 mb-3 px-2">
-            <Avatar className="w-9 h-9 border border-slate-700">
-              <AvatarFallback className="bg-navy text-gold text-xs font-semibold">
-                {getInitials(clientName)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-white truncate">{clientName}</p>
-              <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleSignOut}
-            className="w-full text-slate-400 hover:text-red-400 hover:bg-slate-800/50 justify-start gap-2 text-xs"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            Sign Out
-          </Button>
         </div>
       </aside>
 

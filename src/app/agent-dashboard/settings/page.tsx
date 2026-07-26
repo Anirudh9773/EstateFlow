@@ -34,14 +34,20 @@ export default function AgentSettingsPage() {
   const [googleRating, setGoogleRating] = useState('')
   const [googleReviewCount, setGoogleReviewCount] = useState('')
 
+  // Prevent re-fetching data on browser tab switch (useUser triggers onAuthStateChange)
+  const hasLoadedRef = React.useRef(false)
+
   useEffect(() => {
     async function loadData() {
       if (!user) return
+      // Only load from DB once; subsequent user ref changes (tab switch) should not overwrite local state
+      if (hasLoadedRef.current) return
       setLoading(true)
       try {
         const supabase = createSupabaseClient()
         const { data } = await supabase.from('agents').select('*').eq('user_id', user.id).single()
         if (data) {
+          hasLoadedRef.current = true
           setProfile(data)
           setFullName(data.full_name || '')
           setAgencyName(data.agency_name || '')

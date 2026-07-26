@@ -69,24 +69,32 @@ export default function ClientPropertiesPage() {
     e.preventDefault()
     if (!editingProperty) return
 
-    if (!editingProperty.postcode || !editingProperty.postcode.trim()) {
-      toast.error('Postcode is required')
-      return
-    }
+    // Clear previous inline errors
+    let hasError = false
+    const updates = { ...editingProperty, _postcodeError: '', _phoneError: '', _budgetError: '' }
 
-    if (!validatePostcode(editingProperty.postcode)) {
-      toast.error('Please enter a valid UK postcode (e.g., SW1A 1AA)')
-      return
+    if (!editingProperty.postcode || !editingProperty.postcode.trim()) {
+      updates._postcodeError = 'Postcode is required'
+      hasError = true
+    } else if (!validatePostcode(editingProperty.postcode)) {
+      updates._postcodeError = 'Please enter a valid UK postcode (e.g., SW1A 1AA)'
+      hasError = true
     }
 
     if (!validatePhone(editingProperty.clientPhone)) {
-      toast.error('Please enter a valid phone number (minimum 10 digits)')
-      return
+      updates._phoneError = 'Please enter a valid phone number (minimum 10 digits, maximum 15)'
+      hasError = true
     }
 
     const priceCheck = validatePriceBounds(editingProperty.intent, Number(editingProperty.budget))
     if (!priceCheck.isValid) {
-      toast.error(priceCheck.error || 'Invalid price bounds')
+      updates._budgetError = priceCheck.error || 'Invalid price bounds'
+      hasError = true
+    }
+
+    if (hasError) {
+      setEditingProperty(updates)
+      toast.error('Please fix the errors in the form')
       return
     }
 
@@ -238,11 +246,21 @@ export default function ClientPropertiesPage() {
             <form onSubmit={handleSaveEdit} className="space-y-4 text-sm">
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Postcode *</label>
-                <Input value={editingProperty.postcode} onChange={(e) => setEditingProperty({ ...editingProperty, postcode: e.target.value })} required />
+                <Input value={editingProperty.postcode} onChange={(e) => {
+                  setEditingProperty({ ...editingProperty, postcode: e.target.value, _postcodeError: '' })
+                }} required />
+                {editingProperty._postcodeError && (
+                  <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{editingProperty._postcodeError}</p>
+                )}
               </div>
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Budget / Value (GBP) *</label>
-                <Input type="number" value={editingProperty.budget} onChange={(e) => setEditingProperty({ ...editingProperty, budget: e.target.value })} required />
+                <Input type="number" value={editingProperty.budget} onChange={(e) => {
+                  setEditingProperty({ ...editingProperty, budget: e.target.value, _budgetError: '' })
+                }} required />
+                {editingProperty._budgetError && (
+                  <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{editingProperty._budgetError}</p>
+                )}
               </div>
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Phone Number *</label>
@@ -251,11 +269,14 @@ export default function ClientPropertiesPage() {
                   onChange={(e) => {
                     const val = e.target.value
                     if (/^[0-9+\s-()]*$/.test(val)) {
-                      setEditingProperty({ ...editingProperty, clientPhone: val })
+                      setEditingProperty({ ...editingProperty, clientPhone: val, _phoneError: '' })
                     }
                   }} 
                   required 
                 />
+                {editingProperty._phoneError && (
+                  <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{editingProperty._phoneError}</p>
+                )}
               </div>
               <div className="pt-2 flex justify-end gap-3">
                 <Button type="button" variant="outline" onClick={() => setEditingProperty(null)}>Cancel</Button>

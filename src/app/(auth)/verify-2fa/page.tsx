@@ -16,7 +16,7 @@ export default function Verify2faPage() {
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [timeLeft, setTimeLeft] = useState(600) // 10 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState<number | null>(null) // null until computed from cookie
   const [showResend, setShowResend] = useState(false)
   const [rememberDevice, setRememberDevice] = useState(false)
   const [devOtp, setDevOtp] = useState<string | null>(null)
@@ -32,6 +32,7 @@ export default function Verify2faPage() {
   }, [])
 
   // Read the otp_expires_at cookie if present to restore countdown on refresh
+  // If no cookie found, default to 600 (10 minutes)
   useEffect(() => {
     const match = document.cookie.match(/(?:^|; )otp_expires_at=([^;]*)/)
     if (match && match[1]) {
@@ -46,7 +47,11 @@ export default function Verify2faPage() {
         }
       } catch (e) {
         console.error("Failed to parse otp_expires_at cookie:", e)
+        setTimeLeft(600)
       }
+    } else {
+      // No cookie found — default to 10 minutes
+      setTimeLeft(600)
     }
   }, [])
 
@@ -57,13 +62,14 @@ export default function Verify2faPage() {
 
   // 10-minute countdown timer
   useEffect(() => {
+    if (timeLeft === null) return // Not yet computed
     if (timeLeft <= 0) {
       setShowResend(true)
       return
     }
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1)
+      setTimeLeft((prev) => (prev !== null ? prev - 1 : prev))
     }, 1000)
 
     return () => clearInterval(timer)
@@ -278,7 +284,9 @@ export default function Verify2faPage() {
         {/* Resend actions & Timer */}
         <div className="flex flex-col items-center justify-center gap-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-center">
           <div className="text-sm">
-            {timeLeft > 0 ? (
+            {timeLeft === null ? (
+              <span className="text-muted-foreground">Loading timer...</span>
+            ) : timeLeft > 0 ? (
               <span className="text-muted-foreground">
                 Code expires in: <span className="font-semibold text-navy dark:text-gold">{formatTime(timeLeft)}</span>
               </span>
@@ -287,7 +295,7 @@ export default function Verify2faPage() {
             )}
           </div>
 
-          {(showResend || timeLeft <= 0) && (
+          {(showResend || (timeLeft !== null && timeLeft <= 0)) && (
             <Button
               variant="outline"
               disabled={resending || loading}

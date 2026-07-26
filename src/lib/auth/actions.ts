@@ -905,6 +905,11 @@ export async function updateProperty(id: string, payload: {
     return { error: error.message }
   }
 
+  // Check for zero-row update (RLS blocked or property not found/not owned by user)
+  if (!data || (Array.isArray(data) && data.length === 0)) {
+    return { error: 'Property not found or you do not have permission to update it.' }
+  }
+
   revalidatePath('/client-dashboard')
   return { success: true, data }
 }

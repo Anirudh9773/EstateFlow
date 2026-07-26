@@ -12,6 +12,7 @@ import OAuthButtonsGroup from "@/components/auth/OAuthButtonsGroup"
 import { signInWithOAuth } from "@/lib/auth/actions"
 import { useUser } from "@/lib/auth/useUser"
 import { Logo } from "@/components/logo"
+import { toast } from "sonner"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -105,7 +106,7 @@ export default function SignInPage() {
     try {
       const result = await signInWithOAuth(provider as 'google' | 'facebook' | 'twitter')
       if (result?.error) {
-        alert(result.error)
+        toast.error(result.error)
         setOauthLoading(false)
         return
       }
@@ -117,7 +118,7 @@ export default function SignInPage() {
         return
       }
       console.error('OAuth error:', error)
-      alert('An error occurred during OAuth sign in')
+      toast.error('An error occurred during OAuth sign in')
       setOauthLoading(false)
     }
   }
@@ -131,7 +132,7 @@ export default function SignInPage() {
       const result = await signIn({ email, password })
       
       if (result?.error) {
-        alert(result.error)
+        toast.error(result.error)
         setLoading(false)
         return
       }
@@ -143,6 +144,7 @@ export default function SignInPage() {
 
       // Success - force reload for immediate auth state update
       // This is necessary because Supabase auth state needs to propagate
+      toast.success('Signed in successfully!')
       if (result.userType === 'agent') {
         window.location.href = '/agent-dashboard'
       } else if (result.userType === 'admin' || result.userType === 'semi-admin') {
@@ -152,7 +154,7 @@ export default function SignInPage() {
       }
     } catch (error) {
       console.error('Sign in error:', error)
-      alert('An error occurred during sign in')
+      toast.error('An unexpected error occurred during sign in')
       setLoading(false)
     }
   }
