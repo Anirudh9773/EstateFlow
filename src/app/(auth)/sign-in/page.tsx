@@ -51,16 +51,14 @@ export default function SignInPage() {
   // Redirect if already logged in (handling 2FA check first)
   useEffect(() => {
     async function checkAuthAndRedirect() {
-      if (userLoading || !user || loading) return
+      if (userLoading || !user) return
 
       try {
         const { isSession2faVerified } = await import('@/lib/auth/actions')
         const isVerified = await isSession2faVerified()
 
         if (!isVerified) {
-          const { signOut } = await import('@/lib/auth/actions')
-          await signOut()
-          router.refresh()
+          router.replace('/verify-2fa')
           return
         }
 
@@ -78,7 +76,7 @@ export default function SignInPage() {
     }
 
     checkAuthAndRedirect()
-  }, [user, userLoading, router, loading])
+  }, [user, userLoading, router])
 
   // Show loading while checking auth status
   if (userLoading) {
