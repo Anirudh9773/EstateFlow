@@ -90,12 +90,12 @@ export default function AgentOverviewPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link href="/agent-dashboard/listings">
-            <Button variant="outline" className="border-slate-600 text-white hover:bg-slate-800 hover:text-white">
+            <Button className="bg-white/10 text-white border border-white/30 hover:bg-white hover:text-navy font-semibold transition-colors">
               View Listings
             </Button>
           </Link>
           <Link href="/submit-property">
-            <Button className="bg-gold text-navy hover:bg-gold/90 hover:text-navy font-semibold flex items-center gap-2">
+            <Button className="bg-gold text-navy hover:bg-amber-400 hover:text-navy font-semibold flex items-center gap-2 transition-colors">
               <Plus className="w-4 h-4" />
               Add Listing
             </Button>

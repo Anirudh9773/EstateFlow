@@ -345,7 +345,12 @@ export default function Header() {
                         <Link
                           href="/agent-dashboard"
                           className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
-                          onClick={() => setOpenDropdown(null)}
+                          onClick={() => {
+                            setOpenDropdown(null);
+                            if (pathname === '/agent-dashboard') {
+                              window.location.href = '/agent-dashboard';
+                            }
+                          }}
                         >
                           <Building2 className="w-5 h-5 text-emerald-600" />
                           <span className="text-sm">Dashboard</span>
@@ -355,7 +360,12 @@ export default function Header() {
                         <Link
                           href="/client-dashboard"
                           className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
-                          onClick={() => setOpenDropdown(null)}
+                          onClick={() => {
+                            setOpenDropdown(null);
+                            if (pathname === '/client-dashboard') {
+                              window.location.href = '/client-dashboard';
+                            }
+                          }}
                         >
                           <Building2 className="w-5 h-5 text-amber-600" />
                           <span className="text-sm">Dashboard</span>
@@ -365,7 +375,12 @@ export default function Header() {
                         <Link
                           href="/admin-dashboard"
                           className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
-                          onClick={() => setOpenDropdown(null)}
+                          onClick={() => {
+                            setOpenDropdown(null);
+                            if (pathname === '/admin-dashboard') {
+                              window.location.href = '/admin-dashboard';
+                            }
+                          }}
                         >
                           <Building2 className="w-5 h-5 text-indigo-600" />
                           <span className="text-sm">Admin Dashboard</span>
