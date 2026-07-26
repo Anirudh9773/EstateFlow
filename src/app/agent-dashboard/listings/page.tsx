@@ -77,8 +77,8 @@ export default function AgentListingsPage() {
         </Link>
       </div>
 
-      <Card className="border border-slate-200 shadow-sm">
-        <CardHeader className="pb-4">
+      <Card className="border border-slate-200/80 shadow-sm bg-slate-50/50">
+        <CardHeader className="pb-4 bg-white border-b border-slate-200/80 rounded-t-xl">
           <div className="relative max-w-sm">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <Input 
@@ -86,36 +86,50 @@ export default function AgentListingsPage() {
               placeholder="Search listings by location or type..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 text-sm"
+              className="pl-9 text-sm border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 bg-white"
             />
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredListings.map((listing) => (
-              <Card key={listing.id} className="hover:shadow-md transition-shadow border border-slate-200">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <Badge className={`${getStatusColor(listing.status)} capitalize border font-semibold`}>
-                      {listing.status.replace('_', ' ')}
-                    </Badge>
-                    <span className="text-xs text-slate-400">{listing.listed}</span>
-                  </div>
-                  <h3 className="font-semibold text-slate-900 text-base mt-2">{listing.type}</h3>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-xs text-slate-500 flex items-start gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 shrink-0 text-slate-400 mt-0.5" />
-                    {listing.address}
-                  </p>
-                  <p className="text-lg font-bold text-navy">{listing.price}</p>
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
-                    <span>{listing.views} views</span>
-                    <span>{listing.inquiries} inquiries</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {filteredListings.map((listing) => {
+              const statusAccent = listing.status === 'active' 
+                ? 'border-t-emerald-500' 
+                : listing.status === 'under_offer' 
+                ? 'border-t-amber-500' 
+                : 'border-t-blue-500'
+
+              return (
+                <Card 
+                  key={listing.id} 
+                  className={`bg-white border-2 border-slate-200/90 shadow-sm hover:shadow-lg hover:border-navy/30 transition-all duration-200 overflow-hidden border-t-4 ${statusAccent}`}
+                >
+                  <CardHeader className="pb-2 bg-slate-50/40 border-b border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <Badge className={`${getStatusColor(listing.status)} capitalize border font-semibold shadow-2xs`}>
+                        {listing.status.replace('_', ' ')}
+                      </Badge>
+                      <span className="text-xs text-slate-400 font-medium">{listing.listed}</span>
+                    </div>
+                    <h3 className="font-bold text-slate-900 text-base mt-2">{listing.type}</h3>
+                  </CardHeader>
+                  <CardContent className="pt-3 space-y-3">
+                    <p className="text-xs text-slate-500 flex items-start gap-1.5 leading-relaxed">
+                      <MapPin className="w-3.5 h-3.5 shrink-0 text-slate-400 mt-0.5" />
+                      {listing.address}
+                    </p>
+                    <div className="flex items-baseline justify-between pt-1">
+                      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Asking Price</span>
+                      <p className="text-xl font-extrabold text-navy">{listing.price}</p>
+                    </div>
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-semibold bg-slate-50/60 -mx-6 -mb-6 p-3 px-6">
+                      <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5 text-slate-400" /> {listing.views} views</span>
+                      <span className="text-navy">{listing.inquiries} inquiries</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         </CardContent>
       </Card>

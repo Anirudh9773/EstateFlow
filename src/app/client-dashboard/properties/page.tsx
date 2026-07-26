@@ -184,7 +184,7 @@ export default function ClientPropertiesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {properties.map((property) => (
-            <Card key={property.id} className="border border-slate-200 bg-white hover:shadow-md transition-shadow">
+            <Card key={property.id} className="border-2 border-slate-200/90 bg-white shadow-sm hover:shadow-lg hover:border-navy/30 transition-all duration-200 overflow-hidden border-t-4 border-t-navy">
               <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
                 <Badge className="bg-navy/10 text-navy border-navy/20 font-semibold uppercase text-xs">
                   {property.intent === 'letting-selling' ? 'Letting & Selling' : property.intent}
