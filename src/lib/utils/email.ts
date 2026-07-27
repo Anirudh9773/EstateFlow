@@ -73,7 +73,7 @@ export async function sendEmail({
       const secure = process.env.SMTP_SECURE === 'true' || 
                      (smtpPort ? Number(smtpPort) === 465 : false);
 
-      const transportConfig: any = smtpHost
+      const transportConfig: nodemailer.TransportOptions | Record<string, unknown> = smtpHost
         ? {
             host: smtpHost,
             port: Number(smtpPort || 587),

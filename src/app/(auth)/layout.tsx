@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Outfit, Inter } from "next/font/google"
+import { Outfit } from "next/font/google"
 import AuthLeftPanel from "@/components/auth/auth-left-panel"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
@@ -7,12 +7,6 @@ import { ArrowLeft } from "lucide-react"
 const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-heading",
-  display: "swap",
-})
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
   display: "swap",
 })
 
@@ -27,7 +21,7 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className={`${outfit.variable} ${inter.variable} min-h-screen flex flex-col lg:flex-row`}>
+    <div className={`${outfit.variable} min-h-screen flex flex-col lg:flex-row`}>
       {/* Left Panel - Hidden on mobile, 50% width on desktop */}
       <AuthLeftPanel />
       

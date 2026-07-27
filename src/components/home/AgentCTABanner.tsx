@@ -21,7 +21,7 @@ export default function AgentCTABanner() {
 
   return (
     <section className="bg-navy py-20">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid md:grid-cols-12 gap-10 items-center">
           {/* Left column */}
           <div className="md:col-span-7">

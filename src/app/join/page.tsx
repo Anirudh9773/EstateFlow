@@ -110,14 +110,34 @@ export default function JoinPage() {
 
     setIsLoading(true)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setIsSuccess(true)
-    setIsLoading(false)
+    try {
+      const { signUp } = await import('@/lib/auth/actions')
+      const result = await signUp({
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        phone: formData.phone,
+        userType: 'agent',
+        agencyName: formData.agency,
+        areaOfOperation: formData.postcodeCoverage,
+      })
+
+      if (result?.error) {
+        setErrors(prev => ({ ...prev, email: result.error }))
+        setIsLoading(false)
+        return
+      }
+
+      setIsSuccess(true)
+    } catch (err: unknown) {
+      console.error('Join sign-up error:', err)
+      setErrors(prev => ({ ...prev, form: 'An unexpected error occurred during account creation' }))
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const updateFormData = (field: string, value: any) => {
+  const updateFormData = (field: string, value: string | boolean | string[] | null) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     setErrors(prev => ({ ...prev, [field]: "" }))
   }

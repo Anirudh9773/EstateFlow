@@ -109,9 +109,9 @@ export default function SignInPage() {
         return
       }
       // If successful, user will be redirected
-    } catch (error: any) {
+    } catch (error: unknown) {
       // NEXT_REDIRECT is expected and means redirect is working
-      if (error?.message?.includes('NEXT_REDIRECT')) {
+      if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
         console.log('Redirect initiated successfully')
         return
       }

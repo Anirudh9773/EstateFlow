@@ -26,13 +26,38 @@ import { getClientProperties, updateProperty, deleteProperty } from '@/lib/auth/
 import { toast } from 'sonner'
 import { validatePostcode, validatePhone, validatePriceBounds } from '@/lib/validations/property'
 
+export interface ClientProperty {
+  id: string
+  intent: string
+  property_type?: string
+  postcode?: string
+  property_postcode?: string
+  desired_postcode?: string
+  budget?: number
+  sale_value?: number
+  timeline?: string
+  mortgage_status?: string
+  bedroom_count?: string
+  status?: string
+  created_at?: string
+  client_name?: string
+  client_email?: string
+  client_phone?: string
+  clientName?: string
+  clientEmail?: string
+  clientPhone?: string
+  _postcodeError?: string
+  _phoneError?: string
+  _budgetError?: string
+}
+
 export default function ClientPropertiesPage() {
-  const [properties, setProperties] = useState<any[]>([])
+  const [properties, setProperties] = useState<ClientProperty[]>([])
   const [loading, setLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
 
   // CRUD states
-  const [editingProperty, setEditingProperty] = useState<any | null>(null)
+  const [editingProperty, setEditingProperty] = useState<ClientProperty | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const fetchProperties = async () => {
@@ -56,7 +81,7 @@ export default function ClientPropertiesPage() {
     fetchProperties()
   }, [])
 
-  const handleEditClick = (property: any) => {
+  const handleEditClick = (property: ClientProperty) => {
     setEditingProperty({
       ...property,
       clientName: property.client_name || '',
@@ -81,7 +106,7 @@ export default function ClientPropertiesPage() {
       hasError = true
     }
 
-    if (!validatePhone(editingProperty.clientPhone)) {
+    if (!validatePhone(editingProperty.clientPhone || '')) {
       updates._phoneError = 'Please enter a valid phone number (minimum 10 digits, maximum 15)'
       hasError = true
     }
@@ -102,14 +127,14 @@ export default function ClientPropertiesPage() {
       try {
         const payload = {
           intent: editingProperty.intent,
-          postcode: editingProperty.postcode,
-          propertyType: editingProperty.property_type,
-          bedroomCount: editingProperty.bedroom_count,
-          budget: Number(editingProperty.budget),
-          timeline: editingProperty.timeline,
-          clientName: editingProperty.clientName,
-          clientEmail: editingProperty.clientEmail,
-          clientPhone: editingProperty.clientPhone
+          postcode: editingProperty.postcode || editingProperty.property_postcode || editingProperty.desired_postcode || '',
+          propertyType: editingProperty.property_type || '',
+          bedroomCount: editingProperty.bedroom_count || '',
+          budget: Number(editingProperty.budget || 0),
+          timeline: editingProperty.timeline || '',
+          clientName: editingProperty.clientName || '',
+          clientEmail: editingProperty.clientEmail || '',
+          clientPhone: editingProperty.clientPhone || ''
         }
         
         const result = await updateProperty(editingProperty.id, payload)
@@ -189,7 +214,7 @@ export default function ClientPropertiesPage() {
                 <Badge className="bg-navy/10 text-navy border-navy/20 font-semibold uppercase text-xs">
                   {property.intent === 'letting-selling' ? 'Letting & Selling' : property.intent}
                 </Badge>
-                <span className="text-xs text-slate-400">{new Date(property.created_at).toLocaleDateString()}</span>
+                <span className="text-xs text-slate-400">{property.created_at ? new Date(property.created_at).toLocaleDateString() : 'Just now'}</span>
               </CardHeader>
               <CardContent className="pt-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -203,7 +228,7 @@ export default function ClientPropertiesPage() {
                   </div>
                   <div>
                     <p className="text-xs text-slate-400 font-semibold uppercase">Budget / Value</p>
-                    <p className="font-bold text-navy mt-0.5">{formatBudget(property.intent, property.budget)}</p>
+                    <p className="font-bold text-navy mt-0.5">{formatBudget(property.intent, property.budget ?? property.sale_value ?? 0)}</p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-400 font-semibold uppercase">Timeline</p>
@@ -256,7 +281,7 @@ export default function ClientPropertiesPage() {
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Budget / Value (GBP) *</label>
                 <Input type="number" value={editingProperty.budget} onChange={(e) => {
-                  setEditingProperty({ ...editingProperty, budget: e.target.value, _budgetError: '' })
+                  setEditingProperty({ ...editingProperty, budget: Number(e.target.value), _budgetError: '' })
                 }} required />
                 {editingProperty._budgetError && (
                   <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{editingProperty._budgetError}</p>

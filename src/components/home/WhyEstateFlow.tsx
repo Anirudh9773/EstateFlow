@@ -61,7 +61,7 @@ export default function WhyEstateFlow() {
 
   return (
     <section className="bg-surface py-20">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center">
           <SectionLabel>WHY ESTATEFLOW</SectionLabel>
           <h2 className="text-3xl md:text-4xl font-semibold text-navy mt-3">

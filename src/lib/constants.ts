@@ -12,14 +12,30 @@ export const AGENT_TIERS = {
 
 export const ROUTES = {
   home: '/',
-  submitLead: '/submit-lead',
   submitProperty: '/submit-property',
   findAgent: '/find-an-agent',
   agents: '/agents',
   agentDashboard: '/agent-dashboard',
+  clientDashboard: '/client-dashboard',
+  adminDashboard: '/admin-dashboard',
   pricing: '/pricing',
+  agentPricing: '/agent-pricing',
   about: '/about',
   contact: '/contact',
-  login: '/login',
-  dashboard: '/dashboard',
+  signIn: '/sign-in',
+  join: '/join',
+  privacy: '/privacy',
+  terms: '/terms',
 } as const
+
+/** Routes where Header and Footer should be hidden */
+export const HIDDEN_LAYOUT_ROUTES = [
+  '/submit-property',
+  '/sign-in',
+  '/sign-up/client',
+  '/sign-up/agent',
+  '/forgot-password',
+  '/verify-2fa',
+  '/agent-login',
+  '/reset-password',
+] as const

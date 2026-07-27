@@ -7,6 +7,7 @@ import { Menu, X, ChevronDown, User, Building2, LogOut } from 'lucide-react';
 import { useUser } from '@/lib/auth/useUser';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
+import { HIDDEN_LAYOUT_ROUTES } from '@/lib/constants';
 import { toast } from 'sonner';
 
 export default function Header() {
@@ -167,32 +168,14 @@ export default function Header() {
     { label: 'Contact', href: '/contact' },
   ];
 
-  const hideHeaderRoutes = [
-    '/submit-property',
-    '/sign-in',
-    '/sign-up/client',
-    '/sign-up/agent',
-    '/forgot-password',
-    '/verify-2fa',
-    '/agent-login'
-  ];
-
-  if (hideHeaderRoutes.includes(pathname)) {
+  if (HIDDEN_LAYOUT_ROUTES.some(route => pathname.startsWith(route))) {
     return null;
   }
 
   return (
     <>
       {/* Trust Bar */}
-      {showTrustBar && ![
-        '/submit-property',
-        '/sign-in',
-        '/sign-up/client',
-        '/sign-up/agent',
-        '/forgot-password',
-        '/verify-2fa',
-        '/agent-login'
-      ].includes(pathname) && (
+      {showTrustBar && !HIDDEN_LAYOUT_ROUTES.some(route => pathname.startsWith(route)) && (
         <div className="bg-slate-900 text-white text-xs sm:text-sm py-2">
           <div className="container mx-auto px-4 flex items-center justify-center relative">
             <span className="flex items-center gap-2 text-center">

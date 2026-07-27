@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, type Dispatch, type SetStateAction } from "react"
 import { useRouter } from "next/navigation"
 import { DM_Sans } from "next/font/google"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
@@ -47,7 +48,7 @@ export default function SubmitPropertyPage() {
     lastName: "",
     email: "",
     phone: "",
-    countryCode: "+91",
+    countryCode: "+44",
     // Renting fields
     desiredPostcode: "",
     propertyTypes: [] as string[],
@@ -59,7 +60,7 @@ export default function SubmitPropertyPage() {
     saleTimeline: [] as string[],
   })
 
-  const update = (key: string, value: string | number | boolean | string[]) =>
+  const update = (key: string, value: string | number | boolean | string[] | null) =>
     setFormData(prev => ({ ...prev, [key]: value }))
 
   const toggleArrayField = (field: string, value: string) => {
@@ -77,9 +78,9 @@ export default function SubmitPropertyPage() {
   const prevStep = () => setCurrentStep(s => Math.max(s - 1, 1))
 
   const formatPrice = (val: number) => {
-    if (val >= 5000) return "$5M+"
-    if (val >= 1000) return `$${(val/1000).toFixed(1)}M` 
-    return `$${val}K` 
+    if (val >= 5000) return "£5M+"
+    if (val >= 1000) return `£${(val/1000).toFixed(1)}M` 
+    return `£${val}K` 
   }
 
   const getProgress = () => {
@@ -231,7 +232,35 @@ export default function SubmitPropertyPage() {
 }
 
 // Step components
-function Step1({ formData, update, nextStep }: any) {
+interface StepFormData {
+  intent: string
+  priceRange: number
+  location: string
+  timeline: string
+  mortgageStatus: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  countryCode: string
+  desiredPostcode: string
+  propertyTypes: string[]
+  bedroomCounts: string[]
+  monthlyBudget: number
+  propertyPostcode: string
+  saleValue: number
+  saleTimeline: string[]
+}
+
+interface StepProps {
+  formData: StepFormData
+  update: (key: string, value: string | number | boolean | string[] | null) => void
+  nextStep: () => void
+  prevStep: () => void
+  toggleArrayField: (field: string, value: string) => void
+}
+
+function Step1({ formData, update, nextStep }: Pick<StepProps, 'formData' | 'update' | 'nextStep'>) {
   const options = [
     { 
       label: "Renting", 
@@ -289,7 +318,7 @@ function Step1({ formData, update, nextStep }: any) {
   )
 }
 
-function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) {
+function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: StepProps) {
   const isDesiredValid = !formData.desiredPostcode.trim() || validatePostcode(formData.desiredPostcode)
   const isPropertyValid = !formData.propertyPostcode.trim() || validatePostcode(formData.propertyPostcode)
 
@@ -347,7 +376,7 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: any) 
   }
 }
 
-function Step3({ formData, update, nextStep, prevStep }: any) {
+function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: StepProps) {
   const propertyTypes = ["Flat", "House", "Bungalow", "Studio", "Penthouse", "Maisonette"]
   const bedroomCounts = ["Studio", "1 Bedroom", "2 Bedrooms", "3 Bedrooms", "4 Bedrooms", "5+ Bedrooms"]
 
@@ -455,7 +484,7 @@ function Step3({ formData, update, nextStep, prevStep }: any) {
   }
 }
 
-function Step4({ formData, update, nextStep, prevStep }: any) {
+function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepProps) {
   const formatBudget = (val: number) => {
     return `£${val.toLocaleString()} PCM`
   }
@@ -780,7 +809,15 @@ function Step4({ formData, update, nextStep, prevStep }: any) {
   }
 }
 
-function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: any) {
+interface Step5Props {
+  formData: StepFormData
+  update: (key: string, value: string | number | boolean | string[] | null) => void
+  handleSubmit: () => void
+  isPending: boolean
+  setCurrentStep: Dispatch<SetStateAction<number>>
+}
+
+function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: Step5Props) {
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
   const handleBlur = (field: string) => {
@@ -907,8 +944,8 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: an
       
       <div className="text-xs text-gray-400 mt-3 leading-relaxed">
         By clicking Submit, I acknowledge and agree to EstateFlow's{" "}
-        <span className="text-green-600 underline">Terms of Use</span> and{" "}
-        <span className="text-green-600 underline">Privacy Policy</span>. EstateFlow and participating agents may contact me.
+        <Link href="/terms" className="text-green-600 underline hover:text-green-700">Terms of Use</Link> and{" "}
+        <Link href="/privacy" className="text-green-600 underline hover:text-green-700">Privacy Policy</Link>. EstateFlow and participating agents may contact me.
       </div>
     </div>
   )

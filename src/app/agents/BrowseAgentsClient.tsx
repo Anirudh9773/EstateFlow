@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import AgentCard from "@/components/agents/AgentCard"
 import { Card } from "@/components/ui/card"
@@ -167,18 +168,18 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
             Our AI-powered matching system connects you with the best agents for your requirements.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <a 
+            <Link 
               href="/submit-property"
               className="px-6 py-3 bg-gold text-navy font-semibold rounded-lg hover:bg-gold/90 transition-colors text-sm sm:text-base cursor-pointer inline-block"
             >
               Get Matched
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/find-an-agent"
               className="px-6 py-3 border border-gold text-gold font-semibold rounded-lg hover:bg-gold/10 transition-colors text-sm sm:text-base inline-block"
             >
               Advanced Search
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -2,36 +2,26 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { SITE_TAGLINE, SITE_EMAIL, SITE_PHONE, SITE_ADDRESS, ROUTES } from '@/lib/constants'
+import { SITE_TAGLINE, ROUTES, HIDDEN_LAYOUT_ROUTES } from '@/lib/constants'
 import { Logo } from '@/components/logo'
 
 export default function Footer() {
   const pathname = usePathname()
 
   // Hide footer on specific pages like submit-property and auth pages
-  const hideFooterRoutes = [
-    '/submit-property',
-    '/sign-in',
-    '/sign-up/client',
-    '/sign-up/agent',
-    '/forgot-password',
-    '/verify-2fa',
-    '/agent-login'
-  ]
-
-  if (hideFooterRoutes.includes(pathname)) {
+  if (HIDDEN_LAYOUT_ROUTES.some(route => pathname.startsWith(route))) {
     return null
   }
 
   const platformLinks = [
     { label: 'How it works', href: '/#how-it-works' },
     { label: 'Find an agent', href: ROUTES.findAgent },
-    { label: 'Submit a property', href: ROUTES.submitLead },
+    { label: 'Submit a property', href: ROUTES.submitProperty },
     { label: 'Pricing', href: ROUTES.pricing },
   ]
 
   const agentLinks = [
-    { label: 'Agent pricing', href: ROUTES.pricing },
+    { label: 'Agent pricing', href: ROUTES.agentPricing },
     { label: 'Join as an agent', href: '/join' },
     { label: 'Agent login', href: '/sign-in' },
     { label: 'Agent dashboard', href: ROUTES.agentDashboard },
