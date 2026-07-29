@@ -333,6 +333,11 @@ export async function signInWithOAuth(provider: 'google' | 'facebook' | 'twitter
     provider: provider as Provider,
     options: {
       redirectTo: redirectUrl,
+      ...(provider === 'google' && {
+        queryParams: {
+          prompt: 'select_account',
+        },
+      }),
       ...(userType && {
         data: {
           user_type: userType,

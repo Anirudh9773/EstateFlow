@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
     const sid = payload?.sid
     const isPasswordLogin = amr.includes('password')
     const isRecoverySession = amr.includes('recovery')
-    const userType = user.user_metadata?.user_type
+    const userType = user.user_metadata?.user_type || 'client'
 
     console.log('🔍 Middleware Auth Status:', {
       email: user.email,

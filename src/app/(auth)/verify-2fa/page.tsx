@@ -155,8 +155,10 @@ export default function Verify2faPage() {
         // Redirect based on role type
         if (result.userType === "agent") {
           window.location.href = "/agent-dashboard"
+        } else if (result.userType === "admin" || result.userType === "semi-admin") {
+          window.location.href = "/admin-dashboard"
         } else {
-          window.location.href = "/"
+          window.location.href = "/client-dashboard"
         }
       }
     } catch (err) {

@@ -83,18 +83,19 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // If user_type is provided and not already set, update user metadata and create profile
-    if (data.user && userType && (userType === 'client' || userType === 'agent')) {
+    // If user_type is provided or unset, ensure metadata user_type and profile exist (default to client)
+    const effectiveUserType = (userType === 'agent' || userType === 'client') ? userType : 'client'
+    if (data.user) {
       const existingUserType = data.user.user_metadata?.user_type
       
-      console.log('🔍 Checking user type - Existing:', existingUserType, 'Requested:', userType)
+      console.log('🔍 Checking user type - Existing:', existingUserType, 'Effective:', effectiveUserType)
       
       if (!existingUserType) {
-        console.log('📝 Updating user metadata...')
+        console.log('📝 Updating user metadata with user_type:', effectiveUserType)
         // Update user metadata
         const { error: updateError } = await supabase.auth.updateUser({
           data: {
-            user_type: userType,
+            user_type: effectiveUserType,
             full_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || data.user.email?.split('@')[0],
             email: data.user.email,
           },
@@ -121,7 +122,7 @@ export async function GET(request: NextRequest) {
             const fullName = data.user.user_metadata?.full_name || data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'User'
             const email = data.user.email!
 
-            if (userType === 'client') {
+            if (effectiveUserType === 'client') {
               console.log('👤 Creating client profile...')
               const { data: existingProfile } = await supabaseAdmin
                 .from('clients')
@@ -145,7 +146,7 @@ export async function GET(request: NextRequest) {
               } else {
                 console.log('ℹ️  Client profile already exists')
               }
-            } else if (userType === 'agent') {
+            } else if (effectiveUserType === 'agent') {
               console.log('👤 Creating agent profile...')
               const { data: existingProfile } = await supabaseAdmin
                 .from('agents')
@@ -202,8 +203,13 @@ export async function GET(request: NextRequest) {
       return redirectWithCookies('/agent-dashboard')
     }
 
-    console.log('➡️  Redirecting to homepage')
-    return redirectWithCookies('/')
+    if (metadata?.user_type === 'admin' || metadata?.user_type === 'semi-admin') {
+      console.log('➡️  Redirecting to admin dashboard')
+      return redirectWithCookies('/admin-dashboard')
+    }
+
+    console.log('➡️  Redirecting to client dashboard')
+    return redirectWithCookies('/client-dashboard')
   }
 
   console.log('⚠️  No code provided, redirecting to sign-in')

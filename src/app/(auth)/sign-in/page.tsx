@@ -62,13 +62,13 @@ export default function SignInPage() {
           return
         }
 
-        const userType = user.user_metadata?.user_type
+        const userType = user.user_metadata?.user_type || 'client'
         if (userType === 'agent') {
           router.replace('/agent-dashboard')
         } else if (userType === 'admin' || userType === 'semi-admin') {
           router.replace('/admin-dashboard')
         } else {
-          router.replace('/')
+          router.replace('/client-dashboard')
         }
       } catch (err) {
         console.error('Error verifying 2FA session on sign-in mount:', err)
@@ -102,7 +102,7 @@ export default function SignInPage() {
   const handleOAuthClick = async (provider: string) => {
     setOauthLoading(true)
     try {
-      const result = await signInWithOAuth(provider as 'google' | 'facebook' | 'twitter')
+      const result = await signInWithOAuth(provider as 'google' | 'facebook' | 'twitter', 'client')
       if (result?.error) {
         toast.error(result.error)
         setOauthLoading(false)
@@ -148,7 +148,7 @@ export default function SignInPage() {
       } else if (result.userType === 'admin' || result.userType === 'semi-admin') {
         window.location.href = '/admin-dashboard'
       } else {
-        window.location.href = '/'
+        window.location.href = '/client-dashboard'
       }
     } catch (error) {
       console.error('Sign in error:', error)
