@@ -41,6 +41,12 @@ export default function AgentDashboardLayout({
   const { user } = useUser()
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
+  React.useEffect(() => {
+    const handleToggle = () => setMobileMenuOpen(prev => !prev)
+    window.addEventListener('toggle-dashboard-sidebar', handleToggle)
+    return () => window.removeEventListener('toggle-dashboard-sidebar', handleToggle)
+  }, [])
+
   const handleSignOut = async () => {
     await signOut()
     router.push('/agent-login')
@@ -51,20 +57,7 @@ export default function AgentDashboardLayout({
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
-      {/* Mobile Top Nav Bar */}
-      <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
-        <Logo showSubtitle={false} className="h-7 w-7" />
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6 text-slate-700" /> : <Menu className="w-6 h-6 text-slate-700" />}
-          </Button>
-        </div>
-      </div>
+      {/* Sidebar Navigation */}
 
       {/* Sidebar Navigation */}
       <aside className={`

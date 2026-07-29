@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronDown, User, Building2, LogOut } from 'lucide-react';
+import { Menu, X, ChevronDown, User, Building2, LogOut, LayoutDashboard } from 'lucide-react';
 import { useUser } from '@/lib/auth/useUser';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 
 export default function Header() {
   const pathname = usePathname();
+  const isDashboardRoute = pathname.startsWith('/agent-dashboard') || pathname.startsWith('/client-dashboard') || pathname.startsWith('/admin-dashboard');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -442,15 +443,32 @@ export default function Header() {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
-              aria-label="Toggle mobile menu"
-              aria-expanded={isMobileMenuOpen}
-            >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            {/* Mobile Controls Container */}
+            <div className="flex items-center gap-2 lg:hidden">
+              {/* Dashboard Sidebar Drawer Trigger Button */}
+              {(isDashboardRoute || showUserMenu) && (
+                <button
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('toggle-dashboard-sidebar'))
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-navy text-gold border border-gold/30 rounded-lg text-xs font-semibold hover:bg-navy/90 transition-all shadow-sm cursor-pointer"
+                  aria-label="Toggle dashboard menu"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-gold" />
+                  <span>Dashboard</span>
+                </button>
+              )}
+
+              {/* Main Navigation 3-Lines Menu Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
+                aria-label="Toggle mobile menu"
+                aria-expanded={isMobileMenuOpen}
+              >
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
 
           {/* Mobile Menu */}
