@@ -81,11 +81,11 @@ export default function AgentDashboardLayout({
             </button>
           </div>
 
-          {/* Quick Add Listing CTA */}
-          <Link href="/submit-property" className="block mb-6">
+          {/* Quick Action CTA */}
+          <Link href="/agent-dashboard/leads" className="block mb-6">
             <Button className="w-full bg-gold text-navy hover:bg-gold/90 hover:text-navy font-semibold shadow-sm flex items-center justify-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Listing
+              <Users className="w-4 h-4" />
+              Browse Leads
             </Button>
           </Link>
 

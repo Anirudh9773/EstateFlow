@@ -94,10 +94,10 @@ export default function AgentOverviewPage() {
               View Listings
             </Button>
           </Link>
-          <Link href="/submit-property">
+          <Link href="/agent-dashboard/leads">
             <Button className="bg-gold text-navy hover:bg-amber-400 hover:text-navy font-semibold flex items-center gap-2 transition-colors">
-              <Plus className="w-4 h-4" />
-              Add Listing
+              <Users className="w-4 h-4" />
+              Browse Leads
             </Button>
           </Link>
         </div>

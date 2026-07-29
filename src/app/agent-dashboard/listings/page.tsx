@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Plus, Search, MoreHorizontal, Eye, Building2, MapPin } from 'lucide-react'
+import { Plus, Search, MoreHorizontal, Eye, Building2, MapPin, Users } from 'lucide-react'
 
 const mockListings = [
   {
@@ -69,10 +69,10 @@ export default function AgentListingsPage() {
           <h1 className="text-2xl font-bold text-slate-900 font-heading">Property Listings</h1>
           <p className="text-sm text-slate-500 mt-1">Manage and track performance across your property portfolio</p>
         </div>
-        <Link href="/submit-property">
+        <Link href="/agent-dashboard/leads">
           <Button className="bg-navy text-gold hover:bg-navy/90 font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Add Listing
+            <Users className="w-4 h-4" />
+            Browse Leads
           </Button>
         </Link>
       </div>
