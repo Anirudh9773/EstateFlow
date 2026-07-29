@@ -21,7 +21,7 @@ import {
   Plus,
   Minus
 } from "lucide-react"
-import { submitProperty } from "@/lib/auth/actions"
+import { submitProperty, getMatchedAgents } from "@/lib/auth/actions"
 import { validatePostcode } from "@/lib/validations/property"
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" })
@@ -38,6 +38,9 @@ export default function SubmitPropertyPage() {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [currentStep, setCurrentStep] = useState(1)
+  const [matchedAgents, setMatchedAgents] = useState<any[]>([])
+  const [submissionSuccess, setSubmissionSuccess] = useState(false)
+  const [submittedPostcode, setSubmittedPostcode] = useState("")
   const [formData, setFormData] = useState({
     intent: "",
     priceRange: 300,
@@ -89,9 +92,10 @@ export default function SubmitPropertyPage() {
 
   const handleSubmit = () => {
     startTransition(async () => {
+      const postcode = formData.intent === "renting" ? formData.desiredPostcode : formData.propertyPostcode
       const payload = {
         intent: formData.intent,
-        postcode: formData.intent === "renting" ? formData.desiredPostcode : formData.propertyPostcode,
+        postcode,
         propertyType: formData.propertyTypes[0] || "House",
         bedroomCount: formData.bedroomCounts[0] || "1 Bedroom",
         budget: (formData.intent === "renting" || formData.intent === "letting") ? formData.monthlyBudget : formData.saleValue,
@@ -107,7 +111,18 @@ export default function SubmitPropertyPage() {
         return
       }
       
-      router.push("/client-dashboard")
+      // Fetch matched agents based on postcode
+      setSubmittedPostcode(postcode)
+      try {
+        const agentsResult = await getMatchedAgents(postcode)
+        if (agentsResult?.success && agentsResult.data) {
+          setMatchedAgents(agentsResult.data)
+        }
+      } catch (err) {
+        console.error('Error fetching matched agents:', err)
+      }
+      
+      setSubmissionSuccess(true)
     })
   }
 
@@ -120,6 +135,94 @@ export default function SubmitPropertyPage() {
       case 5: return <Step5 formData={formData} update={update} handleSubmit={handleSubmit} isPending={isPending} setCurrentStep={setCurrentStep} />
       default: return null
     }
+  }
+
+  // Success screen after property submission
+  if (submissionSuccess) {
+    return (
+      <div className={cn("min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)]", dmSans.variable)} style={{ fontFamily: "var(--font-dm-sans)" }}>
+        <div className="fixed inset-0" style={{ background: "radial-gradient(ellipse at center, #1a3a2a 0%, #0F172A 100%)" }} />
+        
+        <div className="relative min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)] flex items-center justify-center pt-10 pb-4 px-4 sm:p-6 md:p-8 z-10">
+          <Card className="max-w-2xl w-full overflow-visible relative">
+            {/* Success badge */}
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+              <span className="border border-green-600 text-green-700 text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full bg-white shadow-sm">
+                ✓ Property Submitted!
+              </span>
+            </div>
+
+            <div className="h-1.5 bg-green-600 rounded-t-xl" />
+
+            <div className="p-8 md:p-12">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-green-600" />
+                </div>
+                <h1 className="text-2xl md:text-3xl font-bold text-[#1a2e1a]">
+                  Your Property Has Been Submitted!
+                </h1>
+                <p className="text-base text-gray-500 mt-2">
+                  {matchedAgents.length > 0
+                    ? `We found ${matchedAgents.length} agent${matchedAgents.length > 1 ? 's' : ''} covering the ${submittedPostcode.toUpperCase()} area`
+                    : "We're searching for the best agents for your property"
+                  }
+                </p>
+              </div>
+
+              {/* Matched agents list */}
+              {matchedAgents.length > 0 ? (
+                <div className="space-y-3 mb-6">
+                  <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wide">
+                    Matched Agents in Your Area
+                  </h2>
+                  <div className="grid gap-3">
+                    {matchedAgents.map((agent) => (
+                      <div
+                        key={agent.id}
+                        className="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-xl"
+                      >
+                        <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                          {(agent.full_name || 'A').charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-slate-900 truncate">{agent.full_name || 'Agent'}</p>
+                          {agent.agency_name && (
+                            <p className="text-xs text-slate-500 truncate flex items-center gap-1">
+                              <Building className="w-3 h-3" />
+                              {agent.agency_name}
+                            </p>
+                          )}
+                          {agent.area_of_operation && (
+                            <p className="text-xs text-green-600 font-medium mt-0.5">
+                              Areas: {agent.area_of_operation.split(',').join(', ')}
+                            </p>
+                          )}
+                        </div>
+                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-6 mb-6 bg-slate-50 rounded-xl border border-slate-200">
+                  <Building2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                  <p className="text-sm text-slate-500">No agents currently covering the {submittedPostcode.toUpperCase()} area.</p>
+                  <p className="text-xs text-slate-400 mt-1">We'll notify agents when they register for your area.</p>
+                </div>
+              )}
+
+              <Button
+                onClick={() => window.location.href = '/client-dashboard'}
+                className="w-full h-12 bg-green-700 hover:bg-green-800 text-white text-base font-semibold"
+              >
+                Go to Dashboard <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   return (

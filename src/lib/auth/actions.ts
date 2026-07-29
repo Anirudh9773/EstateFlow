@@ -976,22 +976,79 @@ export async function getAgentProperties() {
     return { success: true, data: properties || [] }
   }
 
-  const cleanArea = agent.area_of_operation.trim().toLowerCase()
-  
-  // Filter properties based on postcode matching
+  // Split comma-separated area codes into an array
+  const agentAreaCodes = agent.area_of_operation
+    .split(',')
+    .map((a: string) => a.trim().toUpperCase())
+    .filter(Boolean)
+
+  // Filter properties based on postcode area prefix matching
   const matchedProperties = (properties || []).filter(property => {
     if (!property.postcode) return false
-    const cleanPostcode = property.postcode.trim().toLowerCase()
+    const cleanPostcode = property.postcode.trim().toUpperCase()
     
-    // Check if either postcode starts with, is included in, or matches
-    return (
-      cleanPostcode.includes(cleanArea) || 
-      cleanArea.includes(cleanPostcode) ||
-      cleanArea === 'all' || 
-      cleanArea === 'pan city' || 
-      cleanArea === 'pan-city'
+    // Extract the postcode area prefix (1-2 letters at the start)
+    const prefixMatch = cleanPostcode.match(/^([A-Z]{1,2})/)
+    const postcodePrefix = prefixMatch ? prefixMatch[1] : ''
+
+    if (!postcodePrefix) return false
+
+    // Check if any of the agent's areas match
+    return agentAreaCodes.some((area: string) =>
+      area === postcodePrefix ||
+      area === 'ALL' ||
+      area === 'NATIONWIDE' ||
+      area === 'PAN CITY' ||
+      area === 'PAN-CITY'
     )
   })
 
   return { success: true, data: matchedProperties }
 }
+
+export async function getMatchedAgents(postcode: string) {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  
+  if (userError || !user) {
+    return { error: 'Not authenticated', data: [] }
+  }
+
+  // Extract area prefix from the submitted postcode
+  const cleanPostcode = postcode.trim().toUpperCase()
+  const prefixMatch = cleanPostcode.match(/^([A-Z]{1,2})/)
+  const postcodePrefix = prefixMatch ? prefixMatch[1] : ''
+
+  if (!postcodePrefix) {
+    return { error: 'Invalid postcode format', data: [] }
+  }
+
+  // Fetch all agents with area of operation set
+  const { data: agents, error: agentsError } = await supabase
+    .from('agents')
+    .select('id, full_name, email, agency_name, area_of_operation')
+    .not('area_of_operation', 'is', null)
+
+  if (agentsError) {
+    console.error('Error fetching agents:', agentsError)
+    return { error: agentsError.message, data: [] }
+  }
+
+  // Filter agents whose area_of_operation includes the postcode prefix
+  const matchedAgents = (agents || []).filter(agent => {
+    if (!agent.area_of_operation) return false
+    const areaCodes = agent.area_of_operation
+      .split(',')
+      .map((a: string) => a.trim().toUpperCase())
+      .filter(Boolean)
+
+    return areaCodes.some((area: string) =>
+      area === postcodePrefix ||
+      area === 'ALL' ||
+      area === 'NATIONWIDE'
+    )
+  })
+
+  return { success: true, data: matchedAgents }
+}
+

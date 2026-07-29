@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2, X, ChevronDown, Search } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,147 @@ import { signInWithOAuth } from "@/lib/auth/actions"
 import { agentSignUpSchema, type AgentSignUpFormData } from "@/lib/validations/auth"
 import { Logo } from "@/components/logo"
 import { toast } from "sonner"
+import { UK_POSTCODE_AREAS } from "@/data/postcodeAreas"
+
+interface AreaOfOperationSelectProps {
+  value: string
+  onChange: (value: string) => void
+}
+
+function AreaOfOperationSelect({ value, onChange }: AreaOfOperationSelectProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [search, setSearch] = useState("")
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const selectedCodes = value ? value.split(",").filter(Boolean) : []
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const filteredAreas = UK_POSTCODE_AREAS.filter(area => {
+    const q = search.toLowerCase()
+    return area.code.toLowerCase().includes(q) || area.name.toLowerCase().includes(q)
+  })
+
+  const toggleArea = (code: string) => {
+    if (selectedCodes.includes(code)) {
+      const updated = selectedCodes.filter(c => c !== code)
+      onChange(updated.join(","))
+    } else {
+      onChange([...selectedCodes, code].join(","))
+    }
+  }
+
+  const removeArea = (code: string) => {
+    const updated = selectedCodes.filter(c => c !== code)
+    onChange(updated.join(","))
+  }
+
+  return (
+    <div ref={containerRef} className="relative">
+      {/* Trigger */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full h-10 px-3 border border-slate-300 rounded-md bg-white text-sm hover:border-slate-400 focus:border-navy focus:ring-2 focus:ring-navy/20 focus:outline-none transition-colors"
+      >
+        <span className="text-slate-500 truncate">
+          {selectedCodes.length === 0
+            ? "Select areas..."
+            : `${selectedCodes.length} area${selectedCodes.length > 1 ? "s" : ""} selected`}
+        </span>
+        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+      </button>
+
+      {/* Selected badges */}
+      {selectedCodes.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          {selectedCodes.map(code => {
+            const area = UK_POSTCODE_AREAS.find(a => a.code === code)
+            return (
+              <span
+                key={code}
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md text-xs font-medium"
+              >
+                {code} — {area?.name || code}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); removeArea(code) }}
+                  className="text-emerald-500 hover:text-emerald-700 transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Dropdown */}
+      {isOpen && (
+        <div className="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg max-h-56 overflow-hidden">
+          {/* Search input */}
+          <div className="p-2 border-b border-slate-100 sticky top-0 bg-white">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search postcode areas..."
+                className="w-full h-8 pl-8 pr-3 text-xs border border-slate-200 rounded-md focus:border-navy focus:ring-1 focus:ring-navy/20 focus:outline-none"
+                autoFocus
+              />
+            </div>
+          </div>
+          {/* Options list */}
+          <div className="overflow-y-auto max-h-44">
+            {filteredAreas.length === 0 ? (
+              <div className="px-3 py-4 text-xs text-slate-400 text-center">No areas found</div>
+            ) : (
+              filteredAreas.map(area => {
+                const isSelected = selectedCodes.includes(area.code)
+                return (
+                  <button
+                    key={area.code}
+                    type="button"
+                    onClick={() => toggleArea(area.code)}
+                    className={`flex items-center gap-2.5 w-full px-3 py-2 text-left text-xs transition-colors ${
+                      isSelected
+                        ? "bg-emerald-50 text-emerald-700 font-medium"
+                        : "hover:bg-slate-50 text-slate-700"
+                    }`}
+                  >
+                    <span className={`flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                      isSelected ? "bg-emerald-600 border-emerald-600" : "border-slate-300"
+                    }`}>
+                      {isSelected && (
+                        <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </span>
+                    <span className="font-mono font-bold text-[11px] w-7">{area.code}</span>
+                    <span className="truncate">{area.name}</span>
+                  </button>
+                )
+              })
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 
 export default function SimpleAgentSignUpForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -237,14 +378,12 @@ export default function SimpleAgentSignUpForm() {
         </div>
       </div>
 
-      {/* Area of Operation full width */}
+      {/* Area of Operation multi-select */}
       <div className="space-y-1.5">
         <label className="text-xs font-semibold text-slate-600">Area of Operation</label>
-        <Input
-          type="text"
-          placeholder="e.g. SW1A or Kensington"
-          className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
-          {...register("areaOfOperation")}
+        <AreaOfOperationSelect
+          value={watch("areaOfOperation") || ""}
+          onChange={(val) => setValue("areaOfOperation", val, { shouldValidate: true })}
         />
         {errors.areaOfOperation && (
           <p className="text-xs text-red-600">{errors.areaOfOperation.message}</p>
