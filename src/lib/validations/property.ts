@@ -20,10 +20,27 @@ export function validatePhone(phone: string): boolean {
   if (!PHONE_ALLOWED_CHARS.test(trimmed)) return false;
   // Must not contain any letters
   if (/[a-zA-Z]/.test(trimmed)) return false;
-  // Extract digits
+  
+  if (trimmed.startsWith('+91')) {
+    const localDigits = trimmed.replace(/\D/g, "").slice(2);
+    return localDigits.length === 10;
+  }
+  if (trimmed.startsWith('+1')) {
+    const localDigits = trimmed.replace(/\D/g, "").slice(1);
+    return localDigits.length === 10;
+  }
+  if (trimmed.startsWith('+44')) {
+    const localDigits = trimmed.replace(/\D/g, "").slice(2);
+    return localDigits.length === 10 || localDigits.length === 11;
+  }
+  if (trimmed.startsWith('+971')) {
+    const localDigits = trimmed.replace(/\D/g, "").slice(3);
+    return localDigits.length >= 9 && localDigits.length <= 10;
+  }
+
+  // Extract digits fallback
   const digits = trimmed.replace(/\D/g, "");
-  // Standard phone length (at least 10 digits, max 15 digits)
-  return digits.length >= 10 && digits.length <= 15;
+  return digits.length >= 9 && digits.length <= 15;
 }
 
 export function validatePriceBounds(intent: string, price: number): { isValid: boolean; error?: string } {

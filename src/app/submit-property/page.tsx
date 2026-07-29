@@ -828,9 +828,33 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: St
   const isLastNameValid = formData.lastName.trim().length > 0
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
   
-  // Standard phone validation (10 to 11 digits)
-  const phoneDigits = formData.phone.replace(/[\s-]/g, "")
-  const isPhoneValid = /^\d{10,11}$/.test(phoneDigits)
+  // Country-specific phone validation and digit limits
+  const phoneDigits = formData.phone.replace(/\D/g, "")
+  let isPhoneValid = false
+  let phoneErrorMessage = "Please enter a valid phone number"
+  let maxDigits = 11
+
+  if (formData.countryCode === "+91") {
+    isPhoneValid = /^\d{10}$/.test(phoneDigits)
+    phoneErrorMessage = "Please enter a valid 10-digit Indian phone number"
+    maxDigits = 10
+  } else if (formData.countryCode === "+1") {
+    isPhoneValid = /^\d{10}$/.test(phoneDigits)
+    phoneErrorMessage = "Please enter a valid 10-digit US phone number"
+    maxDigits = 10
+  } else if (formData.countryCode === "+44") {
+    isPhoneValid = /^\d{10,11}$/.test(phoneDigits)
+    phoneErrorMessage = "Please enter a valid 10 or 11-digit UK phone number"
+    maxDigits = 11
+  } else if (formData.countryCode === "+971") {
+    isPhoneValid = /^\d{9,10}$/.test(phoneDigits)
+    phoneErrorMessage = "Please enter a valid 9 or 10-digit UAE phone number"
+    maxDigits = 10
+  } else {
+    isPhoneValid = /^\d{9,11}$/.test(phoneDigits)
+    phoneErrorMessage = "Please enter a valid phone number"
+    maxDigits = 11
+  }
 
   const isFormValid = isFirstNameValid && isLastNameValid && isEmailValid && isPhoneValid
 
@@ -908,7 +932,8 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: St
               value={formData.phone}
               onChange={e => {
                 const val = e.target.value;
-                if (/^[0-9+\s-()]*$/.test(val)) {
+                const digits = val.replace(/\D/g, "");
+                if (/^[0-9+\s-()]*$/.test(val) && digits.length <= maxDigits) {
                   update("phone", val);
                 }
               }}
@@ -920,7 +945,7 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: St
             />
           </div>
           {touched.phone && !isPhoneValid && (
-            <span className="text-xs text-red-500">Please enter a valid 10 or 11 digit phone number</span>
+            <span className="text-xs text-red-500">{phoneErrorMessage}</span>
           )}
         </div>
       </div>
