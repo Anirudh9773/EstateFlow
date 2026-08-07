@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { AlertTriangle, RefreshCw, Home, ArrowLeft } from 'lucide-react'
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 
 export default function GlobalErrorPage({
   error,
@@ -37,7 +37,7 @@ export default function GlobalErrorPage({
               We encountered an unexpected error while loading this page. Don&apos;t worry, your data is safe.
             </p>
             {error?.digest && (
-              <p className="text-[11px] font-mono bg-slate-100 text-slate-500 py-1 px-2 rounded.inline-block mt-2">
+              <p className="text-[11px] font-mono bg-slate-100 text-slate-500 py-1 px-2 rounded inline-block mt-2">
                 Error Ref: {error.digest}
               </p>
             )}

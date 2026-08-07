@@ -14,7 +14,7 @@ export default function AboutCTA() {
         title: 'Are You an Estate Agent?',
         description: 'Join 1,200+ verified agents receiving qualified leads directly to your inbox. Hyper-local targeting, instant notifications.',
         buttonText: 'Join EstateFlow',
-        buttonHref: '/agents/join',
+        buttonHref: '/join',
         buttonVariant: 'secondary',
       }}
       footerText="EstateFlow Ltd. • Registered in England and Wales • Connecting property owners with verified UK estate agents since 2021"

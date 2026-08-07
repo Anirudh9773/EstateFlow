@@ -166,11 +166,13 @@ export default function JoinPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button 
-              className="w-full bg-navy text-gold hover:bg-navy/90"
-            >
-              <Link href="/sign-in">Go to Login</Link>
-            </Button>
+            <Link href="/sign-in">
+              <Button 
+                className="w-full bg-navy text-gold hover:bg-navy/90"
+              >
+                Go to Login
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -238,6 +240,12 @@ export default function JoinPage() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => updateFormData("phone", e.target.value)}
+                    onKeyDown={(e) => {
+                      // Block letters from being typed in the phone field
+                      if (/[a-zA-Z]/.test(e.key) && e.key.length === 1) {
+                        e.preventDefault()
+                      }
+                    }}
                     placeholder="+44 20 1234 5678"
                     className={errors.phone ? "border-red-500" : ""}
                   />
@@ -374,9 +382,10 @@ export default function JoinPage() {
                       <SelectValue placeholder="Select a plan" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="starter">Starter - £29/month</SelectItem>
-                      <SelectItem value="regional">Regional - £79/month</SelectItem>
-                      <SelectItem value="pro">Pro - £149/month</SelectItem>
+                      <SelectItem value="local">Local Agent - £29/month</SelectItem>
+                      <SelectItem value="city">City Agent - £79/month</SelectItem>
+                      <SelectItem value="state">State Agent - £149/month</SelectItem>
+                      <SelectItem value="national">National Agent - £299/month</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.plan && (

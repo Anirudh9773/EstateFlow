@@ -56,7 +56,16 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 - **ALWAYS use `pnpm`** - This project uses pnpm, not npm or yarn
 - Commands: `pnpm install`, `pnpm dev`, `pnpm build`
 
-### Recent Major Updates (April 2026, June 2026 & July 2026)
+### Recent Major Updates (April 2026, June 2026, July 2026 & August 2026)
+
+#### Comprehensive Website Audit & 17 Quality/Route Fixes (August 2026)
+- **Zero 404 Route Integrity**: Fixed broken link in `AboutCTA.tsx` where "Join EstateFlow" pointed to non-existent `/agents/join` (changed to `/join`).
+- **Footer Navigation Polish**: Renamed misleading `"Agent login"` link to `"Sign in"` (both roles share unified `/sign-in` route) and added developer TODOs for social links.
+- **Unified Plan Naming**: Synchronized the `/join` page plan selection dropdown to match `/agent-pricing` tier names (*Local Agent - £29*, *City Agent - £79*, *State Agent - £149*, *National Agent - £299*).
+- **Client Session Protection**: Added confirmation prompt on `/agent-pricing` when a logged-in client clicks "Select Plan", preventing accidental sign-outs.
+- **Phone Input Validation**: Enforced real-time letter blocking on the `/join` page phone field.
+- **Layout & Code Polish**: Removed dead `/agent-login` config from `constants.ts`, corrected CSS `vh`/`dvh` ordering in `Header.tsx`, fixed CSS syntax typo in `error.tsx`, and removed unused imports/variables across the codebase.
+- **Full Build Verification**: Verified zero TypeScript/ESLint errors across all 31 static and dynamic App Router routes (`pnpm build`).
 
 #### Real-time Postcode, Phone & Price Bounds Validation & Letting Intent System (July 2026)
 - **Shared Property Validations**: Implemented a shared validation module (`src/lib/validations/property.ts`) enforcing standard UK postcode regex, phone formatting (rejecting letters), and budget constraints (£50k-£5M for selling, £100-£10k PCM for renting/letting).

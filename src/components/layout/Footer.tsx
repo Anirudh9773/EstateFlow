@@ -23,7 +23,7 @@ export default function Footer() {
   const agentLinks = [
     { label: 'Agent pricing', href: ROUTES.agentPricing },
     { label: 'Join as an agent', href: '/join' },
-    { label: 'Agent login', href: '/sign-in' },
+    { label: 'Sign in', href: '/sign-in' },
     { label: 'Agent dashboard', href: ROUTES.agentDashboard },
   ]
 
@@ -53,7 +53,7 @@ export default function Footer() {
               {/* Social icons */}
               <div className="flex items-center gap-3">
                 <a
-                  href="https://linkedin.com"
+                  href="https://linkedin.com" /* TODO: Update to actual EstateFlow LinkedIn URL */
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-slate-400 hover:text-navy transition-colors duration-150"
@@ -64,7 +64,7 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a
-                  href="https://twitter.com"
+                  href="https://twitter.com" /* TODO: Update to actual EstateFlow Twitter/X URL */
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-slate-400 hover:text-navy transition-colors duration-150"

@@ -204,6 +204,10 @@ export default function AgentPricingPage() {
         window.location.href = '/agent-dashboard'
       } else {
         e.preventDefault()
+        const confirmed = window.confirm(
+          'You are currently signed in as a client. To register as an agent, you will be signed out first. Continue?'
+        )
+        if (!confirmed) return
         const { signOut } = await import('@/lib/auth/actions')
         await signOut()
         window.location.href = '/sign-up/agent'

@@ -473,7 +473,7 @@ export default function Header() {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden absolute top-full left-0 right-0 h-[calc(100dvh-4rem)] h-[calc(100vh-4rem)] bg-white dark:bg-slate-950 border-t border-slate-200 overflow-y-auto overscroll-y-contain py-6 pb-16 px-4 shadow-xl z-50 animate-fadeIn">
+            <div className="lg:hidden absolute top-full left-0 right-0 h-[calc(100vh-4rem)] h-[calc(100dvh-4rem)] bg-white dark:bg-slate-950 border-t border-slate-200 overflow-y-auto overscroll-y-contain py-6 pb-16 px-4 shadow-xl z-50 animate-fadeIn">
               {/* Platform Section */}
               <div className="mb-4">
                 <h3 className="px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">

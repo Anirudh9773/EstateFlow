@@ -140,6 +140,7 @@ export async function fetchAgentById(id: string): Promise<Agent | null> {
       return null
     }
 
+    // Use browser client since this function is called from client components
     const supabase = createSupabaseClient()
     
     const { data, error } = await supabase
@@ -221,6 +222,7 @@ export async function fetchFeaturedAgents(): Promise<Agent[]> {
  */
 export async function searchAgents(searchTerm: string): Promise<Agent[]> {
   try {
+    // Use browser client since this function may be called from client components
     const supabase = createSupabaseClient()
     
     const { data, error } = await supabase

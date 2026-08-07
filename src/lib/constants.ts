@@ -36,6 +36,5 @@ export const HIDDEN_LAYOUT_ROUTES = [
   '/sign-up/agent',
   '/forgot-password',
   '/verify-2fa',
-  '/agent-login',
   '/reset-password',
 ] as const

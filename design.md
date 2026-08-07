@@ -458,10 +458,25 @@ To guarantee scrollable, lag-free mobile header overlay menus on small viewports
   }, [isOpen])
 
   // JSX Drawer Layout
-  <div className="fixed top-16 left-0 w-full h-[calc(100dvh-4rem)] bg-white z-40 overflow-y-auto overscroll-y-contain p-6 md:hidden">
+  <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] h-[calc(100dvh-4rem)] bg-white z-40 overflow-y-auto overscroll-y-contain p-6 md:hidden">
     {/* Navigation list */}
   </div>
   ```
+  *Note: Always place `vh` before `dvh` so browsers supporting `dvh` override `vh` as the preferred unit.*
+
+### 3. Button and Link Composition Standard
+Never nest a `<Link>` component inside text children of a `<Button>`. Always wrap the `<Button>` inside the `<Link>` or use Next.js navigation handlers:
+```tsx
+// ✅ Correct
+<Link href="/target">
+  <Button variant="primary">Click Me</Button>
+</Link>
+
+// ❌ Incorrect
+<Button variant="primary">
+  <Link href="/target">Click Me</Link>
+</Button>
+```
 
 ## Responsive Breakpoints
 - Mobile: Default styles
