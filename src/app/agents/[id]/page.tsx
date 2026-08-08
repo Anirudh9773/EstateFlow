@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,7 +26,28 @@ import { getInitials } from '@/lib/utils/getInitials'
 import StarRating from '@/components/ui/StarRating'
 import { agents as realAgents } from '@/data/agents'
 import { fetchAgentById } from '@/lib/agents/fetchAgents'
+import { validatePhone } from '@/lib/validations/property'
 import type { Agent } from '@/types/agent'
+
+// ── Form validation helpers ────────────────────────────────────
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+interface ContactFormErrors {
+  name?: string
+  email?: string
+  phone?: string
+  message?: string
+}
+
+interface CallbackFormErrors {
+  name?: string
+  phone?: string
+}
+
+/** Strip letters from phone input in real-time */
+function filterPhoneInput(value: string): string {
+  return value.replace(/[a-zA-Z]/g, '')
+}
 
 export default function PublicAgentProfilePage() {
   const params = useParams()
@@ -40,6 +61,64 @@ export default function PublicAgentProfilePage() {
   const [isCallbackOpen, setIsCallbackOpen] = useState(false)
   const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [callbackForm, setCallbackForm] = useState({ name: '', phone: '', time: 'morning' })
+  const [contactErrors, setContactErrors] = useState<ContactFormErrors>({})
+  const [callbackErrors, setCallbackErrors] = useState<CallbackFormErrors>({})
+  const [contactTouched, setContactTouched] = useState<Record<string, boolean>>({})
+  const [callbackTouched, setCallbackTouched] = useState<Record<string, boolean>>({})
+
+  // ── Contact form validation ────────────────────────────────
+  const validateContactForm = useCallback(() => {
+    const errors: ContactFormErrors = {}
+
+    if (!contactForm.name.trim()) {
+      errors.name = 'Name is required'
+    } else if (contactForm.name.trim().length < 2) {
+      errors.name = 'Name must be at least 2 characters'
+    }
+
+    if (!contactForm.email.trim()) {
+      errors.email = 'Email is required'
+    } else if (!EMAIL_REGEX.test(contactForm.email.trim())) {
+      errors.email = 'Please enter a valid email address'
+    }
+
+    if (contactForm.phone.trim() && !validatePhone(contactForm.phone)) {
+      errors.phone = 'Please enter a valid phone number'
+    }
+
+    if (!contactForm.message.trim()) {
+      errors.message = 'Message is required'
+    } else if (contactForm.message.trim().length < 10) {
+      errors.message = 'Message must be at least 10 characters'
+    }
+
+    setContactErrors(errors)
+    return Object.keys(errors).length === 0
+  }, [contactForm])
+
+  // ── Callback form validation ───────────────────────────────
+  const validateCallbackForm = useCallback(() => {
+    const errors: CallbackFormErrors = {}
+
+    if (!callbackForm.name.trim()) {
+      errors.name = 'Name is required'
+    } else if (callbackForm.name.trim().length < 2) {
+      errors.name = 'Name must be at least 2 characters'
+    }
+
+    if (!callbackForm.phone.trim()) {
+      errors.phone = 'Phone number is required'
+    } else if (!validatePhone(callbackForm.phone)) {
+      errors.phone = 'Please enter a valid phone number'
+    }
+
+    setCallbackErrors(errors)
+    return Object.keys(errors).length === 0
+  }, [callbackForm])
+
+  // Re-validate on each change (only shows errors for touched fields)
+  useEffect(() => { validateContactForm() }, [validateContactForm])
+  useEffect(() => { validateCallbackForm() }, [validateCallbackForm])
 
   useEffect(() => {
     async function loadAgent() {
@@ -481,31 +560,42 @@ export default function PublicAgentProfilePage() {
             </DialogHeader>
             <form onSubmit={(e) => {
               e.preventDefault();
+              // Mark all fields as touched to show any remaining errors
+              setContactTouched({ name: true, email: true, phone: true, message: true });
+              if (!validateContactForm()) return;
               toast.success(`Message sent successfully! ${agent.name} will contact you shortly.`);
               setIsContactOpen(false);
               setContactForm({ name: '', email: '', phone: '', message: '' });
+              setContactTouched({});
+              setContactErrors({});
             }} className="space-y-4 mt-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-500">Your Name</label>
+                <label className="text-xs font-semibold text-slate-500">Your Name <span className="text-red-500">*</span></label>
                 <Input 
                   type="text" 
-                  required 
                   placeholder="John Doe" 
                   value={contactForm.name}
                   onChange={e => setContactForm({...contactForm, name: e.target.value})}
-                  className="border border-slate-300 focus:border-navy" 
+                  onBlur={() => setContactTouched(prev => ({ ...prev, name: true }))}
+                  className={`border focus:border-navy ${contactTouched.name && contactErrors.name ? 'border-red-400' : 'border-slate-300'}`}
                 />
+                {contactTouched.name && contactErrors.name && (
+                  <p className="text-xs text-red-500 mt-0.5">{contactErrors.name}</p>
+                )}
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-500">Email Address</label>
+                <label className="text-xs font-semibold text-slate-500">Email Address <span className="text-red-500">*</span></label>
                 <Input 
                   type="email" 
-                  required 
                   placeholder="john@example.com" 
                   value={contactForm.email}
                   onChange={e => setContactForm({...contactForm, email: e.target.value})}
-                  className="border border-slate-300 focus:border-navy" 
+                  onBlur={() => setContactTouched(prev => ({ ...prev, email: true }))}
+                  className={`border focus:border-navy ${contactTouched.email && contactErrors.email ? 'border-red-400' : 'border-slate-300'}`}
                 />
+                {contactTouched.email && contactErrors.email && (
+                  <p className="text-xs text-red-500 mt-0.5">{contactErrors.email}</p>
+                )}
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500">Phone Number</label>
@@ -513,26 +603,37 @@ export default function PublicAgentProfilePage() {
                   type="tel" 
                   placeholder="07123 456789" 
                   value={contactForm.phone}
-                  onChange={e => setContactForm({...contactForm, phone: e.target.value})}
-                  className="border border-slate-300 focus:border-navy" 
+                  onChange={e => setContactForm({...contactForm, phone: filterPhoneInput(e.target.value)})}
+                  onBlur={() => setContactTouched(prev => ({ ...prev, phone: true }))}
+                  className={`border focus:border-navy ${contactTouched.phone && contactErrors.phone ? 'border-red-400' : 'border-slate-300'}`}
                 />
+                {contactTouched.phone && contactErrors.phone && (
+                  <p className="text-xs text-red-500 mt-0.5">{contactErrors.phone}</p>
+                )}
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-500">Message</label>
+                <label className="text-xs font-semibold text-slate-500">Message <span className="text-red-500">*</span></label>
                 <textarea 
-                  required 
                   rows={4}
                   placeholder={`Hello ${agent.name}, I would like to discuss...`} 
                   value={contactForm.message}
                   onChange={e => setContactForm({...contactForm, message: e.target.value})}
-                  className="w-full border border-slate-300 rounded-lg p-2 focus:outline-none focus:border-navy text-sm resize-none" 
+                  onBlur={() => setContactTouched(prev => ({ ...prev, message: true }))}
+                  className={`w-full border rounded-lg p-2 focus:outline-none focus:border-navy text-sm resize-none ${contactTouched.message && contactErrors.message ? 'border-red-400' : 'border-slate-300'}`}
                 />
+                {contactTouched.message && contactErrors.message && (
+                  <p className="text-xs text-red-500 mt-0.5">{contactErrors.message}</p>
+                )}
               </div>
               <div className="flex gap-3 justify-end pt-2">
-                <Button type="button" variant="outline" onClick={() => setIsContactOpen(false)} className="cursor-pointer">
+                <Button type="button" variant="outline" onClick={() => { setIsContactOpen(false); setContactTouched({}); }} className="cursor-pointer">
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-navy text-gold hover:bg-navy/90 cursor-pointer">
+                <Button 
+                  type="submit" 
+                  className="bg-navy text-gold hover:bg-navy/90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={Object.keys(contactErrors).length > 0 && Object.keys(contactTouched).length > 0}
+                >
                   Send Message
                 </Button>
               </div>
@@ -551,31 +652,42 @@ export default function PublicAgentProfilePage() {
             </DialogHeader>
             <form onSubmit={(e) => {
               e.preventDefault();
+              // Mark all fields as touched to show any remaining errors
+              setCallbackTouched({ name: true, phone: true });
+              if (!validateCallbackForm()) return;
               toast.success(`Callback requested successfully! ${agent.name} will call you back.`);
               setIsCallbackOpen(false);
               setCallbackForm({ name: '', phone: '', time: 'morning' });
+              setCallbackTouched({});
+              setCallbackErrors({});
             }} className="space-y-4 mt-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-500">Your Name</label>
+                <label className="text-xs font-semibold text-slate-500">Your Name <span className="text-red-500">*</span></label>
                 <Input 
                   type="text" 
-                  required 
                   placeholder="John Doe" 
                   value={callbackForm.name}
                   onChange={e => setCallbackForm({...callbackForm, name: e.target.value})}
-                  className="border border-slate-300 focus:border-navy" 
+                  onBlur={() => setCallbackTouched(prev => ({ ...prev, name: true }))}
+                  className={`border focus:border-navy ${callbackTouched.name && callbackErrors.name ? 'border-red-400' : 'border-slate-300'}`}
                 />
+                {callbackTouched.name && callbackErrors.name && (
+                  <p className="text-xs text-red-500 mt-0.5">{callbackErrors.name}</p>
+                )}
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-500">Phone Number</label>
+                <label className="text-xs font-semibold text-slate-500">Phone Number <span className="text-red-500">*</span></label>
                 <Input 
                   type="tel" 
-                  required 
                   placeholder="07123 456789" 
                   value={callbackForm.phone}
-                  onChange={e => setCallbackForm({...callbackForm, phone: e.target.value})}
-                  className="border border-slate-300 focus:border-navy" 
+                  onChange={e => setCallbackForm({...callbackForm, phone: filterPhoneInput(e.target.value)})}
+                  onBlur={() => setCallbackTouched(prev => ({ ...prev, phone: true }))}
+                  className={`border focus:border-navy ${callbackTouched.phone && callbackErrors.phone ? 'border-red-400' : 'border-slate-300'}`}
                 />
+                {callbackTouched.phone && callbackErrors.phone && (
+                  <p className="text-xs text-red-500 mt-0.5">{callbackErrors.phone}</p>
+                )}
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500">Preferred Time to Call</label>
@@ -590,10 +702,14 @@ export default function PublicAgentProfilePage() {
                 </select>
               </div>
               <div className="flex gap-3 justify-end pt-2">
-                <Button type="button" variant="outline" onClick={() => setIsCallbackOpen(false)} className="cursor-pointer">
+                <Button type="button" variant="outline" onClick={() => { setIsCallbackOpen(false); setCallbackTouched({}); }} className="cursor-pointer">
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-navy text-gold hover:bg-navy/90 cursor-pointer">
+                <Button 
+                  type="submit" 
+                  className="bg-navy text-gold hover:bg-navy/90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={Object.keys(callbackErrors).length > 0 && Object.keys(callbackTouched).length > 0}
+                >
                   Request Call
                 </Button>
               </div>
