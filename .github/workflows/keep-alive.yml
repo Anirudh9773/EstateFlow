@@ -1,32 +1,61 @@
 name: Keep Supabase Alive
 
+# =============================================================
+# SETUP REQUIRED - Add these GitHub Repository Secrets:
+#   SUPABASE_URL      -> Your Supabase project URL
+#   SUPABASE_ANON_KEY -> Your Supabase anon/public key
+#   SITE_URL          -> Deployed site URL (https://estateflow.vercel.app)
+#   KEEP_ALIVE_SECRET -> Random secret token (same as in .env.local)
+#
+# How to add: GitHub repo -> Settings -> Secrets and variables -> Actions
+# =============================================================
+
 on:
   schedule:
-    # Run every 3 days at 00:00 UTC to prevent the 7-day inactivity pause
-    - cron: '0 0 */3 * *'
-  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+    - cron: "0 9 */3 * *"   # Every 3 days at 09:00 UTC (2:30 PM IST)
+  workflow_dispatch:
 
 jobs:
-  ping-supabase:
+  keep-supabase-alive:
+    name: Ping Supabase to prevent auto-pause
     runs-on: ubuntu-latest
+
     steps:
-      - name: Ping Supabase API
+      - name: Ping Supabase REST API directly
         run: |
           if [ -z "${{ secrets.SUPABASE_URL }}" ] || [ -z "${{ secrets.SUPABASE_ANON_KEY }}" ]; then
-            echo "Error: SUPABASE_URL or SUPABASE_ANON_KEY secret is not set in GitHub repository secrets."
+            echo "ERROR: Add SUPABASE_URL and SUPABASE_ANON_KEY to GitHub Secrets"
             exit 1
           fi
-          
-          echo "Pinging Supabase REST API..."
-          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             "${{ secrets.SUPABASE_URL }}/rest/v1/")
-          
-          echo "Response code: $STATUS_CODE"
-          if [ "$STATUS_CODE" -eq 200 ] || [ "$STATUS_CODE" -eq 401 ] || [ "$STATUS_CODE" -eq 404 ]; then
-            echo "Successfully pinged Supabase (status: $STATUS_CODE). Activity registered!"
+          STATUS=$(echo "$RESPONSE" | tail -n1)
+          echo "Supabase HTTP Status: $STATUS"
+          if [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 401 ] || [ "$STATUS" -eq 404 ]; then
+            echo "SUCCESS - Supabase is alive! (HTTP $STATUS)"
           else
-            echo "Ping failed with unexpected status: $STATUS_CODE"
-            exit 1
+            echo "FAILED - HTTP $STATUS"; exit 1
           fi
+
+      - name: Ping EstateFlow keep-alive endpoint
+        run: |
+          SITE="${{ secrets.SITE_URL }}"
+          if [ -z "$SITE" ]; then echo "SITE_URL not set, skipping"; exit 0; fi
+          URL="$SITE/api/keep-alive"
+          SECRET="${{ secrets.KEEP_ALIVE_SECRET }}"
+          [ -n "$SECRET" ] && URL="$URL?token=$SECRET"
+          RESPONSE=$(curl -s -w "\n%{http_code}" --max-time 30 "$URL")
+          STATUS=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n-1)
+          echo "Site HTTP Status: $STATUS | Body: $BODY"
+          [ "$STATUS" -eq 200 ] && echo "SUCCESS - Site keep-alive OK!" || echo "WARNING - HTTP $STATUS (non-critical, Supabase already pinged)"
+
+      - name: Print summary
+        run: |
+          echo "================================================"
+          echo "  EstateFlow Keep-Alive Complete"
+          echo "  Supabase stays active for 7 more days."
+          echo "  Next run: in 3 days."
+          echo "================================================"
