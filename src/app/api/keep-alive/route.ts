@@ -12,7 +12,6 @@ import { NextResponse } from "next/server";
  * Protected by a secret token to prevent abuse.
  */
 export async function GET(request: Request) {
-  // Validate the secret token to prevent unauthorized pings
   const { searchParams } = new URL(request.url);
   const token = searchParams.get("token");
   const expectedToken = process.env.KEEP_ALIVE_SECRET;
@@ -42,7 +41,7 @@ export async function GET(request: Request) {
 
     if (error) {
       console.log(
-        "[keep-alive] Supabase responded (table query returned error but DB is alive):",
+        "[keep-alive] Supabase responded (query error but DB is alive):",
         error.message
       );
     }
@@ -50,7 +49,9 @@ export async function GET(request: Request) {
     const latencyMs = Date.now() - startTime;
 
     console.log(
-      `[keep-alive] SUCCESS Supabase is alive. Latency: ${latencyMs}ms — ${new Date().toISOString()}`
+      "[keep-alive] SUCCESS - Supabase is alive. Latency:",
+      latencyMs,
+      "ms"
     );
 
     return NextResponse.json({
@@ -61,7 +62,7 @@ export async function GET(request: Request) {
     });
   } catch (err) {
     const latencyMs = Date.now() - startTime;
-    console.error("[keep-alive] FAILED Supabase ping failed:", err);
+    console.error("[keep-alive] FAILED - Supabase ping failed:", err);
 
     return NextResponse.json(
       {
