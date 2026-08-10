@@ -289,7 +289,7 @@ export default function PricingPage() {
           {/* Agent Pricing Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {agentPricingSummary.map((tier) => (
-              <Link key={tier.category} href="/agent-pricing" className="block">
+              <Link key={tier.category} href={`/checkout?plan=${encodeURIComponent(tier.category)}&price=${encodeURIComponent(tier.price)}&cycle=monthly`} className="block">
                 <Card className="border border-[var(--color-ef-border)] bg-white p-6 hover:border-[var(--color-gold)]/30 hover:shadow-lg transition-all duration-300 cursor-pointer group">
                   <h3 className="text-lg font-semibold text-[var(--color-navy)] mb-2 group-hover:text-[var(--color-gold)] transition-colors">{tier.category}</h3>
                   <p className="text-[var(--color-text-secondary)] text-sm mb-4">{tier.description}</p>

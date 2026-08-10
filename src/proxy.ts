@@ -1,0 +1,141 @@
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+import { decodeSupabaseToken } from '@/lib/auth/twoFactor'
+
+export async function proxy(request: NextRequest) {
+  let response = NextResponse.next({ request })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          response = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
+
+  // 1. Redirect to sign-in if not authenticated and accessing protected routes or verify-2fa
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin-dashboard')
+  const isAgentRoute = request.nextUrl.pathname.startsWith('/agent-dashboard')
+  const isClientRoute = request.nextUrl.pathname.startsWith('/client-dashboard')
+  const isProtectedRoute =
+    isAgentRoute ||
+    isClientRoute ||
+    request.nextUrl.pathname.startsWith('/submit-property') ||
+    isAdminRoute
+
+  if (!user && (isProtectedRoute || request.nextUrl.pathname.startsWith('/verify-2fa'))) {
+    return NextResponse.redirect(new URL('/sign-in', request.url))
+  }
+
+  // 2. Redirect authenticated users based on 2FA status
+  if (user && session) {
+    const payload = decodeSupabaseToken(session.access_token)
+    const amr = payload?.amr || []
+    const sid = payload?.sid
+    const isPasswordLogin = amr.includes('password')
+    const isRecoverySession = amr.includes('recovery')
+    const userType = user.user_metadata?.user_type || 'client'
+
+    console.log('🔍 Proxy Auth Status:', {
+      email: user.email,
+      amr,
+      sid: sid ? 'Present' : 'Missing',
+      isPasswordLogin,
+      isRecoverySession,
+      path: request.nextUrl.pathname,
+      userType
+    })
+
+    // SECURITY: If this is a password recovery session (from a reset link),
+    // restrict access to ONLY the reset-password page. The user must complete
+    // the password reset before getting full access to the app.
+    if (isRecoverySession) {
+      const isResetRoute = request.nextUrl.pathname.startsWith('/reset-password')
+      if (!isResetRoute) {
+        return NextResponse.redirect(new URL('/reset-password', request.url))
+      }
+      // Allow access to /reset-password and return early
+      return response
+    }
+
+    const isAuthRoute =
+      request.nextUrl.pathname.startsWith('/sign-in') ||
+      request.nextUrl.pathname.startsWith('/sign-up')
+
+    const is2faRoute = request.nextUrl.pathname.startsWith('/verify-2fa')
+
+    // Role-based authorization guards
+    if (isAdminRoute && userType !== 'admin' && userType !== 'semi-admin') {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+
+    if (isAgentRoute && userType !== 'agent') {
+      const dest = (userType === 'admin' || userType === 'semi-admin') ? '/admin-dashboard' : '/'
+      return NextResponse.redirect(new URL(dest, request.url))
+    }
+
+    if (isClientRoute && userType !== 'client') {
+      const dest = (userType === 'admin' || userType === 'semi-admin')
+        ? '/admin-dashboard'
+        : userType === 'agent'
+        ? '/agent-dashboard'
+        : '/'
+      return NextResponse.redirect(new URL(dest, request.url))
+    }
+
+    let isVerified = true
+    if (isPasswordLogin && sid) {
+      const { isUser2faVerified } = await import('@/lib/auth/twoFactor')
+      isVerified = await isUser2faVerified(supabase, user.id, sid, request.cookies)
+    }
+
+    if (!isVerified) {
+      // If not 2FA-verified, force redirect to /verify-2fa for protected pages
+      if (isProtectedRoute) {
+        return NextResponse.redirect(new URL('/verify-2fa', request.url))
+      }
+    } else {
+      // If already verified, redirect away from /verify-2fa or standard auth pages
+      if (is2faRoute || isAuthRoute) {
+        let dest = '/'
+        if (userType === 'agent') {
+          dest = '/agent-dashboard'
+        } else if (userType === 'admin' || userType === 'semi-admin') {
+          dest = '/admin-dashboard'
+        }
+        return NextResponse.redirect(new URL(dest, request.url))
+      }
+    }
+  }
+
+  return response
+}
+
+export const config = {
+  matcher: [
+    '/agent-dashboard/:path*',
+    '/client-dashboard/:path*',
+    '/submit-property/:path*',
+    '/admin-dashboard/:path*',
+    '/sign-in',
+    '/sign-up/:path*',
+    '/verify-2fa',
+    '/reset-password',
+  ],
+}

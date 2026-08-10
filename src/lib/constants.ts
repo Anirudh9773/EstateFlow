@@ -26,6 +26,7 @@ export const ROUTES = {
   join: '/join',
   privacy: '/privacy',
   terms: '/terms',
+  checkout: '/checkout',
 } as const
 
 /** Routes where Header and Footer should be hidden */

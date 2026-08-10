@@ -196,23 +196,10 @@ export default function AgentPricingPage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
   const { user } = useUser()
 
-  const handleSelectPlan = async (e: React.MouseEvent) => {
-    if (user) {
-      const userType = user.user_metadata?.user_type
-      if (userType === 'agent') {
-        e.preventDefault()
-        window.location.href = '/agent-dashboard'
-      } else {
-        e.preventDefault()
-        const confirmed = window.confirm(
-          'You are currently signed in as a client. To register as an agent, you will be signed out first. Continue?'
-        )
-        if (!confirmed) return
-        const { signOut } = await import('@/lib/auth/actions')
-        await signOut()
-        window.location.href = '/sign-up/agent'
-      }
-    }
+  const handleSelectPlan = (tierCategory: string = "City Agent", tierPrice: string = "£79") => (e: React.MouseEvent) => {
+    e.preventDefault()
+    const checkoutUrl = `/checkout?plan=${encodeURIComponent(tierCategory)}&price=${encodeURIComponent(tierPrice)}&cycle=${billingCycle}`
+    window.location.href = checkoutUrl
   }
 
   return (
@@ -336,7 +323,7 @@ export default function AgentPricingPage() {
                 </div>
 
                 <Button 
-                  render={<Link href="/sign-up/agent" onClick={handleSelectPlan} />}
+                  render={<Link href={`/checkout?plan=${encodeURIComponent(tier.category)}&price=${encodeURIComponent(tier.price)}&cycle=${billingCycle}`} onClick={handleSelectPlan(tier.category, tier.price)} />}
                   nativeButton={false}
                   className={`w-full mt-auto cursor-pointer ${
                     selectedPlan === tier.category
@@ -471,9 +458,9 @@ export default function AgentPricingPage() {
             and connect with qualified leads.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/sign-up/agent">
+            <Link href={`/checkout?plan=City%20Agent&price=%C2%A379&cycle=${billingCycle}`}>
               <Button 
-                onClick={handleSelectPlan}
+                onClick={handleSelectPlan("City Agent", "£79")}
                 className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-6 py-3 cursor-pointer"
               >
                 Get Started Now
