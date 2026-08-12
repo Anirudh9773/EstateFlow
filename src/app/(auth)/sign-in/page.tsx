@@ -48,30 +48,35 @@ export default function SignInPage() {
     }
   }, [])
 
-  // Redirect if already logged in (handling 2FA check first)
+  const [isVerified, setIsVerified] = useState<boolean | null>(null)
+
+  // Redirect if already logged in and 2FA verified
   useEffect(() => {
     async function checkAuthAndRedirect() {
-      if (userLoading || !user) return
+      if (userLoading) return
+      if (!user) {
+        setIsVerified(false)
+        return
+      }
 
       try {
         const { isSession2faVerified } = await import('@/lib/auth/actions')
-        const isVerified = await isSession2faVerified()
+        const verified = await isSession2faVerified()
+        setIsVerified(verified)
 
-        if (!isVerified) {
-          router.replace('/verify-2fa')
-          return
-        }
-
-        const userType = user.user_metadata?.user_type || 'client'
-        if (userType === 'agent') {
-          router.replace('/agent-dashboard')
-        } else if (userType === 'admin' || userType === 'semi-admin') {
-          router.replace('/admin-dashboard')
-        } else {
-          router.replace('/client-dashboard')
+        if (verified) {
+          const userType = user.user_metadata?.user_type || 'client'
+          if (userType === 'agent') {
+            router.replace('/agent-dashboard')
+          } else if (userType === 'admin' || userType === 'semi-admin') {
+            router.replace('/admin-dashboard')
+          } else {
+            router.replace('/client-dashboard')
+          }
         }
       } catch (err) {
         console.error('Error verifying 2FA session on sign-in mount:', err)
+        setIsVerified(false)
       }
     }
 
@@ -79,7 +84,7 @@ export default function SignInPage() {
   }, [user, userLoading, router])
 
   // Show loading while checking auth status
-  if (userLoading) {
+  if (userLoading || (user && isVerified === null)) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="w-8 h-8 animate-spin text-navy" />
@@ -87,13 +92,13 @@ export default function SignInPage() {
     )
   }
 
-  // Don't render form if user is logged in (will redirect)
-  if (user) {
+  // Don't render form if user is logged in AND 2FA verified (will redirect)
+  if (user && isVerified === true) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-navy mx-auto mb-4" />
-          <p className="text-sm text-muted-foreground">Redirecting...</p>
+          <p className="text-sm text-muted-foreground">Redirecting to dashboard...</p>
         </div>
       </div>
     )
