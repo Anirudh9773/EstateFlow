@@ -99,6 +99,10 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL(dest, request.url))
     }
 
+    if (request.nextUrl.pathname.startsWith('/submit-property') && userType === 'agent') {
+      return NextResponse.redirect(new URL('/agent-dashboard', request.url))
+    }
+
     let isVerified = true
     if (isPasswordLogin && sid) {
       const { isUser2faVerified } = await import('@/lib/auth/twoFactor')

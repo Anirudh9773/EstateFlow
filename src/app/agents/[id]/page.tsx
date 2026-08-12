@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -26,11 +27,43 @@ import { getInitials } from '@/lib/utils/getInitials'
 import StarRating from '@/components/ui/StarRating'
 import { agents as realAgents } from '@/data/agents'
 import { fetchAgentById } from '@/lib/agents/fetchAgents'
-import { validatePhone } from '@/lib/validations/property'
+import { submitAgentDirectInquiry } from '@/lib/auth/actions'
 import type { Agent } from '@/types/agent'
 
 // ── Form validation helpers ────────────────────────────────────
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const NAME_REGEX = /^[A-Za-z\s'-]{2,50}$/
+
+function validateCountryPhone(countryCode: string, phone: string): { isValid: boolean; error?: string; maxDigits: number } {
+  const digits = phone.replace(/\D/g, '')
+  let isValid = false
+  let error = 'Please enter a valid phone number'
+  let maxDigits = 11
+
+  if (countryCode === '+91') {
+    maxDigits = 10
+    isValid = /^\d{10}$/.test(digits)
+    error = 'Please enter a valid 10-digit Indian phone number'
+  } else if (countryCode === '+1') {
+    maxDigits = 10
+    isValid = /^\d{10}$/.test(digits)
+    error = 'Please enter a valid 10-digit US phone number'
+  } else if (countryCode === '+44') {
+    maxDigits = 11
+    isValid = /^\d{10,11}$/.test(digits)
+    error = 'Please enter a valid 10 or 11-digit UK phone number'
+  } else if (countryCode === '+971') {
+    maxDigits = 10
+    isValid = /^\d{9,10}$/.test(digits)
+    error = 'Please enter a valid 9 or 10-digit UAE phone number'
+  } else {
+    maxDigits = 11
+    isValid = /^\d{9,11}$/.test(digits)
+    error = 'Please enter a valid phone number'
+  }
+
+  return { isValid, error, maxDigits }
+}
 
 interface ContactFormErrors {
   name?: string
@@ -44,11 +77,6 @@ interface CallbackFormErrors {
   phone?: string
 }
 
-/** Strip letters from phone input in real-time */
-function filterPhoneInput(value: string): string {
-  return value.replace(/[a-zA-Z]/g, '')
-}
-
 export default function PublicAgentProfilePage() {
   const params = useParams()
   const router = useRouter()
@@ -59,8 +87,11 @@ export default function PublicAgentProfilePage() {
   
   const [isContactOpen, setIsContactOpen] = useState(false)
   const [isCallbackOpen, setIsCallbackOpen] = useState(false)
-  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: '' })
-  const [callbackForm, setCallbackForm] = useState({ name: '', phone: '', time: 'morning' })
+  const [isSubmittingContact, setIsSubmittingContact] = useState(false)
+  const [isSubmittingCallback, setIsSubmittingCallback] = useState(false)
+  
+  const [contactForm, setContactForm] = useState({ name: '', email: '', countryCode: '+44', phone: '', message: '' })
+  const [callbackForm, setCallbackForm] = useState({ name: '', countryCode: '+44', phone: '', time: 'morning' })
   const [contactErrors, setContactErrors] = useState<ContactFormErrors>({})
   const [callbackErrors, setCallbackErrors] = useState<CallbackFormErrors>({})
   const [contactTouched, setContactTouched] = useState<Record<string, boolean>>({})
@@ -69,11 +100,16 @@ export default function PublicAgentProfilePage() {
   // ── Contact form validation ────────────────────────────────
   const validateContactForm = useCallback(() => {
     const errors: ContactFormErrors = {}
+    const trimmedName = contactForm.name.trim()
 
-    if (!contactForm.name.trim()) {
+    if (!trimmedName) {
       errors.name = 'Name is required'
-    } else if (contactForm.name.trim().length < 2) {
+    } else if (trimmedName.length < 2) {
       errors.name = 'Name must be at least 2 characters'
+    } else if (/\d/.test(trimmedName)) {
+      errors.name = 'Name cannot contain numbers'
+    } else if (!NAME_REGEX.test(trimmedName)) {
+      errors.name = 'Name must contain only letters'
     }
 
     if (!contactForm.email.trim()) {
@@ -82,8 +118,13 @@ export default function PublicAgentProfilePage() {
       errors.email = 'Please enter a valid email address'
     }
 
-    if (contactForm.phone.trim() && !validatePhone(contactForm.phone)) {
-      errors.phone = 'Please enter a valid phone number'
+    if (!contactForm.phone.trim()) {
+      errors.phone = 'Phone number is required'
+    } else {
+      const phoneVal = validateCountryPhone(contactForm.countryCode, contactForm.phone)
+      if (!phoneVal.isValid) {
+        errors.phone = phoneVal.error
+      }
     }
 
     if (!contactForm.message.trim()) {
@@ -99,17 +140,25 @@ export default function PublicAgentProfilePage() {
   // ── Callback form validation ───────────────────────────────
   const validateCallbackForm = useCallback(() => {
     const errors: CallbackFormErrors = {}
+    const trimmedName = callbackForm.name.trim()
 
-    if (!callbackForm.name.trim()) {
+    if (!trimmedName) {
       errors.name = 'Name is required'
-    } else if (callbackForm.name.trim().length < 2) {
+    } else if (trimmedName.length < 2) {
       errors.name = 'Name must be at least 2 characters'
+    } else if (/\d/.test(trimmedName)) {
+      errors.name = 'Name cannot contain numbers'
+    } else if (!NAME_REGEX.test(trimmedName)) {
+      errors.name = 'Name must contain only letters'
     }
 
     if (!callbackForm.phone.trim()) {
       errors.phone = 'Phone number is required'
-    } else if (!validatePhone(callbackForm.phone)) {
-      errors.phone = 'Please enter a valid phone number'
+    } else {
+      const phoneVal = validateCountryPhone(callbackForm.countryCode, callbackForm.phone)
+      if (!phoneVal.isValid) {
+        errors.phone = phoneVal.error
+      }
     }
 
     setCallbackErrors(errors)
@@ -558,16 +607,40 @@ export default function PublicAgentProfilePage() {
                 Send a secure message. {agent.name} typically responds in {agent.responseTime}.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={(e) => {
+            <form onSubmit={async (e) => {
               e.preventDefault();
-              // Mark all fields as touched to show any remaining errors
               setContactTouched({ name: true, email: true, phone: true, message: true });
               if (!validateContactForm()) return;
-              toast.success(`Message sent successfully! ${agent.name} will contact you shortly.`);
-              setIsContactOpen(false);
-              setContactForm({ name: '', email: '', phone: '', message: '' });
-              setContactTouched({});
-              setContactErrors({});
+              
+              setIsSubmittingContact(true);
+              try {
+                const result = await submitAgentDirectInquiry({
+                  agentId: agent.id,
+                  agentName: agent.name,
+                  type: 'inquiry',
+                  clientName: contactForm.name,
+                  clientEmail: contactForm.email,
+                  clientPhone: contactForm.phone,
+                  countryCode: contactForm.countryCode,
+                  message: contactForm.message
+                });
+
+                if (result?.error) {
+                  toast.error('Failed to send message: ' + result.error);
+                  return;
+                }
+
+                toast.success(`Message sent successfully! ${agent.name} will receive your inquiry on their dashboard.`);
+                setIsContactOpen(false);
+                setContactForm({ name: '', email: '', countryCode: '+44', phone: '', message: '' });
+                setContactTouched({});
+                setContactErrors({});
+              } catch (err) {
+                console.error('Contact submit error:', err);
+                toast.error('An error occurred while sending your message.');
+              } finally {
+                setIsSubmittingContact(false);
+              }
             }} className="space-y-4 mt-4">
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500">Your Name <span className="text-red-500">*</span></label>
@@ -575,7 +648,10 @@ export default function PublicAgentProfilePage() {
                   type="text" 
                   placeholder="John Doe" 
                   value={contactForm.name}
-                  onChange={e => setContactForm({...contactForm, name: e.target.value})}
+                  onChange={e => {
+                    const filtered = e.target.value.replace(/[^A-Za-z\s'-]/g, '');
+                    setContactForm({...contactForm, name: filtered});
+                  }}
                   onBlur={() => setContactTouched(prev => ({ ...prev, name: true }))}
                   className={`border focus:border-navy ${contactTouched.name && contactErrors.name ? 'border-red-400' : 'border-slate-300'}`}
                 />
@@ -598,15 +674,38 @@ export default function PublicAgentProfilePage() {
                 )}
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-500">Phone Number</label>
-                <Input 
-                  type="tel" 
-                  placeholder="07123 456789" 
-                  value={contactForm.phone}
-                  onChange={e => setContactForm({...contactForm, phone: filterPhoneInput(e.target.value)})}
-                  onBlur={() => setContactTouched(prev => ({ ...prev, phone: true }))}
-                  className={`border focus:border-navy ${contactTouched.phone && contactErrors.phone ? 'border-red-400' : 'border-slate-300'}`}
-                />
+                <label className="text-xs font-semibold text-slate-500">Phone Number <span className="text-red-500">*</span></label>
+                <div className="flex gap-2">
+                  <Select 
+                    value={contactForm.countryCode} 
+                    onValueChange={(val) => setContactForm(prev => ({ ...prev, countryCode: val || '+44', phone: '' }))}
+                  >
+                    <SelectTrigger className="w-28 h-10 border border-slate-300 bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                      <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                      <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                      <SelectItem value="+971">🇦🇪 +971</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input 
+                    type="tel" 
+                    placeholder="Phone Number" 
+                    value={contactForm.phone}
+                    onChange={e => {
+                      const val = e.target.value;
+                      const digits = val.replace(/\D/g, "");
+                      const { maxDigits } = validateCountryPhone(contactForm.countryCode, val);
+                      if (digits.length <= maxDigits) {
+                        setContactForm({ ...contactForm, phone: val });
+                      }
+                    }}
+                    onBlur={() => setContactTouched(prev => ({ ...prev, phone: true }))}
+                    className={`flex-1 border focus:border-navy ${contactTouched.phone && contactErrors.phone ? 'border-red-400' : 'border-slate-300'}`}
+                  />
+                </div>
                 {contactTouched.phone && contactErrors.phone && (
                   <p className="text-xs text-red-500 mt-0.5">{contactErrors.phone}</p>
                 )}
@@ -631,9 +730,10 @@ export default function PublicAgentProfilePage() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-navy text-gold hover:bg-navy/90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={Object.keys(contactErrors).length > 0 && Object.keys(contactTouched).length > 0}
+                  disabled={isSubmittingContact || (Object.keys(contactErrors).length > 0 && Object.keys(contactTouched).length > 0)}
+                  className="bg-navy text-gold hover:bg-navy/90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
+                  {isSubmittingContact && <Loader2 className="w-4 h-4 animate-spin" />}
                   Send Message
                 </Button>
               </div>
@@ -650,16 +750,39 @@ export default function PublicAgentProfilePage() {
                 Leave your number and {agent.name} will call you back.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={(e) => {
+            <form onSubmit={async (e) => {
               e.preventDefault();
-              // Mark all fields as touched to show any remaining errors
               setCallbackTouched({ name: true, phone: true });
               if (!validateCallbackForm()) return;
-              toast.success(`Callback requested successfully! ${agent.name} will call you back.`);
-              setIsCallbackOpen(false);
-              setCallbackForm({ name: '', phone: '', time: 'morning' });
-              setCallbackTouched({});
-              setCallbackErrors({});
+              
+              setIsSubmittingCallback(true);
+              try {
+                const result = await submitAgentDirectInquiry({
+                  agentId: agent.id,
+                  agentName: agent.name,
+                  type: 'callback',
+                  clientName: callbackForm.name,
+                  clientPhone: callbackForm.phone,
+                  countryCode: callbackForm.countryCode,
+                  preferredTime: callbackForm.time
+                });
+
+                if (result?.error) {
+                  toast.error('Failed to request callback: ' + result.error);
+                  return;
+                }
+
+                toast.success(`Callback requested successfully! ${agent.name} will receive your request on their dashboard.`);
+                setIsCallbackOpen(false);
+                setCallbackForm({ name: '', countryCode: '+44', phone: '', time: 'morning' });
+                setCallbackTouched({});
+                setCallbackErrors({});
+              } catch (err) {
+                console.error('Callback submit error:', err);
+                toast.error('An error occurred while requesting callback.');
+              } finally {
+                setIsSubmittingCallback(false);
+              }
             }} className="space-y-4 mt-4">
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500">Your Name <span className="text-red-500">*</span></label>
@@ -667,7 +790,10 @@ export default function PublicAgentProfilePage() {
                   type="text" 
                   placeholder="John Doe" 
                   value={callbackForm.name}
-                  onChange={e => setCallbackForm({...callbackForm, name: e.target.value})}
+                  onChange={e => {
+                    const filtered = e.target.value.replace(/[^A-Za-z\s'-]/g, '');
+                    setCallbackForm({...callbackForm, name: filtered});
+                  }}
                   onBlur={() => setCallbackTouched(prev => ({ ...prev, name: true }))}
                   className={`border focus:border-navy ${callbackTouched.name && callbackErrors.name ? 'border-red-400' : 'border-slate-300'}`}
                 />
@@ -677,14 +803,37 @@ export default function PublicAgentProfilePage() {
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-500">Phone Number <span className="text-red-500">*</span></label>
-                <Input 
-                  type="tel" 
-                  placeholder="07123 456789" 
-                  value={callbackForm.phone}
-                  onChange={e => setCallbackForm({...callbackForm, phone: filterPhoneInput(e.target.value)})}
-                  onBlur={() => setCallbackTouched(prev => ({ ...prev, phone: true }))}
-                  className={`border focus:border-navy ${callbackTouched.phone && callbackErrors.phone ? 'border-red-400' : 'border-slate-300'}`}
-                />
+                <div className="flex gap-2">
+                  <Select 
+                    value={callbackForm.countryCode} 
+                    onValueChange={(val) => setCallbackForm(prev => ({ ...prev, countryCode: val || '+44', phone: '' }))}
+                  >
+                    <SelectTrigger className="w-28 h-10 border border-slate-300 bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                      <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                      <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                      <SelectItem value="+971">🇦🇪 +971</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input 
+                    type="tel" 
+                    placeholder="Phone Number" 
+                    value={callbackForm.phone}
+                    onChange={e => {
+                      const val = e.target.value;
+                      const digits = val.replace(/\D/g, "");
+                      const { maxDigits } = validateCountryPhone(callbackForm.countryCode, val);
+                      if (digits.length <= maxDigits) {
+                        setCallbackForm({ ...callbackForm, phone: val });
+                      }
+                    }}
+                    onBlur={() => setCallbackTouched(prev => ({ ...prev, phone: true }))}
+                    className={`flex-1 border focus:border-navy ${callbackTouched.phone && callbackErrors.phone ? 'border-red-400' : 'border-slate-300'}`}
+                  />
+                </div>
                 {callbackTouched.phone && callbackErrors.phone && (
                   <p className="text-xs text-red-500 mt-0.5">{callbackErrors.phone}</p>
                 )}
@@ -707,9 +856,10 @@ export default function PublicAgentProfilePage() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-navy text-gold hover:bg-navy/90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={Object.keys(callbackErrors).length > 0 && Object.keys(callbackTouched).length > 0}
+                  disabled={isSubmittingCallback || (Object.keys(callbackErrors).length > 0 && Object.keys(callbackTouched).length > 0)}
+                  className="bg-navy text-gold hover:bg-navy/90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
+                  {isSubmittingCallback && <Loader2 className="w-4 h-4 animate-spin" />}
                   Request Call
                 </Button>
               </div>

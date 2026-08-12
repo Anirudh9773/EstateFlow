@@ -1052,3 +1052,45 @@ export async function getMatchedAgents(postcode: string) {
   return { success: true, data: matchedAgents }
 }
 
+export async function submitAgentDirectInquiry(payload: {
+  agentId: string
+  agentName: string
+  type: 'inquiry' | 'callback'
+  clientName: string
+  clientEmail?: string
+  clientPhone: string
+  countryCode: string
+  message?: string
+  preferredTime?: string
+}) {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const fullPhone = `${payload.countryCode} ${payload.clientPhone.trim()}`
+  const fullClientName = payload.clientName.trim()
+
+  const { data, error } = await supabase
+    .from('properties')
+    .insert({
+      client_id: user?.id || null,
+      intent: payload.type === 'callback' ? 'Callback Request' : 'Direct Inquiry',
+      postcode: 'DIRECT',
+      property_type: payload.type === 'callback' ? `Callback (${payload.preferredTime || 'Morning'})` : 'Agent Message',
+      bedroom_count: payload.message ? payload.message.substring(0, 50) : `Direct Inquiry for ${payload.agentName}`,
+      budget: 0,
+      timeline: 'Immediately',
+      client_name: fullClientName,
+      client_email: payload.clientEmail || 'N/A',
+      client_phone: fullPhone
+    })
+    .select()
+
+  if (error) {
+    console.error('Error inserting agent direct inquiry:', error)
+    return { error: error.message }
+  }
+
+  revalidatePath('/agent-dashboard/leads')
+  return { success: true, data }
+}
+

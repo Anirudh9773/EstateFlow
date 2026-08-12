@@ -8,8 +8,11 @@ import { Badge } from '@/components/ui/badge'
 import { SectionLabel, GoldDivider } from '@/components/ui'
 import { CheckCircle, Star, Users, MapPin, TrendingUp, Shield, Phone, Mail, Zap, ArrowRight, Crown, Home, Briefcase } from 'lucide-react'
 import { ROUTES } from '@/lib/constants'
+import { useUser } from '@/lib/auth/useUser'
 
 export default function PricingPage() {
+  const { user } = useUser()
+  const userType = user?.user_metadata?.user_type || 'client'
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
   const [selectedPlan, setSelectedPlan] = useState<string>('Professional')
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
@@ -250,6 +253,8 @@ export default function PricingPage() {
                       render={
                         tier.price === 'Custom' 
                           ? <Link href="/contact" /> 
+                          : userType === 'agent'
+                          ? <Link href="/agent-pricing" />
                           : <Link href="/submit-property" />
                       }
                       nativeButton={false}
@@ -259,7 +264,7 @@ export default function PricingPage() {
                           : "bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90"
                       }`}
                     >
-                      {tier.price === 'Custom' ? 'Contact Sales' : 'Choose Plan'}
+                      {tier.price === 'Custom' ? 'Contact Sales' : userType === 'agent' ? 'View Agent Pricing' : 'Choose Plan'}
                     </Button>
                   </CardContent>
                 </Card>
@@ -373,21 +378,39 @@ export default function PricingPage() {
           <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
             Join thousands of homeowners and agents who trust EstateFlow for their property needs.
           </p>
-           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/submit-property">
-              <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer">
-                Submit Your Property
-              </Button>
-            </Link>
-            <Link href="/sign-up/agent">
-              <Button 
-                variant="outline" 
-                className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-8 py-3 cursor-pointer"
-              >
-                Join as an Agent
-              </Button>
-            </Link>
-          </div>
+          {user && userType === 'agent' ? (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/agent-dashboard">
+                <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer">
+                  Agent Dashboard
+                </Button>
+              </Link>
+              <Link href="/agent-pricing">
+                <Button 
+                  variant="outline" 
+                  className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-8 py-3 cursor-pointer"
+                >
+                  View Agent Pricing
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/submit-property">
+                <Button className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer">
+                  Submit Your Property
+                </Button>
+              </Link>
+              <Link href="/sign-up/agent">
+                <Button 
+                  variant="outline" 
+                  className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-8 py-3 cursor-pointer"
+                >
+                  Join as an Agent
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </section>
     </div>

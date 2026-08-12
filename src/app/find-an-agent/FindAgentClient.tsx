@@ -7,12 +7,15 @@ import AgentCard from '@/components/agents/AgentCard'
 import { Button } from '@/components/ui/button'
 import { SectionLabel, GoldDivider } from '@/components/ui'
 import { Search, Filter } from 'lucide-react'
+import { useUser } from '@/lib/auth/useUser'
 
 interface FindAgentClientProps {
   agents: Agent[]
 }
 
 export default function FindAgentClient({ agents }: FindAgentClientProps) {
+  const { user } = useUser()
+  const userType = user?.user_metadata?.user_type || 'client'
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedLocation, setSelectedLocation] = useState('all')
   const [selectedSpecialisation, setSelectedSpecialisation] = useState('all')
@@ -213,19 +216,39 @@ export default function FindAgentClient({ agents }: FindAgentClientProps) {
       {/* CTA Section */}
       <section className="bg-[var(--color-navy)] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-3xl font-bold text-[var(--color-gold)] mb-4">
-            Can't find what you're looking for?
-          </h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-            Submit your property details and we'll match you with the perfect agents from our network.
-          </p>
-          <Button 
-            render={<Link href="/submit-property" />}
-            nativeButton={false}
-            className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer"
-          >
-            Submit Your Property
-          </Button>
+          {user && userType === 'agent' ? (
+            <>
+              <h2 className="text-3xl font-bold text-[var(--color-gold)] mb-4">
+                Are you an Agent looking for Leads?
+              </h2>
+              <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+                Access qualified client property submissions matched to your coverage area and grow your pipeline.
+              </p>
+              <Button 
+                render={<Link href="/agent-dashboard" />}
+                nativeButton={false}
+                className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer"
+              >
+                Go to Agent Dashboard
+              </Button>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl font-bold text-[var(--color-gold)] mb-4">
+                Can't find what you're looking for?
+              </h2>
+              <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+                Submit your property details and we'll match you with the perfect agents from our network.
+              </p>
+              <Button 
+                render={<Link href="/submit-property" />}
+                nativeButton={false}
+                className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-8 py-3 cursor-pointer"
+              >
+                Submit Your Property
+              </Button>
+            </>
+          )}
         </div>
       </section>
     </div>

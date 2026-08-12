@@ -1,9 +1,15 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { SectionLabel, GoldDivider, AvatarStack } from '@/components/ui'
 import { ROUTES } from '@/lib/constants'
+import { useUser } from '@/lib/auth/useUser'
 
 export default function Hero() {
+  const { user } = useUser()
+  const userType = user?.user_metadata?.user_type || 'client'
+
   const propertyPills = [
     { postcode: 'SW1A 1AA', beds: '3 bed', price: '£485,000', rotation: 'rotate-1' },
     { postcode: 'M1 2JN', beds: '2 bed', price: '£220,000', rotation: '-rotate-1' },
@@ -34,19 +40,30 @@ export default function Hero() {
             </p>
             
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-              <Link href={ROUTES.submitProperty}>
-                <Button
-                  size="lg"
-                  className="bg-navy text-gold hover:bg-navy/90 h-12 px-6 sm:px-8 text-sm font-medium w-full sm:w-auto"
-                >
-                  Submit Your Property
-                </Button>
-              </Link>
+              {user && userType === 'agent' ? (
+                <Link href={ROUTES.agentDashboard}>
+                  <Button
+                    size="lg"
+                    className="bg-navy text-gold hover:bg-navy/90 h-12 px-6 sm:px-8 text-sm font-medium w-full sm:w-auto cursor-pointer"
+                  >
+                    Agent Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link href={ROUTES.submitProperty}>
+                  <Button
+                    size="lg"
+                    className="bg-navy text-gold hover:bg-navy/90 h-12 px-6 sm:px-8 text-sm font-medium w-full sm:w-auto cursor-pointer"
+                  >
+                    Submit Your Property
+                  </Button>
+                </Link>
+              )}
               <Link href={ROUTES.agents}>
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-navy text-navy hover:bg-navy hover:text-gold h-12 px-6 sm:px-8 text-sm font-medium w-full sm:w-auto"
+                  className="border-navy text-navy hover:bg-navy hover:text-gold h-12 px-6 sm:px-8 text-sm font-medium w-full sm:w-auto cursor-pointer"
                 >
                   Browse agents →
                 </Button>

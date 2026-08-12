@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import AgentCard from "@/components/agents/AgentCard"
 import { Card } from "@/components/ui/card"
+import { useUser } from "@/lib/auth/useUser"
 import type { Agent } from "@/types/agent"
 
 interface BrowseAgentsClientProps {
@@ -12,6 +13,8 @@ interface BrowseAgentsClientProps {
 }
 
 export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) {
+  const { user } = useUser()
+  const userType = user?.user_metadata?.user_type || 'client'
   const [activeTab, setActiveTab] = useState("all")
   const [showAllAgents, setShowAllAgents] = useState(false)
 
@@ -162,25 +165,50 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
 
         {/* CTA Section */}
         <div className="text-center mt-12 p-6 sm:p-8 bg-navy text-white rounded-lg">
-          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gold">Ready to Find Your Perfect Agent?</h2>
-          <p className="mb-4 sm:mb-6 opacity-90 max-w-2xl mx-auto text-sm sm:text-base">
-            Get personalized recommendations based on your property needs and location. 
-            Our AI-powered matching system connects you with the best agents for your requirements.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <Link 
-              href="/submit-property"
-              className="px-6 py-3 bg-gold text-navy font-semibold rounded-lg hover:bg-gold/90 transition-colors text-sm sm:text-base cursor-pointer inline-block"
-            >
-              Get Matched
-            </Link>
-            <Link 
-              href="/find-an-agent"
-              className="px-6 py-3 border border-gold text-gold font-semibold rounded-lg hover:bg-gold/10 transition-colors text-sm sm:text-base inline-block"
-            >
-              Advanced Search
-            </Link>
-          </div>
+          {user && userType === 'agent' ? (
+            <>
+              <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gold">Grow Your Business with EstateFlow</h2>
+              <p className="mb-4 sm:mb-6 opacity-90 max-w-2xl mx-auto text-sm sm:text-base">
+                Manage your profile, view client property submissions matched to your service area, and track your active leads.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <Link 
+                  href="/agent-dashboard"
+                  className="px-6 py-3 bg-gold text-navy font-semibold rounded-lg hover:bg-gold/90 transition-colors text-sm sm:text-base cursor-pointer inline-block"
+                >
+                  Agent Dashboard
+                </Link>
+                <Link 
+                  href="/agent-pricing"
+                  className="px-6 py-3 border border-gold text-gold font-semibold rounded-lg hover:bg-gold/10 transition-colors text-sm sm:text-base inline-block"
+                >
+                  View Pricing Plans
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gold">Ready to Find Your Perfect Agent?</h2>
+              <p className="mb-4 sm:mb-6 opacity-90 max-w-2xl mx-auto text-sm sm:text-base">
+                Get personalized recommendations based on your property needs and location. 
+                Our AI-powered matching system connects you with the best agents for your requirements.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <Link 
+                  href="/submit-property"
+                  className="px-6 py-3 bg-gold text-navy font-semibold rounded-lg hover:bg-gold/90 transition-colors text-sm sm:text-base cursor-pointer inline-block"
+                >
+                  Get Matched
+                </Link>
+                <Link 
+                  href="/find-an-agent"
+                  className="px-6 py-3 border border-gold text-gold font-semibold rounded-lg hover:bg-gold/10 transition-colors text-sm sm:text-base inline-block"
+                >
+                  Advanced Search
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
