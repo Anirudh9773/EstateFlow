@@ -253,7 +253,7 @@ export default function AgentPricingPage() {
               className={`relative border-2 transition-all duration-300 hover:shadow-xl h-full flex flex-col ${
                 selectedPlan === tier.category
                   ? `border-[var(--color-gold)] shadow-lg scale-105` 
-                  : 'border-gray-200 hover:border-[var(--color-gold)]/30'
+                  : 'border-slate-200 hover:border-[var(--color-navy)]'
               }`}
               onClick={() => setSelectedPlan(tier.category)}
             >

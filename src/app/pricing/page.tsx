@@ -199,7 +199,7 @@ export default function PricingPage() {
                   className={`relative border-2 transition-all duration-300 hover:shadow-xl h-full flex flex-col ${
                     selectedPlan === tier.category
                       ? 'border-[var(--color-gold)] shadow-lg scale-105' 
-                      : 'border-gray-200 hover:border-[var(--color-gold)]/30'
+                      : 'border-slate-200 hover:border-[var(--color-navy)]'
                   }`}
                   onClick={() => setSelectedPlan(tier.category)}
                 >
@@ -293,7 +293,7 @@ export default function PricingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {agentPricingSummary.map((tier) => (
               <Link key={tier.category} href={`/checkout?plan=${encodeURIComponent(tier.category)}&price=${encodeURIComponent(tier.price)}&cycle=monthly`} className="block">
-                <Card className="border border-[var(--color-ef-border)] bg-white p-6 hover:border-[var(--color-gold)]/30 hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                <Card className="border-2 border-slate-200 bg-white p-6 hover:border-[var(--color-navy)] hover:shadow-xl transition-all duration-300 cursor-pointer group">
                   <h3 className="text-lg font-semibold text-[var(--color-navy)] mb-2 group-hover:text-[var(--color-gold)] transition-colors">{tier.category}</h3>
                   <p className="text-[var(--color-text-secondary)] text-sm mb-4">{tier.description}</p>
                   <div className="text-2xl font-bold text-[var(--color-navy)] mb-1">{tier.price}</div>
