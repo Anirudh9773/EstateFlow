@@ -81,14 +81,6 @@ export default function AgentDashboardLayout({
             </button>
           </div>
 
-          {/* Quick Action CTA */}
-          <Link href="/agent-dashboard/leads" className="block mb-6">
-            <Button className="w-full bg-gold text-navy hover:bg-gold/90 hover:text-navy font-semibold shadow-sm flex items-center justify-center gap-2">
-              <Users className="w-4 h-4" />
-              Browse Leads
-            </Button>
-          </Link>
-
           {/* Navigation Links */}
           <nav className="space-y-1.5">
             {navItems.map((item) => {
