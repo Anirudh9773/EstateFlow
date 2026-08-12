@@ -32,11 +32,12 @@ function CheckoutContent() {
   const cycleParam = searchParams.get('cycle') || 'monthly'
 
   const userType = user?.user_metadata?.user_type
+  const isClientPlan = ['basic', 'professional', 'homeowner', 'enterprise'].some(p => planParam.toLowerCase().includes(p))
 
   // Determine pricing details based on params
   const isAnnual = cycleParam === 'annual'
   const baseNumericPrice = parseInt(priceParam.replace(/[^0-9]/g, '')) || 79
-  const displayPrice = isAnnual 
+  const displayPrice = (!isClientPlan && isAnnual) 
     ? `£${Math.round(baseNumericPrice * 0.8)}` 
     : priceParam
 
@@ -47,11 +48,11 @@ function CheckoutContent() {
         {/* Top Navigation */}
         <div className="mb-8 flex items-center justify-between">
           <Link 
-            href="/agent-pricing" 
+            href={isClientPlan ? "/pricing" : "/agent-pricing"} 
             className="inline-flex items-center text-sm font-semibold text-slate-600 hover:text-[var(--color-navy)] transition-colors gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Pricing Plans
+            {isClientPlan ? "Back to Pricing" : "Back to Agent Pricing Plans"}
           </Link>
           
           <Badge className="bg-amber-100 text-amber-800 border border-amber-300 font-semibold px-3 py-1 text-xs">
@@ -81,24 +82,30 @@ function CheckoutContent() {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
           
-          {/* Left Column: Plan Summary (1 col on desktop or 3 col span) */}
+          {/* Left Column: Plan Summary */}
           <Card className="md:col-span-1 border-2 border-[var(--color-gold)]/40 bg-white shadow-lg flex flex-col justify-between">
             <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
               <div className="flex items-center justify-between mb-2">
                 <Badge className="bg-[var(--color-gold)] text-[var(--color-navy)] font-bold text-xs">
                   Selected Plan
                 </Badge>
-                <span className="text-xs text-slate-500 capitalize font-medium">{cycleParam} Billing</span>
+                <span className="text-xs text-slate-500 capitalize font-medium">
+                  {isClientPlan ? 'One-Time' : `${cycleParam} Billing`}
+                </span>
               </div>
               <CardTitle className="text-xl font-bold text-[var(--color-navy)]">
                 {planParam}
               </CardTitle>
               <CardDescription className="text-xs">
-                {planParam.includes('Local') 
+                {planParam.toLowerCase().includes('basic') 
+                  ? 'Perfect for single property listings & agent matching'
+                  : planParam.toLowerCase().includes('professional')
+                  ? 'Multiple property submissions & priority agent matching'
+                  : planParam.toLowerCase().includes('local')
                   ? 'Ideal for neighborhood specialists'
-                  : planParam.includes('City')
+                  : planParam.toLowerCase().includes('city')
                   ? 'City-wide coverage & boosted leads'
-                  : planParam.includes('State')
+                  : planParam.toLowerCase().includes('state')
                   ? 'Multi-county regional coverage'
                   : 'Nationwide UK agency coverage'
                 }
@@ -111,27 +118,53 @@ function CheckoutContent() {
                   {displayPrice}
                 </div>
                 <div className="text-xs text-[var(--color-text-secondary)] font-medium">
-                  per month {isAnnual ? '(billed annually - 20% OFF)' : ''}
+                  {isClientPlan 
+                    ? 'one-time payment' 
+                    : `per month ${isAnnual ? '(billed annually - 20% OFF)' : ''}`
+                  }
                 </div>
               </div>
 
               <div className="space-y-2 text-xs text-slate-600">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Full access to matched client leads</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Verified agent badge & profile listing</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Performance reporting dashboard</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>No long-term contract commitment</span>
-                </div>
+                {isClientPlan ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Submit property listings & reach verified agents</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Priority matching & market analytics</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Full access to client dashboard</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>7-day agent response guarantee</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Full access to matched client leads</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Verified agent badge & profile listing</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Performance reporting dashboard</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>No long-term contract commitment</span>
+                    </div>
+                  </>
+                )}
               </div>
             </CardContent>
 
@@ -142,7 +175,7 @@ function CheckoutContent() {
             </div>
           </Card>
 
-          {/* Right Column: Status & Next Steps (2 cols on desktop) */}
+          {/* Right Column: Status & Next Steps */}
           <Card className="md:col-span-2 border border-[var(--color-ef-border)] bg-white shadow-md">
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -171,7 +204,10 @@ function CheckoutContent() {
                       Complimentary Access During Gateway Upgrade
                     </h4>
                     <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                      While our card payment system is being finalized, all agent account features and dashboard access are available to registered agents. You can start using EstateFlow immediately!
+                      {isClientPlan
+                        ? 'While our card payment system is being finalized, all property submission and agent matching features are fully active! You can submit your property and connect with agents immediately.'
+                        : 'While our card payment system is being finalized, all agent account features and dashboard access are available to registered agents. You can start using EstateFlow immediately!'
+                      }
                     </p>
                   </div>
                 </div>
@@ -189,27 +225,49 @@ function CheckoutContent() {
                       </Button>
                     </Link>
                   ) : (
-                    <Link href="/contact" className="block">
-                      <Button className="w-full bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-12 text-base font-semibold gap-2 shadow-md cursor-pointer">
-                        <Mail className="w-5 h-5" />
-                        Contact Support for Agent Access
-                        <ArrowRight className="w-4 h-4 ml-auto" />
-                      </Button>
-                    </Link>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <Link href="/submit-property" className="block">
+                        <Button className="w-full bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer">
+                          Submit Your Property
+                        </Button>
+                      </Link>
+                      <Link href="/client-dashboard" className="block">
+                        <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 h-11 text-sm font-semibold cursor-pointer">
+                          Client Dashboard
+                        </Button>
+                      </Link>
+                    </div>
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Link href="/sign-up/agent" className="block">
-                      <Button className="w-full bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer">
-                        <Building2 className="w-4 h-4" />
-                        Create Agent Account
-                      </Button>
-                    </Link>
-                    <Link href="/sign-in" className="block">
-                      <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 h-11 text-sm font-semibold cursor-pointer">
-                        Already Registered? Sign In
-                      </Button>
-                    </Link>
+                    {isClientPlan ? (
+                      <>
+                        <Link href="/submit-property" className="block">
+                          <Button className="w-full bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer">
+                            Submit Your Property
+                          </Button>
+                        </Link>
+                        <Link href="/sign-in" className="block">
+                          <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 h-11 text-sm font-semibold cursor-pointer">
+                            Sign In / Register
+                          </Button>
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/sign-up/agent" className="block">
+                          <Button className="w-full bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer">
+                            <Building2 className="w-4 h-4" />
+                            Create Agent Account
+                          </Button>
+                        </Link>
+                        <Link href="/sign-in" className="block">
+                          <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 h-11 text-sm font-semibold cursor-pointer">
+                            Already Registered? Sign In
+                          </Button>
+                        </Link>
+                      </>
+                    )}
                   </div>
                 )}
 

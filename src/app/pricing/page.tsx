@@ -253,9 +253,7 @@ export default function PricingPage() {
                       render={
                         tier.price === 'Custom' 
                           ? <Link href="/contact" /> 
-                          : userType === 'agent'
-                          ? <Link href="/agent-pricing" />
-                          : <Link href="/submit-property" />
+                          : <Link href={`/checkout?plan=${encodeURIComponent(tier.category)}&price=${encodeURIComponent(tier.price)}&cycle=${billingCycle}`} />
                       }
                       nativeButton={false}
                       className={`w-full mt-auto cursor-pointer ${
@@ -264,7 +262,7 @@ export default function PricingPage() {
                           : "bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90"
                       }`}
                     >
-                      {tier.price === 'Custom' ? 'Contact Sales' : userType === 'agent' ? 'View Agent Pricing' : 'Choose Plan'}
+                      {tier.price === 'Custom' ? 'Contact Sales' : 'Choose Plan'}
                     </Button>
                   </CardContent>
                 </Card>
