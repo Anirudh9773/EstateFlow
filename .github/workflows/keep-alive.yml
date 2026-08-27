@@ -42,8 +42,9 @@ jobs:
       - name: Ping EstateFlow keep-alive endpoint
         continue-on-error: true
         run: |
-          SITE="${{ secrets.SITE_URL }}"
+          SITE=$(echo "${{ secrets.SITE_URL }}" | tr -d '[:space:]' | sed 's:/*$::')
           if [ -z "$SITE" ]; then echo "SITE_URL not set, skipping"; exit 0; fi
+          echo "Pinging: $SITE/api/keep-alive"
           URL="$SITE/api/keep-alive"
           SECRET="${{ secrets.KEEP_ALIVE_SECRET }}"
           [ -n "$SECRET" ] && URL="$URL?token=$SECRET"
