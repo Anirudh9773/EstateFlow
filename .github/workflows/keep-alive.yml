@@ -40,6 +40,7 @@ jobs:
           fi
 
       - name: Ping EstateFlow keep-alive endpoint
+        continue-on-error: true
         run: |
           SITE="${{ secrets.SITE_URL }}"
           if [ -z "$SITE" ]; then echo "SITE_URL not set, skipping"; exit 0; fi
