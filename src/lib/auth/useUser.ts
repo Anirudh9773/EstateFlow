@@ -9,10 +9,16 @@ export function useUser() {
   const [loading, setLoading] = useState(true)
 
   const refreshUser = useCallback(async () => {
-    const supabase = createSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    setUser(user)
-    setLoading(false)
+    try {
+      const supabase = createSupabaseClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    } catch (err) {
+      console.error('refreshUser error:', err)
+      setUser(null)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -20,10 +26,18 @@ export function useUser() {
     let active = true
 
     async function getInitialUser() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (active) {
-        setUser(user)
-        setLoading(false)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (active) {
+          setUser(user)
+          setLoading(false)
+        }
+      } catch (err) {
+        console.error('getInitialUser error:', err)
+        if (active) {
+          setUser(null)
+          setLoading(false)
+        }
       }
     }
 

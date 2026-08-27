@@ -21,6 +21,7 @@ export default function Header() {
   const [is2faVerified, setIs2faVerified] = useState<boolean | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function check2fa() {
       if (loading) return;
       if (!user) {
@@ -29,14 +30,19 @@ export default function Header() {
       }
       try {
         const { isSession2faVerified } = await import('@/lib/auth/actions');
-        const verified = await isSession2faVerified();
-        setIs2faVerified(verified);
+        // Race against a 5s timeout so the header never stays in loading state
+        const verified = await Promise.race([
+          isSession2faVerified(),
+          new Promise<boolean>((resolve) => setTimeout(() => resolve(true), 5000)),
+        ]);
+        if (!cancelled) setIs2faVerified(verified);
       } catch (e) {
         console.error('Error checking 2FA in Header:', e);
-        setIs2faVerified(true);
+        if (!cancelled) setIs2faVerified(true);
       }
     }
     check2fa();
+    return () => { cancelled = true; };
   }, [user, loading]);
 
   // Lock body scroll when mobile menu is open to prevent background scrolling
