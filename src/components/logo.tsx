@@ -8,14 +8,14 @@ export function LogoIcon({ className = "h-6 w-6" }: { className?: string }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Simple House Outline (Navy) */}
+      {/* Simple House Outline */}
       <path
         d="M3 10L12 3L21 10V21H3V10Z"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="text-navy"
+        className="text-[#F5F3EE]"
       />
       {/* Upward Growth & Flow Arrow (Gold) */}
       <path
@@ -41,13 +41,13 @@ export function Logo({
     <div className="flex items-center gap-2">
       <LogoIcon className={className} />
       <div className="flex flex-col">
-        <span className="text-lg sm:text-xl font-bold tracking-tight leading-tight select-none">
-          <span className="text-navy">Estate</span>
+        <span className="text-lg sm:text-xl font-bold tracking-tight leading-tight select-none font-heading">
+          <span className="text-[#F5F3EE]">Estate</span>
           <span className="text-gold">Flow</span>
         </span>
         {showSubtitle && (
-          <span className="text-xs text-slate-500 hidden lg:block leading-none mt-0.5 select-none">
-            Where properties meet the right agent
+          <span className="text-xs text-text-muted hidden lg:block leading-none mt-0.5 select-none tracking-wider uppercase" style={{ fontSize: '9px' }}>
+            Elite Property Matching
           </span>
         )}
       </div>

@@ -15,7 +15,7 @@ export default function StatsBar({ stats }: StatsBarProps) {
   ]
 
   return (
-    <section className="bg-navy py-12 sm:py-14">
+    <section className="bg-[#111118] py-12 sm:py-14 border-y border-gold/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 items-center">
           {statsArray.map((stat, index) => (
@@ -24,7 +24,7 @@ export default function StatsBar({ stats }: StatsBarProps) {
               {index < statsArray.length - 1 && (
                 <Separator
                   orientation="vertical"
-                  className="bg-white/10 h-12 ml-6 sm:ml-8 hidden md:block"
+                  className="bg-gold/15 h-12 ml-6 sm:ml-8 hidden md:block"
                 />
               )}
             </div>

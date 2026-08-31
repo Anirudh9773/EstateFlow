@@ -21,11 +21,11 @@ export default function HowItWorks() {
   ]
 
   return (
-    <section id="how-it-works" className="bg-white py-16 sm:py-20">
+    <section id="how-it-works" className="bg-[#0d0d14] py-16 sm:py-20 pt-28 sm:pt-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center">
           <SectionLabel>HOW IT WORKS</SectionLabel>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-navy mt-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#F5F3EE] mt-3 font-heading">
             How EstateFlow works
           </h2>
           <GoldDivider className="mx-auto mt-4 sm:mt-5 mb-3" />
@@ -36,11 +36,11 @@ export default function HowItWorks() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-12">
           {steps.map((step) => (
-            <Card key={step.number} className="border-2 border-slate-200 shadow-sm hover:shadow-md hover:border-gold/60 transition-all duration-300 p-6 sm:p-8 h-full">
-              <div className="w-12 h-12 rounded-full bg-gold/10 border-2 border-gold/30 flex items-center justify-center mb-6">
-                <span className="text-gold font-semibold text-sm">{step.number}</span>
+            <Card key={step.number} className="bg-[#1A1A24] border border-gold/10 shadow-none hover:border-gold/30 transition-all duration-300 p-6 sm:p-8 h-full gold-glow-hover">
+              <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/25 flex items-center justify-center mb-6">
+                <span className="text-gold font-semibold text-sm font-heading">{step.number}</span>
               </div>
-              <h3 className="font-semibold text-navy text-lg mb-2">{step.title}</h3>
+              <h3 className="font-semibold text-[#F5F3EE] text-lg mb-2">{step.title}</h3>
               <p className="text-text-secondary text-sm leading-relaxed">{step.description}</p>
             </Card>
           ))}

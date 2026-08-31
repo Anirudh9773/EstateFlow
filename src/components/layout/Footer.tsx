@@ -36,19 +36,35 @@ export default function Footer() {
 
   return (
     <>
-      {/* Separator line */}
-      <div className="bg-white border-t border-slate-200"></div>
-      
-      <footer className="bg-white pt-12 sm:pt-16 pb-8 border-t border-slate-200">
+      {/* Bottom CTA Banner */}
+      <section className="bg-[#111118] py-16 border-t border-gold/10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#F5F3EE] font-heading">
+            Get Matched With a Top Agent Today
+          </h2>
+          <p className="mt-4 text-[#B8B5AE] text-base sm:text-lg max-w-xl mx-auto">
+            Private viewings and exclusive listings available on request
+          </p>
+          <div className="mt-8">
+            <Link href="/submit-property">
+              <button className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold px-10 py-3 rounded-lg transition-all duration-200 hover:scale-105 cursor-pointer">
+                Get Started
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="bg-[#0a0a10] pt-12 sm:pt-16 pb-8 border-t border-gold/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           {/* Top grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 pb-8 sm:pb-12 border-b border-slate-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 pb-8 sm:pb-12 border-b border-gold/10">
             {/* Brand column */}
             <div className="col-span-1 sm:col-span-2 md:col-span-1">
               <div className="mb-3">
                 <Logo className="h-6 w-6" />
               </div>
-              <p className="text-slate-600 text-sm mb-4">{SITE_TAGLINE}</p>
+              <p className="text-text-muted text-sm mb-4">{SITE_TAGLINE}</p>
               
               {/* Social icons */}
               <div className="flex items-center gap-3">
@@ -56,7 +72,7 @@ export default function Footer() {
                   href="https://linkedin.com" /* TODO: Update to actual EstateFlow LinkedIn URL */
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-navy transition-colors duration-150"
+                  className="text-text-muted hover:text-gold transition-colors duration-150"
                   aria-label="LinkedIn"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -67,7 +83,7 @@ export default function Footer() {
                   href="https://twitter.com" /* TODO: Update to actual EstateFlow Twitter/X URL */
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-navy transition-colors duration-150"
+                  className="text-text-muted hover:text-gold transition-colors duration-150"
                   aria-label="Twitter"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -79,13 +95,13 @@ export default function Footer() {
 
             {/* Platform links */}
             <div>
-              <h3 className="text-navy font-medium mb-4 text-sm">Platform</h3>
+              <h3 className="text-gold font-medium mb-4 text-sm uppercase tracking-wider">Platform</h3>
               <ul className="space-y-2.5">
                 {platformLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-slate-600 text-sm hover:text-navy transition-colors duration-150"
+                      className="text-text-muted text-sm hover:text-gold transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -96,13 +112,13 @@ export default function Footer() {
 
             {/* For Agents links */}
             <div>
-              <h3 className="text-navy font-medium mb-4 text-sm">For Agents</h3>
+              <h3 className="text-gold font-medium mb-4 text-sm uppercase tracking-wider">For Agents</h3>
               <ul className="space-y-2.5">
                 {agentLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-slate-600 text-sm hover:text-navy transition-colors duration-150"
+                      className="text-text-muted text-sm hover:text-gold transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -113,13 +129,13 @@ export default function Footer() {
 
             {/* Company links */}
             <div className="col-span-1 sm:col-span-2 md:col-span-1">
-              <h3 className="text-navy font-medium mb-4 text-sm">Company</h3>
+              <h3 className="text-gold font-medium mb-4 text-sm uppercase tracking-wider">Company</h3>
               <ul className="space-y-2.5">
                 {companyLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-slate-600 text-sm hover:text-navy transition-colors duration-150"
+                      className="text-text-muted text-sm hover:text-gold transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -131,10 +147,10 @@ export default function Footer() {
 
           {/* Bottom bar */}
           <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-slate-500 text-xs text-center sm:text-left">
+            <p className="text-text-muted/60 text-xs text-center sm:text-left">
               © 2026 EstateFlow Ltd. All rights reserved.
             </p>
-            <p className="text-slate-400 text-xs text-center sm:text-right">Built for UK real estate</p>
+            <p className="text-text-muted/40 text-xs text-center sm:text-right">Built for UK real estate</p>
           </div>
         </div>
       </footer>

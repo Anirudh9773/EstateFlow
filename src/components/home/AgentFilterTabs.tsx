@@ -29,12 +29,12 @@ export default function AgentFilterTabs({ agents }: AgentFilterTabsProps) {
     <Tabs defaultValue="all" className="w-full">
       {/* Tab List */}
       <div className="w-full overflow-x-auto scrollbar-none flex sm:justify-center -mx-4 px-4 sm:mx-0 sm:px-0">
-        <TabsList className="inline-flex min-w-max max-w-2xl mb-8 sm:mb-10 rounded-full p-1.5 bg-slate-100/80 gap-1.5 group-data-horizontal/tabs:h-auto border border-slate-200/50 shadow-sm">
+        <TabsList className="inline-flex min-w-max max-w-2xl mb-8 sm:mb-10 rounded-full p-1.5 bg-[#1A1A24] gap-1.5 group-data-horizontal/tabs:h-auto border border-gold/10 shadow-sm">
           {cities.map((city) => (
             <TabsTrigger
               key={city.value}
               value={city.value}
-              className="text-slate-600 hover:bg-navy hover:text-gold data-active:bg-navy data-active:text-gold rounded-full px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 border-0 whitespace-nowrap cursor-pointer shadow-none data-active:shadow-md"
+              className="text-[#B8B5AE] hover:bg-gold/10 hover:text-gold data-active:bg-gold data-active:text-[#0d0d14] rounded-full px-4 sm:px-6 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 border-0 whitespace-nowrap cursor-pointer shadow-none data-active:shadow-md"
             >
               {city.label}
             </TabsTrigger>
@@ -75,7 +75,7 @@ export default function AgentFilterTabs({ agents }: AgentFilterTabsProps) {
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-navy mb-2">
+                <h3 className="text-lg font-semibold text-[#F5F3EE] mb-2">
                   No agents found in {city.label}
                 </h3>
                 <p className="text-text-secondary text-sm">

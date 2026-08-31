@@ -20,16 +20,16 @@ export default function AgentCTABanner() {
   ]
 
   return (
-    <section className="bg-navy py-20">
+    <section className="bg-[#111118] py-20 border-t border-gold/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid md:grid-cols-12 gap-10 items-center">
           {/* Left column */}
           <div className="md:col-span-7">
             <SectionLabel className="text-gold/60">FOR REAL ESTATE AGENTS</SectionLabel>
-            <h2 className="text-3xl md:text-4xl font-semibold text-white mt-3 mb-4">
+            <h2 className="text-3xl md:text-4xl font-semibold text-[#F5F3EE] mt-3 mb-4 font-heading">
               Grow your pipeline with qualified property leads
             </h2>
-            <p className="text-white/60 leading-relaxed mb-6">
+            <p className="text-[#B8B5AE]/60 leading-relaxed mb-6">
               Join 1,200+ agents who trust EstateFlow to deliver high-quality leads directly to their inbox.
             </p>
 
@@ -37,7 +37,7 @@ export default function AgentCTABanner() {
               {features.map((feature) => (
                 <li key={feature} className="flex items-start gap-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-gold mt-2 flex-shrink-0" />
-                  <span className="text-white/70 text-sm">{feature}</span>
+                  <span className="text-[#B8B5AE]/70 text-sm">{feature}</span>
                 </li>
               ))}
             </ul>
@@ -45,16 +45,16 @@ export default function AgentCTABanner() {
 
           {/* Right column - Pricing card */}
           <div className="md:col-span-5">
-            <Card className="bg-white/5 border-white/10 shadow-none p-8">
+            <Card className="bg-[#1A1A24] border border-gold/15 shadow-none p-8 gold-glow-hover">
               <div className="text-gold text-[11px] uppercase tracking-widest mb-3">
                 Most popular plan
               </div>
-              <div className="text-white text-4xl font-semibold mb-2">£99/month</div>
-              <div className="text-white/50 text-sm mb-6">
+              <div className="text-[#F5F3EE] text-4xl font-semibold mb-2 font-heading">£99/month</div>
+              <div className="text-text-muted text-sm mb-6">
                 Regional plan · Up to 30 leads/month
               </div>
 
-              <Separator className="bg-white/10 my-6" />
+              <Separator className="bg-gold/10 my-6" />
 
               <ul className="space-y-3 mb-6">
                 {planFeatures.map((feature) => (
@@ -72,18 +72,18 @@ export default function AgentCTABanner() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span className="text-white/70 text-sm">{feature}</span>
+                    <span className="text-[#B8B5AE]/70 text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
 
               <Link href="/agent-pricing">
-                <Button className="w-full bg-gold text-navy hover:bg-gold/90 font-medium cursor-pointer">
+                <Button className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold cursor-pointer">
                   See all pricing plans
                 </Button>
               </Link>
 
-              <p className="text-white/30 text-[11px] text-center mt-4">
+              <p className="text-text-muted/50 text-[11px] text-center mt-4">
                 No setup fee · Cancel anytime
               </p>
             </Card>

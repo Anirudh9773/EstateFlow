@@ -8,11 +8,11 @@ interface TestimonialsProps {
 
 export default function Testimonials({ testimonials }: TestimonialsProps) {
   return (
-    <section id="testimonials" className="bg-white py-16 sm:py-20 overflow-hidden">
+    <section id="testimonials" className="bg-[#111118] py-16 sm:py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-10 sm:mb-12">
           <SectionLabel>WHAT SELLERS SAY</SectionLabel>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-navy mt-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#F5F3EE] mt-3 font-heading">
             Trusted by thousands of property owners
           </h2>
           <GoldDivider className="mx-auto mt-4 sm:mt-5" />

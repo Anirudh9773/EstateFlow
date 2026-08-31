@@ -11,11 +11,11 @@ interface FeaturedAgentsProps {
 
 export default function FeaturedAgents({ agents }: FeaturedAgentsProps) {
   return (
-    <section id="agents" className="bg-surface py-20">
+    <section id="agents" className="bg-[#0d0d14] py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center">
           <SectionLabel>OUR AGENTS</SectionLabel>
-          <h2 className="text-3xl md:text-4xl font-semibold text-navy mt-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-[#F5F3EE] mt-3 font-heading">
             Meet our top-rated agents
           </h2>
           <GoldDivider className="mx-auto mt-5 mb-3" />
@@ -34,7 +34,7 @@ export default function FeaturedAgents({ agents }: FeaturedAgentsProps) {
           <Link href={ROUTES.agents}>
             <Button
               variant="outline"
-              className="border-navy text-navy hover:bg-navy hover:text-gold px-8"
+              className="border-gold/40 text-gold hover:bg-gold/10 px-8"
             >
               View all agents →
             </Button>

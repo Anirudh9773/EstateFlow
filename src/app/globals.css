@@ -9,7 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-inter);
+  --font-heading: var(--font-playfair);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,14 +39,14 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  /* EstateFlow Named Colors */
-  --color-navy: oklch(0.25 0.04 265);
-  --color-gold: oklch(0.68 0.09 75);
-  --color-surface: oklch(0.97 0.01 85);
-  --color-ef-border: oklch(0.91 0.01 75);
-  --color-text-primary: oklch(0.25 0.04 265);
-  --color-text-secondary: oklch(0.45 0.01 65);
-  --color-text-muted: oklch(0.62 0.01 65);
+  /* EstateFlow Dark Luxury Named Colors */
+  --color-navy: #0d0d14;
+  --color-gold: #C9A84C;
+  --color-surface: #111118;
+  --color-ef-border: rgba(201, 168, 76, 0.15);
+  --color-text-primary: #F5F3EE;
+  --color-text-secondary: #B8B5AE;
+  --color-text-muted: #706D66;
   --color-success: oklch(0.45 0.12 155);
   --color-danger: oklch(0.47 0.17 25);
   /* Border Radius */
@@ -60,76 +60,40 @@
 }
 
 :root {
-  /* EstateFlow Custom Palette */
-  --background: oklch(0.97 0.01 85);        /* #F7F6F2 off-white surface */
-  --foreground: oklch(0.25 0.04 265);       /* #1A1A2E deep navy */
-  --card: oklch(1 0 0);                     /* #FFFFFF pure white */
-  --card-foreground: oklch(0.25 0.04 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.04 265);
-  --primary: oklch(0.25 0.04 265);          /* #1A1A2E deep navy */
-  --primary-foreground: oklch(0.68 0.09 75); /* #C9A84C gold */
-  --secondary: oklch(0.91 0.01 75);         /* #E5E3DC warm gray */
-  --secondary-foreground: oklch(0.25 0.04 265);
-  --muted: oklch(0.91 0.01 75);
-  --muted-foreground: oklch(0.62 0.01 65);  /* #A8A49E */
-  --accent: oklch(0.68 0.09 75);            /* #C9A84C warm gold */
-  --accent-foreground: oklch(0.25 0.04 265);
-  --destructive: oklch(0.47 0.17 25);       /* #C0392B */
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.91 0.01 75);            /* #E5E3DC */
-  --input: oklch(0.91 0.01 75);
-  --ring: oklch(0.68 0.09 75);              /* gold focus ring */
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* EstateFlow Dark Luxury Palette */
+  --background: #0d0d14;
+  --foreground: #F5F3EE;
+  --card: #1A1A24;
+  --card-foreground: #F5F3EE;
+  --popover: #1A1A24;
+  --popover-foreground: #F5F3EE;
+  --primary: #C9A84C;
+  --primary-foreground: #0d0d14;
+  --secondary: #1E1E28;
+  --secondary-foreground: #F5F3EE;
+  --muted: #1E1E28;
+  --muted-foreground: #706D66;
+  --accent: #C9A84C;
+  --accent-foreground: #0d0d14;
+  --destructive: #C0392B;
+  --destructive-foreground: #F5F3EE;
+  --border: rgba(201, 168, 76, 0.15);
+  --input: #1E1E28;
+  --ring: #C9A84C;
+  --chart-1: #C9A84C;
+  --chart-2: #D4AF6A;
+  --chart-3: #B8952E;
+  --chart-4: #A68527;
+  --chart-5: #8C7020;
   --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.25 0.04 265);
-  --sidebar-primary: oklch(0.25 0.04 265);
-  --sidebar-primary-foreground: oklch(0.68 0.09 75);
-  --sidebar-accent: oklch(0.91 0.01 75);
-  --sidebar-accent-foreground: oklch(0.25 0.04 265);
-  --sidebar-border: oklch(0.91 0.01 75);
-  --sidebar-ring: oklch(0.68 0.09 75);
-}
-
-.dark {
-  /* EstateFlow Dark Mode */
-  --background: oklch(0.18 0.04 265);
-  --foreground: oklch(0.92 0.01 75);
-  --card: oklch(0.22 0.04 265);
-  --card-foreground: oklch(0.92 0.01 75);
-  --popover: oklch(0.22 0.04 265);
-  --popover-foreground: oklch(0.92 0.01 75);
-  --primary: oklch(0.68 0.09 75);           /* gold is primary in dark mode */
-  --primary-foreground: oklch(0.18 0.04 265);
-  --secondary: oklch(0.28 0.03 265);
-  --secondary-foreground: oklch(0.92 0.01 75);
-  --muted: oklch(0.28 0.03 265);
-  --muted-foreground: oklch(0.65 0.01 65);
-  --accent: oklch(0.68 0.09 75);
-  --accent-foreground: oklch(0.18 0.04 265);
-  --destructive: oklch(0.47 0.17 25);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.28 0.03 265);
-  --input: oklch(0.28 0.03 265);
-  --ring: oklch(0.68 0.09 75);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.22 0.04 265);
-  --sidebar-foreground: oklch(0.92 0.01 75);
-  --sidebar-primary: oklch(0.68 0.09 75);
-  --sidebar-primary-foreground: oklch(0.18 0.04 265);
-  --sidebar-accent: oklch(0.28 0.03 265);
-  --sidebar-accent-foreground: oklch(0.92 0.01 75);
-  --sidebar-border: oklch(0.28 0.03 265);
-  --sidebar-ring: oklch(0.68 0.09 75);
+  --sidebar: #0d0d14;
+  --sidebar-foreground: #F5F3EE;
+  --sidebar-primary: #C9A84C;
+  --sidebar-primary-foreground: #0d0d14;
+  --sidebar-accent: #1E1E28;
+  --sidebar-accent-foreground: #F5F3EE;
+  --sidebar-border: rgba(201, 168, 76, 0.15);
+  --sidebar-ring: #C9A84C;
 }
 
 @layer base {
@@ -144,11 +108,35 @@
   }
 }
 
-/* Swiper Custom Styles for EstateFlow */
+/* Glass Panel Utility */
+.glass-panel {
+  background: rgba(13, 13, 20, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(201, 168, 76, 0.12);
+}
+
+.glass-panel-light {
+  background: rgba(26, 26, 36, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Gold Glow Hover */
+.gold-glow-hover {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.gold-glow-hover:hover {
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.15), 0 0 40px rgba(201, 168, 76, 0.05);
+  border-color: rgba(201, 168, 76, 0.4);
+}
+
+/* Swiper Custom Styles for Dark Theme */
 .swiper-pagination-custom .swiper-pagination-bullet {
   width: 8px;
   height: 8px;
-  background: oklch(0.91 0.01 75); /* ef-border */
+  background: rgba(201, 168, 76, 0.25);
   opacity: 1;
   transition: all 150ms ease;
 }
@@ -156,11 +144,11 @@
 .swiper-pagination-custom .swiper-pagination-bullet-active {
   width: 24px;
   border-radius: 4px;
-  background: oklch(0.68 0.09 75); /* gold */
+  background: #C9A84C;
 }
 
 .swiper-pagination-custom .swiper-pagination-bullet:hover {
-  background: oklch(0.68 0.09 75); /* gold */
+  background: #C9A84C;
 }
 
 /* Agent Filter Tabs - Enhanced Transitions */
@@ -224,3 +212,13 @@
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Hero gradient overlay */
+.hero-gradient {
+  background: linear-gradient(
+    to bottom,
+    rgba(13, 13, 20, 0.3) 0%,
+    rgba(13, 13, 20, 0.5) 40%,
+    rgba(13, 13, 20, 0.85) 70%,
+    rgba(13, 13, 20, 1) 100%
+  );
+}

@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 export default function Header() {
   const pathname = usePathname();
   const isDashboardRoute = pathname.startsWith('/agent-dashboard') || pathname.startsWith('/client-dashboard') || pathname.startsWith('/admin-dashboard');
+  const isHomePage = pathname === '/';
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -179,19 +180,22 @@ export default function Header() {
     return null;
   }
 
+  // Header transparent on homepage when not scrolled
+  const isTransparent = isHomePage && !isScrolled && !isMobileMenuOpen;
+
   return (
     <>
       {/* Trust Bar */}
       {showTrustBar && !HIDDEN_LAYOUT_ROUTES.some(route => pathname.startsWith(route)) && (
-        <div className="bg-slate-900 text-white text-xs sm:text-sm py-2">
+        <div className="bg-[#1A1A24] text-[#B8B5AE] text-xs sm:text-sm py-2 border-b border-gold/10">
           <div className="container mx-auto px-4 flex items-center justify-center relative">
             <span className="flex items-center gap-2 text-center">
-              <span className="text-emerald-400">✓</span>
+              <span className="text-gold">✓</span>
               Trusted by 1,200+ verified agents across the UK
             </span>
             <button
               onClick={() => setShowTrustBar(false)}
-              className="absolute right-4 text-slate-400 hover:text-white transition-colors text-lg leading-none"
+              className="absolute right-4 text-text-muted hover:text-[#F5F3EE] transition-colors text-lg leading-none"
               aria-label="Dismiss announcement"
             >
               ×
@@ -202,8 +206,10 @@ export default function Header() {
 
       {/* Main Header */}
       <header
-        className={`sticky top-0 z-50 bg-white transition-all duration-300 ${
-          isScrolled ? 'shadow-md backdrop-blur-sm bg-white/95' : ''
+        className={`sticky top-0 z-50 transition-all duration-500 ${
+          isTransparent
+            ? 'bg-transparent'
+            : 'bg-[#0d0d14]/95 backdrop-blur-md border-b border-gold/10 shadow-lg shadow-black/20'
         }`}
       >
         <nav className="container mx-auto px-4" aria-label="Main navigation">
@@ -219,7 +225,7 @@ export default function Header() {
               <div className="relative" ref={platformDropdownRef}>
                 <button
                   onClick={() => toggleDropdown('platform')}
-                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
+                  className="flex items-center gap-1 text-[#B8B5AE] hover:text-gold font-medium transition-colors cursor-pointer text-sm tracking-wide"
                   aria-expanded={openDropdown === 'platform'}
                   aria-haspopup="true"
                 >
@@ -231,12 +237,12 @@ export default function Header() {
                   />
                 </button>
                 {openDropdown === 'platform' && (
-                  <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-2 animate-fadeIn">
+                  <div className="absolute top-full left-0 mt-2 w-56 bg-[#1A1A24] rounded-lg shadow-xl border border-gold/15 py-2 animate-fadeIn">
                     {platformLinks.map((link) => (
                       <Link
                         key={link.href}
                         href={link.href}
-                        className="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                        className="block px-4 py-2 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors text-sm"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {link.label}
@@ -251,19 +257,19 @@ export default function Header() {
                 <div className="relative" ref={agentsDropdownRef}>
                   <button
                     onClick={() => toggleDropdown('agents')}
-                    className="flex items-center gap-1 text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
+                    className="flex items-center gap-1 text-[#B8B5AE] hover:text-gold font-medium transition-colors cursor-pointer text-sm tracking-wide"
                     aria-expanded={openDropdown === 'agents'}
                     aria-haspopup="true"
                   >
                     For Agents
                   </button>
                   {openDropdown === 'agents' && (
-                    <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-2 animate-fadeIn">
+                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#1A1A24] rounded-lg shadow-xl border border-gold/15 py-2 animate-fadeIn">
                       {agentLinks.map((link) => (
                         <Link
                           key={link.href}
                           href={link.href}
-                          className="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                          className="block px-4 py-2 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors text-sm"
                           onClick={() => setOpenDropdown(null)}
                         >
                           {link.label}
@@ -279,7 +285,7 @@ export default function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  className="text-[#B8B5AE] hover:text-gold font-medium transition-colors text-sm tracking-wide"
                 >
                   {link.label}
                 </Link>
@@ -293,7 +299,7 @@ export default function Header() {
                 <Button
                   nativeButton={false}
                   render={<Link href="/submit-property" />}
-                  className="bg-amber-500 text-white hover:bg-amber-600 font-medium"
+                  className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold text-sm"
                 >
                   <span className="hidden sm:inline">Submit a Property</span>
                   <span className="sm:hidden">Submit</span>
@@ -302,17 +308,17 @@ export default function Header() {
 
               {showLoading ? (
                 // Loading state
-                <div className="w-24 h-10 bg-slate-200 animate-pulse rounded-lg"></div>
+                <div className="w-24 h-10 bg-[#1E1E28] animate-pulse rounded-lg"></div>
               ) : showUserMenu ? (
                 // Logged in - Show user menu
                 <div className="relative" ref={userMenuDropdownRef}>
                   <button
                     onClick={() => toggleDropdown('usermenu')}
-                    className="flex items-center gap-2 px-4 py-2 border-2 border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2 border border-gold/30 text-[#F5F3EE] rounded-lg font-medium hover:bg-gold/10 transition-colors text-sm cursor-pointer"
                     aria-expanded={openDropdown === 'usermenu'}
                     aria-haspopup="true"
                   >
-                    <div className="w-8 h-8 rounded-full bg-navy text-gold flex items-center justify-center text-xs font-semibold">
+                    <div className="w-8 h-8 rounded-full bg-gold text-[#0d0d14] flex items-center justify-center text-xs font-semibold">
                       {userInitial}
                     </div>
                     <span className="max-w-[100px] truncate">{userDisplayName}</span>
@@ -323,18 +329,18 @@ export default function Header() {
                     />
                   </button>
                   {openDropdown === 'usermenu' && (
-                    <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-slate-200 py-2 animate-fadeIn z-50">
-                      <div className="px-4 py-3 border-b border-slate-200">
-                        <p className="text-sm font-medium text-slate-900">{userDisplayName}</p>
-                        <p className="text-xs text-slate-500">{user.email}</p>
-                        <p className="text-xs text-slate-400 mt-1 capitalize">
+                    <div className="absolute top-full right-0 mt-2 w-64 bg-[#1A1A24] rounded-lg shadow-xl border border-gold/15 py-2 animate-fadeIn z-50">
+                      <div className="px-4 py-3 border-b border-gold/10">
+                        <p className="text-sm font-medium text-[#F5F3EE]">{userDisplayName}</p>
+                        <p className="text-xs text-text-muted">{user.email}</p>
+                        <p className="text-xs text-text-muted mt-1 capitalize">
                           {userType} Account
                         </p>
                       </div>
                       {userType === 'agent' && (
                         <Link
                           href="/agent-dashboard"
-                          className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors"
                           onClick={() => {
                             setOpenDropdown(null);
                             if (pathname === '/agent-dashboard') {
@@ -342,14 +348,14 @@ export default function Header() {
                             }
                           }}
                         >
-                          <Building2 className="w-5 h-5 text-emerald-600" />
+                          <Building2 className="w-5 h-5 text-gold" />
                           <span className="text-sm">Dashboard</span>
                         </Link>
                       )}
                       {userType === 'client' && (
                         <Link
                           href="/client-dashboard"
-                          className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors"
                           onClick={() => {
                             setOpenDropdown(null);
                             if (pathname === '/client-dashboard') {
@@ -357,14 +363,14 @@ export default function Header() {
                             }
                           }}
                         >
-                          <Building2 className="w-5 h-5 text-amber-600" />
+                          <Building2 className="w-5 h-5 text-gold" />
                           <span className="text-sm">Dashboard</span>
                         </Link>
                       )}
                       {(userType === 'admin' || userType === 'semi-admin') && (
                         <Link
                           href="/admin-dashboard"
-                          className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors"
                           onClick={() => {
                             setOpenDropdown(null);
                             if (pathname === '/admin-dashboard') {
@@ -372,15 +378,15 @@ export default function Header() {
                             }
                           }}
                         >
-                          <Building2 className="w-5 h-5 text-indigo-600" />
+                          <Building2 className="w-5 h-5 text-gold" />
                           <span className="text-sm">Admin Dashboard</span>
                         </Link>
                       )}
                       <button
                         onClick={handleSignOut}
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors w-full text-left cursor-pointer"
+                        className="flex items-center gap-3 px-4 py-3 text-[#B8B5AE] hover:bg-red-500/10 hover:text-red-400 transition-colors w-full text-left cursor-pointer"
                       >
-                        <LogOut className="w-5 h-5 text-red-600" />
+                        <LogOut className="w-5 h-5 text-red-400" />
                         <span className="text-sm">Sign Out</span>
                       </button>
                     </div>
@@ -394,7 +400,7 @@ export default function Header() {
                     nativeButton={false}
                     variant="outline"
                     render={<Link href="/sign-in" />}
-                    className="border-2 border-slate-300 text-slate-700 hover:bg-slate-50"
+                    className="border border-gold/30 text-gold hover:bg-gold/10 hover:text-gold"
                   >
                     Sign In
                   </Button>
@@ -403,7 +409,7 @@ export default function Header() {
                   <div className="relative" ref={signUpDropdownRef}>
                     <Button
                       onClick={() => toggleDropdown('signup')}
-                      className="bg-navy text-gold hover:bg-navy/90 gap-2 cursor-pointer"
+                      className="bg-gold text-[#0d0d14] hover:bg-gold/90 gap-2 cursor-pointer font-semibold"
                       aria-expanded={openDropdown === 'signup'}
                       aria-haspopup="true"
                     >
@@ -415,31 +421,31 @@ export default function Header() {
                       />
                     </Button>
                     {openDropdown === 'signup' && (
-                      <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-slate-200 py-2 animate-fadeIn z-50">
+                      <div className="absolute top-full right-0 mt-2 w-64 bg-[#1A1A24] rounded-lg shadow-xl border border-gold/15 py-2 animate-fadeIn z-50">
                         <Link
                           href="/sign-up/client"
-                          className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors"
                           onClick={() => setOpenDropdown(null)}
                         >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100">
-                            <User className="w-5 h-5 text-amber-600" />
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gold/10 border border-gold/20">
+                            <User className="w-5 h-5 text-gold" />
                           </div>
                           <div className="flex-1">
-                            <div className="font-medium text-slate-900">As Client</div>
-                            <div className="text-xs text-slate-500">Find your perfect agent</div>
+                            <div className="font-medium text-[#F5F3EE]">As Client</div>
+                            <div className="text-xs text-text-muted">Find your perfect agent</div>
                           </div>
                         </Link>
                         <Link
                           href="/sign-up/agent"
-                          className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors"
                           onClick={() => setOpenDropdown(null)}
                         >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100">
-                            <Building2 className="w-5 h-5 text-emerald-600" />
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gold/10 border border-gold/20">
+                            <Building2 className="w-5 h-5 text-gold" />
                           </div>
                           <div className="flex-1">
-                            <div className="font-medium text-slate-900">As Agent</div>
-                            <div className="text-xs text-slate-500">Grow your pipeline</div>
+                            <div className="font-medium text-[#F5F3EE]">As Agent</div>
+                            <div className="text-xs text-text-muted">Grow your pipeline</div>
                           </div>
                         </Link>
                       </div>
@@ -457,7 +463,7 @@ export default function Header() {
                   onClick={() => {
                     window.dispatchEvent(new CustomEvent('toggle-dashboard-sidebar'))
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-navy text-gold border border-gold/30 rounded-lg text-xs font-semibold hover:bg-navy/90 transition-all shadow-sm cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/10 text-gold border border-gold/30 rounded-lg text-xs font-semibold hover:bg-gold/20 transition-all shadow-sm cursor-pointer"
                   aria-label="Toggle dashboard menu"
                 >
                   <LayoutDashboard className="w-4 h-4 text-gold" />
@@ -468,7 +474,7 @@ export default function Header() {
               {/* Main Navigation 3-Lines Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
+                className="p-2 text-[#B8B5AE] hover:text-gold transition-colors cursor-pointer"
                 aria-label="Toggle mobile menu"
                 aria-expanded={isMobileMenuOpen}
               >
@@ -479,17 +485,17 @@ export default function Header() {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden absolute top-full left-0 right-0 h-[calc(100vh-4rem)] h-[calc(100dvh-4rem)] bg-white dark:bg-slate-950 border-t border-slate-200 overflow-y-auto overscroll-y-contain py-6 pb-16 px-4 shadow-xl z-50 animate-fadeIn">
+            <div className="lg:hidden absolute top-full left-0 right-0 h-[calc(100vh-4rem)] h-[calc(100dvh-4rem)] bg-[#0d0d14] border-t border-gold/10 overflow-y-auto overscroll-y-contain py-6 pb-16 px-4 shadow-xl z-50 animate-fadeIn">
               {/* Platform Section */}
               <div className="mb-4">
-                <h3 className="px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <h3 className="px-4 py-2 text-xs font-semibold text-gold/60 uppercase tracking-wider">
                   Platform
                 </h3>
                 {platformLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="block px-4 py-2 text-slate-700 hover:bg-slate-50 transition-colors"
+                    className="block px-4 py-2 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {link.label}
@@ -500,14 +506,14 @@ export default function Header() {
               {/* For Agents Section */}
               {(!user || userType === 'agent') && (
                 <div className="mb-4">
-                  <h3 className="px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <h3 className="px-4 py-2 text-xs font-semibold text-gold/60 uppercase tracking-wider">
                     For Agents
                   </h3>
                   {agentLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="block px-4 py-2 text-slate-700 hover:bg-slate-50 transition-colors"
+                      className="block px-4 py-2 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {link.label}
@@ -518,14 +524,14 @@ export default function Header() {
 
               {/* Company Section */}
               <div className="mb-4">
-                <h3 className="px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <h3 className="px-4 py-2 text-xs font-semibold text-gold/60 uppercase tracking-wider">
                   Company
                 </h3>
                 {companyLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="block px-4 py-2 text-slate-700 hover:bg-slate-50 transition-colors"
+                    className="block px-4 py-2 text-[#B8B5AE] hover:bg-gold/10 hover:text-gold transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {link.label}
@@ -533,7 +539,7 @@ export default function Header() {
                 ))}
               </div>
 
-              <div className="border-t border-slate-200 pt-4 px-4">
+              <div className="border-t border-gold/10 pt-4 px-4">
                 {/* Primary CTA */}
                 {(!user || userType === 'client') && (
                   <Button
@@ -545,7 +551,7 @@ export default function Header() {
                         onClick={() => setIsMobileMenuOpen(false)}
                       />
                     }
-                    className="w-full bg-amber-500 text-white hover:bg-amber-600 font-semibold mb-4 justify-center"
+                    className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold mb-4 justify-center"
                   >
                     Submit a Property
                   </Button>
@@ -554,21 +560,21 @@ export default function Header() {
                 {showLoading ? (
                   // Loading state
                   <div className="space-y-3">
-                    <div className="h-20 bg-slate-200 animate-pulse rounded-lg"></div>
-                    <div className="h-20 bg-slate-200 animate-pulse rounded-lg"></div>
+                    <div className="h-20 bg-[#1E1E28] animate-pulse rounded-lg"></div>
+                    <div className="h-20 bg-[#1E1E28] animate-pulse rounded-lg"></div>
                   </div>
                 ) : showUserMenu ? (
                   // Logged in - Show user info and sign out
                   <div>
-                    <div className="mb-4 p-4 bg-slate-50 rounded-lg">
+                    <div className="mb-4 p-4 bg-[#1A1A24] rounded-lg border border-gold/10">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-12 h-12 rounded-full bg-navy text-gold flex items-center justify-center text-lg font-semibold">
+                        <div className="w-12 h-12 rounded-full bg-gold text-[#0d0d14] flex items-center justify-center text-lg font-semibold">
                           {userInitial}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 truncate">{userDisplayName}</p>
-                          <p className="text-xs text-slate-500 truncate">{user.email}</p>
-                          <p className="text-xs text-slate-400 capitalize">
+                          <p className="text-sm font-medium text-[#F5F3EE] truncate">{userDisplayName}</p>
+                          <p className="text-xs text-text-muted truncate">{user.email}</p>
+                          <p className="text-xs text-text-muted capitalize">
                             {userType} Account
                           </p>
                         </div>
@@ -576,7 +582,7 @@ export default function Header() {
                       {userType === 'agent' && (
                         <Link
                           href="/agent-dashboard"
-                          className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors mb-2"
+                          className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gold text-[#0d0d14] rounded-lg hover:bg-gold/90 transition-colors mb-2 font-semibold"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <Building2 className="w-4 h-4" />
@@ -586,7 +592,7 @@ export default function Header() {
                       {userType === 'client' && (
                         <Link
                           href="/client-dashboard"
-                          className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors mb-2"
+                          className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gold text-[#0d0d14] rounded-lg hover:bg-gold/90 transition-colors mb-2 font-semibold"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <Building2 className="w-4 h-4" />
@@ -596,7 +602,7 @@ export default function Header() {
                       {(userType === 'admin' || userType === 'semi-admin') && (
                         <Link
                           href="/admin-dashboard"
-                          className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mb-2"
+                          className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gold text-[#0d0d14] rounded-lg hover:bg-gold/90 transition-colors mb-2 font-semibold"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <Building2 className="w-4 h-4" />
@@ -605,7 +611,7 @@ export default function Header() {
                       )}
                       <button
                         onClick={handleSignOut}
-                        className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors"
                       >
                         <LogOut className="w-4 h-4" />
                         <span className="text-sm font-medium">Sign Out</span>
@@ -626,39 +632,39 @@ export default function Header() {
                           onClick={() => setIsMobileMenuOpen(false)}
                         />
                       }
-                      className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold mb-4 justify-center"
+                      className="w-full border-gold/30 text-gold hover:bg-gold/10 font-semibold mb-4 justify-center"
                     >
                       Sign In
                     </Button>
 
                     {/* Sign Up Section */}
                     <div>
-                      <h3 className="text-sm font-semibold text-slate-900 mb-3">Sign Up</h3>
+                      <h3 className="text-sm font-semibold text-[#F5F3EE] mb-3">Sign Up</h3>
                       <div className="space-y-2">
                         <Link
                           href="/sign-up/client"
-                          className="flex items-center gap-3 px-4 py-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 border border-gold/15 rounded-lg hover:bg-gold/10 transition-colors"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100">
-                            <User className="w-5 h-5 text-amber-600" />
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gold/10 border border-gold/20">
+                            <User className="w-5 h-5 text-gold" />
                           </div>
                           <div className="flex-1">
-                            <div className="font-medium text-slate-900 text-sm">As Client</div>
-                            <div className="text-xs text-slate-500">Find your perfect agent</div>
+                            <div className="font-medium text-[#F5F3EE] text-sm">As Client</div>
+                            <div className="text-xs text-text-muted">Find your perfect agent</div>
                           </div>
                         </Link>
                         <Link
                           href="/sign-up/agent"
-                          className="flex items-center gap-3 px-4 py-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 border border-gold/15 rounded-lg hover:bg-gold/10 transition-colors"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100">
-                            <Building2 className="w-5 h-5 text-emerald-600" />
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gold/10 border border-gold/20">
+                            <Building2 className="w-5 h-5 text-gold" />
                           </div>
                           <div className="flex-1">
-                            <div className="font-medium text-slate-900 text-sm">As Agent</div>
-                            <div className="text-xs text-slate-500">Grow your pipeline</div>
+                            <div className="font-medium text-[#F5F3EE] text-sm">As Agent</div>
+                            <div className="text-xs text-text-muted">Grow your pipeline</div>
                           </div>
                         </Link>
                       </div>

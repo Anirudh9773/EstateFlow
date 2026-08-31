@@ -56,27 +56,27 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
       >
         {testimonials.map((testimonial) => (
           <SwiperSlide key={testimonial.id}>
-            <Card className="border-ef-border shadow-none p-6 sm:p-8 h-full">
+            <Card className="bg-[#1A1A24] border border-gold/10 shadow-none p-6 sm:p-8 h-full">
               {/* Quote text */}
-              <p className="text-text-secondary leading-relaxed text-sm mb-6">
+              <p className="text-[#B8B5AE] leading-relaxed text-sm mb-6">
                 {testimonial.quote}
               </p>
 
-              <Separator className="bg-ef-border mb-5" />
+              <Separator className="bg-gold/10 mb-5" />
 
               {/* Author info */}
               <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10 flex-shrink-0">
+                <Avatar className="h-10 w-10 flex-shrink-0 ring-1 ring-gold/20">
                   <AvatarImage
                     src={testimonial.avatar}
                     alt={`${testimonial.name} avatar`}
                   />
-                  <AvatarFallback className="bg-navy text-gold text-xs">
+                  <AvatarFallback className="bg-gold text-[#0d0d14] text-xs">
                     {getInitials(testimonial.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <div className="text-navy font-medium text-sm truncate">{testimonial.name}</div>
+                  <div className="text-[#F5F3EE] font-medium text-sm truncate">{testimonial.name}</div>
                   <div className="text-text-muted text-xs truncate">{testimonial.location}</div>
                 </div>
                 <StarRating rating={testimonial.rating} size="sm" className="ml-auto flex-shrink-0" />
@@ -88,11 +88,11 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
 
       {/* Custom Navigation Arrows - Hidden on mobile, shown on sm+ */}
       <button
-        className="swiper-button-prev-custom hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 sm:-translate-x-4 md:-translate-x-6 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold/80 hover:bg-gold/5 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
+        className="swiper-button-prev-custom hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 sm:-translate-x-4 md:-translate-x-6 z-10 w-10 h-10 rounded-full bg-[#1A1A24] border border-gold/15 hover:border-gold/40 hover:bg-gold/10 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed"
         aria-label="Previous testimonial"
       >
         <svg
-          className="w-5 h-5 text-navy group-hover:text-gold transition-colors duration-150"
+          className="w-5 h-5 text-[#B8B5AE] group-hover:text-gold transition-colors duration-150"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -102,11 +102,11 @@ export default function TestimonialSlider({ testimonials }: TestimonialSliderPro
       </button>
 
       <button
-        className="swiper-button-next-custom hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 sm:translate-x-4 md:translate-x-6 z-10 w-10 h-10 rounded-full bg-white border border-ef-border hover:border-gold/80 hover:bg-gold/5 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
+        className="swiper-button-next-custom hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 sm:translate-x-4 md:translate-x-6 z-10 w-10 h-10 rounded-full bg-[#1A1A24] border border-gold/15 hover:border-gold/40 hover:bg-gold/10 transition-all duration-150 items-center justify-center group disabled:opacity-30 disabled:cursor-not-allowed"
         aria-label="Next testimonial"
       >
         <svg
-          className="w-5 h-5 text-navy group-hover:text-gold transition-colors duration-150"
+          className="w-5 h-5 text-[#B8B5AE] group-hover:text-gold transition-colors duration-150"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
