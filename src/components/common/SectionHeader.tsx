@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { GoldDivider, SectionLabel } from '@/components/ui';
 
 interface SectionHeaderProps {
   title: string;
@@ -15,32 +16,25 @@ export default function SectionHeader({
   subtitle,
   description,
   align = 'center',
-  dividerColor = 'amber',
   children,
   className = '',
 }: SectionHeaderProps) {
   const alignClass = align === 'center' ? 'text-center' : 'text-left';
   const dividerAlign = align === 'center' ? 'mx-auto' : '';
-  
-  const dividerColors = {
-    amber: 'bg-amber-500',
-    emerald: 'bg-emerald-500',
-    slate: 'bg-slate-500',
-  };
 
   return (
     <div className={`mb-8 md:mb-12 ${alignClass} ${className}`}>
       {subtitle && (
-        <p className="text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">
-          {subtitle}
-        </p>
+        <div className={align === 'center' ? 'flex justify-center mb-2' : 'mb-2'}>
+          <SectionLabel>{subtitle}</SectionLabel>
+        </div>
       )}
-      <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-3 md:mb-4 px-4 md:px-0">
+      <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-[#F5F3EE] mb-3 md:mb-4 px-4 md:px-0">
         {title}
       </h2>
-      <div className={`w-16 md:w-20 h-1 ${dividerColors[dividerColor]} ${dividerAlign} mb-4 md:mb-6`}></div>
+      <GoldDivider className={`${dividerAlign} mt-2 mb-4 sm:mb-6`} />
       {description && (
-        <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed px-4 md:px-0">
+        <p className="text-base sm:text-lg text-[#B8B5AE] max-w-3xl mx-auto leading-relaxed px-4 md:px-0">
           {description}
         </p>
       )}

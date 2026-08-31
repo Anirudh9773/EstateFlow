@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { GoldDivider } from '@/components/ui';
 
 interface PageHeroProps {
   title: string;
@@ -17,34 +18,34 @@ export default function PageHero({
   description,
   stats,
   children,
-  variant = 'gradient',
   className = '',
 }: PageHeroProps) {
-  const bgClass = variant === 'gradient' 
-    ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' 
-    : 'bg-slate-900';
-
   return (
-    <section className={`relative ${bgClass} text-white py-12 sm:py-16 md:py-20 lg:py-28 ${className}`}>
-      <div className="container mx-auto px-4 max-w-4xl text-center">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 md:mb-6 px-4">
+    <section className={`relative bg-[#0d0d14] text-white py-16 sm:py-20 md:py-24 lg:py-28 overflow-hidden border-b border-ef-border ${className}`}>
+      {/* Ambient background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gold/5 rounded-full blur-3xl pointer-events-none" />
+      
+      <div className="container relative z-10 mx-auto px-4 max-w-4xl text-center">
+        <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#F5F3EE] mb-4">
           {title}
         </h1>
         
+        <GoldDivider className="mx-auto mt-4 mb-5" />
+        
         {description && (
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-300 mb-4 sm:mb-6 md:mb-8 leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl text-[#B8B5AE] mb-8 leading-relaxed max-w-3xl mx-auto">
             {description}
           </p>
         )}
 
         {stats && stats.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 text-center px-4">
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-10 md:gap-14 text-center pt-2">
             {stats.map((stat, index) => (
-              <div key={index}>
-                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-amber-400">
+              <div key={index} className="p-2">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gold">
                   {stat.value}
                 </div>
-                <div className="text-xs sm:text-sm md:text-base text-slate-400 mt-1">{stat.label}</div>
+                <div className="text-xs sm:text-sm text-[#B8B5AE] mt-1 font-medium">{stat.label}</div>
               </div>
             ))}
           </div>

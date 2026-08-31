@@ -38,15 +38,15 @@ export function Logo({
   showSubtitle?: boolean 
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2.5 shrink-0 select-none">
       <LogoIcon className={className} />
-      <div className="flex flex-col">
-        <span className="text-lg sm:text-xl font-bold tracking-tight leading-tight select-none font-heading">
+      <div className="flex flex-col shrink-0">
+        <span className="text-lg sm:text-xl font-bold tracking-tight leading-tight select-none font-heading whitespace-nowrap">
           <span className="text-[#F5F3EE]">Estate</span>
           <span className="text-gold">Flow</span>
         </span>
         {showSubtitle && (
-          <span className="text-xs text-text-muted hidden lg:block leading-none mt-0.5 select-none tracking-wider uppercase" style={{ fontSize: '9px' }}>
+          <span className="text-xs text-text-muted hidden lg:block leading-none mt-0.5 select-none tracking-wider uppercase whitespace-nowrap" style={{ fontSize: '9px' }}>
             Elite Property Matching
           </span>
         )}

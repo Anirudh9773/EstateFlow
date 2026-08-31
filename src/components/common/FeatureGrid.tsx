@@ -18,7 +18,6 @@ export default function FeatureGrid({
   features,
   columns = 3,
   variant = 'card',
-  iconColor = 'amber',
   className = '',
 }: FeatureGridProps) {
   const gridCols = {
@@ -27,23 +26,8 @@ export default function FeatureGrid({
     4: 'md:grid-cols-2 lg:grid-cols-4',
   };
 
-  const iconColors = {
-    amber: {
-      bg: 'bg-amber-100',
-      text: 'text-amber-600',
-    },
-    emerald: {
-      bg: 'bg-emerald-100',
-      text: 'text-emerald-600',
-    },
-    blue: {
-      bg: 'bg-blue-100',
-      text: 'text-blue-600',
-    },
-  };
-
   const cardClass = variant === 'card' 
-    ? 'bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow' 
+    ? 'bg-[#1A1A24] p-6 sm:p-8 rounded-xl border border-white/10 hover:border-gold/30 hover:shadow-lg transition-all duration-300' 
     : 'p-6';
 
   return (
@@ -52,17 +36,17 @@ export default function FeatureGrid({
         const Icon = feature.icon;
         return (
           <div key={index} className={cardClass}>
-            <div className="flex items-start gap-3 md:gap-4">
+            <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <div className={`w-10 h-10 md:w-12 md:h-12 ${iconColors[iconColor].bg} rounded-lg flex items-center justify-center`}>
-                  <Icon className={`w-5 h-5 md:w-6 md:h-6 ${iconColors[iconColor].text}`} />
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gold/10 border border-gold/20 rounded-xl flex items-center justify-center">
+                  <Icon className="w-5 h-5 md:w-6 md:h-6 text-gold" />
                 </div>
               </div>
               <div>
-                <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-2">
+                <h3 className="text-lg md:text-xl font-semibold text-[#F5F3EE] mb-2 font-heading">
                   {feature.title}
                 </h3>
-                <p className="text-sm md:text-base text-slate-600 leading-relaxed">
+                <p className="text-sm md:text-base text-[#B8B5AE] leading-relaxed">
                   {feature.description}
                 </p>
               </div>

@@ -34,7 +34,7 @@ const providerConfig = {
     name: "X",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="#000000"/>
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor"/>
       </svg>
     ),
   },
@@ -54,7 +54,7 @@ export default function OAuthButton({
     <Button 
       type="button" 
       variant="outline" 
-      className="w-full gap-2 h-11 border-2 border-slate-300 bg-white hover:bg-slate-50 hover:border-slate-500 text-slate-700 font-medium transition-colors justify-center"
+      className="w-full gap-2.5 h-11 border border-white/15 bg-[#1E1E28] hover:bg-[#282836] hover:border-gold/40 text-[#F5F3EE] hover:text-white font-medium transition-all justify-center cursor-pointer shadow-sm"
       onClick={onClick}
       disabled={disabled || loading}
     >

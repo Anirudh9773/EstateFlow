@@ -1,4 +1,5 @@
 import { LucideIcon } from 'lucide-react';
+import { GoldDivider } from '@/components/ui';
 
 interface Stat {
   icon: LucideIcon;
@@ -20,18 +21,9 @@ export default function StatsSection({
   title,
   subtitle,
   stats,
-  variant = 'dark',
   columns = 4,
   className = '',
 }: StatsSectionProps) {
-  const isDark = variant === 'dark';
-  const bgClass = isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900';
-  const subtitleClass = isDark ? 'text-slate-300' : 'text-slate-600';
-  const valueClass = isDark ? 'text-amber-400' : 'text-amber-600';
-  const descClass = isDark ? 'text-slate-400' : 'text-slate-600';
-  const iconBgClass = isDark ? 'bg-amber-500/10' : 'bg-amber-100';
-  const iconClass = isDark ? 'text-amber-400' : 'text-amber-600';
-
   const gridCols = {
     2: 'md:grid-cols-2',
     3: 'md:grid-cols-3',
@@ -39,15 +31,15 @@ export default function StatsSection({
   };
 
   return (
-    <section className={`py-12 md:py-16 lg:py-24 ${bgClass} ${className}`}>
+    <section className={`py-12 md:py-16 lg:py-24 bg-[#0d0d14] text-white border-y border-ef-border ${className}`}>
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 px-4 md:px-0">
+          <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-[#F5F3EE] mb-3 px-4 md:px-0">
             {title}
           </h2>
-          <div className="w-16 md:w-20 h-1 bg-amber-500 mx-auto mb-4 md:mb-6"></div>
+          <GoldDivider className="mx-auto mt-3 mb-4 sm:mb-6" />
           {subtitle && (
-            <p className={`text-lg md:text-xl ${subtitleClass} max-w-3xl mx-auto px-4 md:px-0`}>
+            <p className="text-base sm:text-lg text-[#B8B5AE] max-w-3xl mx-auto px-4 md:px-0">
               {subtitle}
             </p>
           )}
@@ -57,17 +49,17 @@ export default function StatsSection({
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <div key={index} className="text-center px-4">
-                <div className={`inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 ${iconBgClass} rounded-full mb-3 md:mb-4`}>
-                  <Icon className={`w-7 h-7 md:w-8 md:h-8 ${iconClass}`} />
+              <div key={index} className="text-center px-4 p-6 rounded-xl bg-[#1A1A24] border border-white/10 hover:border-gold/30 transition-all duration-300">
+                <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gold/10 border border-gold/20 rounded-2xl mb-4 text-gold">
+                  <Icon className="w-7 h-7 md:w-8 md:h-8 text-gold" />
                 </div>
-                <div className={`text-3xl md:text-4xl lg:text-5xl font-bold ${valueClass} mb-2`}>
+                <div className="text-3xl md:text-4xl font-bold text-gold mb-2 font-heading">
                   {stat.value}
                 </div>
-                <div className="text-base md:text-lg font-semibold mb-2">
+                <div className="text-base font-semibold text-[#F5F3EE] mb-1.5">
                   {stat.label}
                 </div>
-                <p className={`${descClass} text-xs md:text-sm`}>
+                <p className="text-[#B8B5AE] text-xs sm:text-sm leading-relaxed">
                   {stat.description}
                 </p>
               </div>

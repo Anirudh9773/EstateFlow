@@ -5,8 +5,8 @@ export default function OurMission() {
     <ContentSection variant="white" maxWidth="lg">
       <SectionHeader title="Our Mission" />
       
-      <div className="prose prose-lg max-w-none text-slate-700">
-        <p className="text-xl leading-relaxed mb-6">
+      <div className="prose prose-invert prose-lg max-w-none text-[#B8B5AE]">
+        <p className="text-xl leading-relaxed mb-6 text-[#F5F3EE] font-medium">
           At EstateFlow, we believe that selling or buying a property shouldn't be complicated, 
           stressful, or uncertain. Our mission is simple: to simplify the property journey for 
           everyone involved.

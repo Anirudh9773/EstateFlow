@@ -180,61 +180,61 @@ export default function JoinPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background text-foreground py-12 sm:py-16">
+      <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-navy mb-4">
+          <div className="text-center mb-10">
+            <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-[#F5F3EE] mb-3">
               Join EstateFlow
             </h1>
-            <p className="text-text-secondary text-lg">
+            <p className="text-text-secondary text-base sm:text-lg">
               Create your agent account and start connecting with property buyers and sellers
             </p>
           </div>
 
-          <Card className="bg-white border-ef-border">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-navy text-center">
+          <Card className="bg-[#1A1A24] border-white/10 text-white rounded-2xl shadow-2xl overflow-hidden">
+            <CardHeader className="bg-[#14141E] border-b border-white/10 p-6 sm:p-8">
+              <CardTitle className="font-heading text-2xl font-bold text-white text-center">
                 Create My Agent Account
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6 sm:p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Full Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
+                  <Label htmlFor="fullName" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Full Name</Label>
                   <Input
                     id="fullName"
                     type="text"
                     value={formData.fullName}
                     onChange={(e) => updateFormData("fullName", e.target.value)}
                     placeholder="John Smith"
-                    className={errors.fullName ? "border-red-500" : ""}
+                    className={errors.fullName ? "border-red-400" : ""}
                   />
                   {errors.fullName && (
-                    <p className="text-sm text-red-500">{errors.fullName}</p>
+                    <p className="text-xs text-red-400">{errors.fullName}</p>
                   )}
                 </div>
 
                 {/* Email Address */}
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Email Address</Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => updateFormData("email", e.target.value)}
                     placeholder="john@example.com"
-                    className={errors.email ? "border-red-500" : ""}
+                    className={errors.email ? "border-red-400" : ""}
                   />
                   {errors.email && (
-                    <p className="text-sm text-red-500">{errors.email}</p>
+                    <p className="text-xs text-red-400">{errors.email}</p>
                   )}
                 </div>
 
                 {/* Phone Number */}
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
+                  <Label htmlFor="phone" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Phone Number</Label>
                   <Input
                     id="phone"
                     type="tel"
@@ -247,33 +247,33 @@ export default function JoinPage() {
                       }
                     }}
                     placeholder="+44 20 1234 5678"
-                    className={errors.phone ? "border-red-500" : ""}
+                    className={errors.phone ? "border-red-400" : ""}
                   />
                   {errors.phone && (
-                    <p className="text-sm text-red-500">{errors.phone}</p>
+                    <p className="text-xs text-red-400">{errors.phone}</p>
                   )}
                 </div>
 
                 {/* Agency/Company Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="agency">Agency / Company Name</Label>
+                  <Label htmlFor="agency" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Agency / Company Name</Label>
                   <Input
                     id="agency"
                     type="text"
                     value={formData.agency}
                     onChange={(e) => updateFormData("agency", e.target.value)}
                     placeholder="Smith & Co Estate Agents"
-                    className={errors.agency ? "border-red-500" : ""}
+                    className={errors.agency ? "border-red-400" : ""}
                   />
                   {errors.agency && (
-                    <p className="text-sm text-red-500">{errors.agency}</p>
+                    <p className="text-xs text-red-400">{errors.agency}</p>
                   )}
                 </div>
 
                 {/* Password & Confirm Password */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Password</Label>
                     <div className="relative">
                       <Input
                         id="password"
@@ -281,13 +281,13 @@ export default function JoinPage() {
                         value={formData.password}
                         onChange={(e) => updateFormData("password", e.target.value)}
                         placeholder="••••••••••"
-                        className={errors.password ? "border-red-500 pr-10" : "pr-10"}
+                        className={errors.password ? "border-red-400 pr-10" : "pr-10"}
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        className="absolute right-0 top-0 h-full px-3 py-2 text-text-muted hover:text-white hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -298,12 +298,12 @@ export default function JoinPage() {
                       </Button>
                     </div>
                     {errors.password && (
-                      <p className="text-sm text-red-500">{errors.password}</p>
+                      <p className="text-xs text-red-400">{errors.password}</p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Label htmlFor="confirmPassword" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Confirm Password</Label>
                     <div className="relative">
                       <Input
                         id="confirmPassword"
@@ -311,13 +311,13 @@ export default function JoinPage() {
                         value={formData.confirmPassword}
                         onChange={(e) => updateFormData("confirmPassword", e.target.value)}
                         placeholder="••••••••••"
-                        className={errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"}
+                        className={errors.confirmPassword ? "border-red-400 pr-10" : "pr-10"}
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        className="absolute right-0 top-0 h-full px-3 py-2 text-text-muted hover:text-white hover:bg-transparent"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       >
                         {showConfirmPassword ? (
@@ -328,33 +328,33 @@ export default function JoinPage() {
                       </Button>
                     </div>
                     {errors.confirmPassword && (
-                      <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                      <p className="text-xs text-red-400">{errors.confirmPassword}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Postcode Coverage */}
                 <div className="space-y-2">
-                  <Label htmlFor="postcodeCoverage">Postcode Coverage</Label>
+                  <Label htmlFor="postcodeCoverage" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Postcode Coverage</Label>
                   <Input
                     id="postcodeCoverage"
                     type="text"
                     value={formData.postcodeCoverage}
                     onChange={(e) => updateFormData("postcodeCoverage", e.target.value)}
                     placeholder="SW1A, EC1A, M1 2JN"
-                    className={errors.postcodeCoverage ? "border-red-500" : ""}
+                    className={errors.postcodeCoverage ? "border-red-400" : ""}
                   />
                   {errors.postcodeCoverage && (
-                    <p className="text-sm text-red-500">{errors.postcodeCoverage}</p>
+                    <p className="text-xs text-red-400">{errors.postcodeCoverage}</p>
                   )}
                 </div>
 
                 {/* Specialisms (Multi-select) */}
                 <div className="space-y-2">
-                  <Label>Specialisms (Select all that apply)</Label>
+                  <Label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Specialisms (Select all that apply)</Label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {specialisms.map((specialism) => (
-                      <div key={specialism} className="flex items-center space-x-2">
+                      <div key={specialism} className="flex items-center space-x-2 bg-white/5 p-2 rounded-lg border border-white/10">
                         <Checkbox
                           id={specialism}
                           checked={formData.specialisms.includes(specialism)}
@@ -362,7 +362,7 @@ export default function JoinPage() {
                         />
                         <Label 
                           htmlFor={specialism} 
-                          className="text-sm font-normal cursor-pointer"
+                          className="text-xs text-[#B8B5AE] font-normal cursor-pointer"
                         >
                           {specialism}
                         </Label>
@@ -370,18 +370,18 @@ export default function JoinPage() {
                     ))}
                   </div>
                   {errors.specialisms && (
-                    <p className="text-sm text-red-500">{errors.specialisms}</p>
+                    <p className="text-xs text-red-400">{errors.specialisms}</p>
                   )}
                 </div>
 
                 {/* Plan Selection */}
                 <div className="space-y-2">
-                  <Label>Plan Selection</Label>
+                  <Label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Plan Selection</Label>
                   <Select value={formData.plan} onValueChange={(value) => updateFormData("plan", value)}>
-                    <SelectTrigger className={errors.plan ? "border-red-500" : ""}>
+                    <SelectTrigger className={`bg-[#1E1E28] border-white/15 text-white ${errors.plan ? "border-red-400" : ""}`}>
                       <SelectValue placeholder="Select a plan" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-[#1E1E28] border-white/15 text-white">
                       <SelectItem value="local">Local Agent - £29/month</SelectItem>
                       <SelectItem value="city">City Agent - £79/month</SelectItem>
                       <SelectItem value="state">State Agent - £149/month</SelectItem>
@@ -389,31 +389,31 @@ export default function JoinPage() {
                     </SelectContent>
                   </Select>
                   {errors.plan && (
-                    <p className="text-sm text-red-500">{errors.plan}</p>
+                    <p className="text-xs text-red-400">{errors.plan}</p>
                   )}
                 </div>
 
                 {/* Confirmation Checkboxes */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-2">
                   <div className="flex items-start space-x-2">
                     <Checkbox
                       id="terms"
                       checked={formData.termsAccepted}
                       onCheckedChange={(checked) => updateFormData("termsAccepted", checked)}
                     />
-                    <Label htmlFor="terms" className="text-sm leading-relaxed">
+                    <Label htmlFor="terms" className="text-xs text-text-secondary leading-relaxed cursor-pointer">
                       I accept the{" "}
-                      <Link href="/terms" className="text-gold hover:underline">
+                      <Link href="/terms" className="text-gold hover:underline font-semibold">
                         Terms and Conditions
                       </Link>{" "}
                       and{" "}
-                      <Link href="/privacy" className="text-gold hover:underline">
+                      <Link href="/privacy" className="text-gold hover:underline font-semibold">
                         Privacy Policy
                       </Link>
                     </Label>
                   </div>
                   {errors.terms && (
-                    <p className="text-sm text-red-500">{errors.terms}</p>
+                    <p className="text-xs text-red-400">{errors.terms}</p>
                   )}
 
                   <div className="flex items-start space-x-2">
@@ -422,12 +422,12 @@ export default function JoinPage() {
                       checked={formData.privacyAccepted}
                       onCheckedChange={(checked) => updateFormData("privacyAccepted", checked)}
                     />
-                    <Label htmlFor="privacy" className="text-sm leading-relaxed">
+                    <Label htmlFor="privacy" className="text-xs text-text-secondary leading-relaxed cursor-pointer">
                       I consent to receive marketing communications from EstateFlow
                     </Label>
                   </div>
                   {errors.privacy && (
-                    <p className="text-sm text-red-500">{errors.privacy}</p>
+                    <p className="text-xs text-red-400">{errors.privacy}</p>
                   )}
                 </div>
 
@@ -435,7 +435,7 @@ export default function JoinPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-navy text-gold hover:bg-navy/90 h-12 text-lg font-semibold"
+                  className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 h-12 text-base font-bold rounded-xl cursor-pointer"
                 >
                   {isLoading ? (
                     <>
@@ -449,10 +449,10 @@ export default function JoinPage() {
               </form>
 
               {/* Already have account link */}
-              <div className="text-center mt-6 pt-6 border-t border-ef-border">
-                <p className="text-text-secondary">
+              <div className="text-center mt-6 pt-6 border-t border-white/10">
+                <p className="text-text-secondary text-sm">
                   Already have an account?{" "}
-                  <Link href="/sign-in" className="text-gold hover:underline font-medium">
+                  <Link href="/sign-in" className="text-gold hover:underline font-semibold">
                     Log in
                   </Link>
                 </p>

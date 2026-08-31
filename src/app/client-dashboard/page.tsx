@@ -65,67 +65,67 @@ export default function ClientOverviewPage() {
 
       {/* Stats Summary Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border border-slate-200 shadow-sm">
+        <Card className="bg-[#1A1A24] border border-white/10 text-white rounded-2xl shadow-md">
           <CardContent className="p-5 flex items-center gap-4">
-            <div className="p-3 bg-amber-50 rounded-xl text-amber-600 border border-amber-100">
+            <div className="p-3 bg-gold/10 text-gold border border-gold/20 rounded-xl">
               <Building2 className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Properties Submitted</p>
-              <p className="text-2xl font-bold text-slate-900 mt-0.5">{properties.length}</p>
+              <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Properties Submitted</p>
+              <p className="font-heading text-3xl font-bold text-white mt-0.5">{properties.length}</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-200 shadow-sm">
+        <Card className="bg-[#1A1A24] border border-white/10 text-white rounded-2xl shadow-md">
           <CardContent className="p-5 flex items-center gap-4">
-            <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600 border border-emerald-100">
+            <div className="p-3 bg-gold/10 text-gold border border-gold/20 rounded-xl">
               <CheckCircle className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Active Agent Matches</p>
-              <p className="text-2xl font-bold text-slate-900 mt-0.5">{properties.length > 0 ? 'Active' : '0'}</p>
+              <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Active Agent Matches</p>
+              <p className="font-heading text-3xl font-bold text-white mt-0.5">{properties.length > 0 ? 'Active' : '0'}</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-200 shadow-sm">
+        <Card className="bg-[#1A1A24] border border-white/10 text-white rounded-2xl shadow-md">
           <CardContent className="p-5 flex items-center gap-4">
-            <div className="p-3 bg-blue-50 rounded-xl text-blue-600 border border-blue-100">
+            <div className="p-3 bg-gold/10 text-gold border border-gold/20 rounded-xl">
               <Clock className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Average Match Time</p>
-              <p className="text-2xl font-bold text-slate-900 mt-0.5">&lt; 24 hrs</p>
+              <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Average Match Time</p>
+              <p className="font-heading text-3xl font-bold text-white mt-0.5">&lt; 24 hrs</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Recent Properties Overview */}
-      <Card className="border border-slate-200 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-4">
+      <Card className="bg-[#1A1A24] border border-white/10 text-white rounded-2xl shadow-xl overflow-hidden">
+        <CardHeader className="flex flex-row items-center justify-between pb-4 bg-[#14141E] border-b border-white/10 p-5">
           <div>
-            <CardTitle className="text-lg">Recent Property Requests</CardTitle>
-            <CardDescription>Status and overview of your recent property submissions</CardDescription>
+            <CardTitle className="font-heading text-lg font-bold text-white">Recent Property Requests</CardTitle>
+            <CardDescription className="text-xs text-text-secondary">Status and overview of your recent property submissions</CardDescription>
           </div>
           <Link href="/client-dashboard/properties">
-            <Button variant="ghost" size="sm" className="text-navy hover:text-navy/80 text-xs font-semibold gap-1">
+            <Button variant="ghost" size="sm" className="text-gold hover:text-white text-xs font-semibold gap-1.5 cursor-pointer">
               View All Properties <ArrowRight className="w-3.5 h-3.5" />
             </Button>
           </Link>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-5 sm:p-6">
           {loading ? (
             <div className="py-12 flex justify-center">
-              <Loader2 className="w-8 h-8 text-navy animate-spin" />
+              <Loader2 className="w-8 h-8 text-gold animate-spin" />
             </div>
           ) : properties.length === 0 ? (
             <div className="text-center py-12 space-y-3">
-              <Building2 className="w-10 h-10 text-slate-300 mx-auto" />
-              <p className="text-slate-500 text-sm">You haven't submitted any property requests yet.</p>
+              <Building2 className="w-10 h-10 text-text-muted mx-auto" />
+              <p className="text-text-secondary text-sm">You haven't submitted any property requests yet.</p>
               <Link href="/submit-property">
-                <Button className="bg-navy text-gold hover:bg-navy/90 font-semibold text-xs">
+                <Button className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-bold text-xs rounded-xl cursor-pointer">
                   Submit Your First Property
                 </Button>
               </Link>
@@ -133,15 +133,15 @@ export default function ClientOverviewPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {properties.slice(0, 4).map((prop) => (
-                <div key={prop.id} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div key={prop.id} className="p-4 bg-[#14141E] border border-white/10 rounded-xl space-y-2">
                   <div className="flex items-center justify-between">
-                    <Badge className="bg-navy/10 text-navy font-semibold text-xs capitalize">
+                    <Badge className="bg-gold/15 text-gold border border-gold/30 font-bold text-xs capitalize">
                       {prop.intent}
                     </Badge>
-                    <span className="text-xs text-slate-400 font-mono uppercase font-bold">{prop.postcode}</span>
+                    <span className="text-xs text-gold font-mono uppercase font-bold">{prop.postcode}</span>
                   </div>
-                  <p className="text-sm font-semibold text-slate-800">{prop.bedroom_count} • {prop.property_type}</p>
-                  <p className="text-xs font-bold text-navy">
+                  <p className="text-sm font-semibold text-white">{prop.bedroom_count} • {prop.property_type}</p>
+                  <p className="text-xs font-bold text-gold">
                     Budget: £{Number(prop.budget).toLocaleString()}
                     {(prop.intent === 'renting' || prop.intent === 'letting') && ' PCM'}
                   </p>

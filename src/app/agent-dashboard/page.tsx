@@ -108,17 +108,17 @@ export default function AgentOverviewPage() {
         {stats.map((stat, i) => {
           const Icon = stat.icon
           return (
-            <Card key={i} className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            <Card key={i} className="bg-[#1A1A24] border border-white/10 rounded-2xl shadow-md">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{stat.title}</span>
-                  <div className={`p-2 rounded-lg bg-slate-100 ${stat.color}`}>
+                  <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">{stat.title}</span>
+                  <div className="p-2.5 rounded-xl bg-gold/10 text-gold border border-gold/20">
                     <Icon className="w-5 h-5" />
                   </div>
                 </div>
                 <div className="mt-3">
-                  <span className="text-2xl font-bold text-slate-900">{stat.value}</span>
-                  <p className="text-xs text-emerald-600 font-medium mt-1">{stat.change}</p>
+                  <span className="font-heading text-3xl font-bold text-white">{stat.value}</span>
+                  <p className="text-xs text-emerald-400 font-medium mt-1">{stat.change}</p>
                 </div>
               </CardContent>
             </Card>
@@ -127,49 +127,49 @@ export default function AgentOverviewPage() {
       </div>
 
       {/* Recent Leads Table */}
-      <Card className="border border-slate-200 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-4">
+      <Card className="bg-[#1A1A24] border border-white/10 rounded-2xl shadow-xl overflow-hidden">
+        <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-white/10">
           <div>
-            <CardTitle className="text-lg">Recent Lead Inquiries</CardTitle>
-            <CardDescription>Latest client submissions matched to your service area</CardDescription>
+            <CardTitle className="font-heading text-lg font-bold text-white">Recent Lead Inquiries</CardTitle>
+            <CardDescription className="text-xs text-text-secondary">Latest client submissions matched to your service area</CardDescription>
           </div>
           <Link href="/agent-dashboard/leads">
-            <Button variant="ghost" size="sm" className="text-navy hover:text-navy/80 text-xs font-semibold gap-1">
+            <Button variant="ghost" size="sm" className="text-gold hover:text-white text-xs font-semibold gap-1.5 cursor-pointer">
               View All Leads <ArrowRight className="w-3.5 h-3.5" />
             </Button>
           </Link>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {loading ? (
-            <div className="py-8 text-center text-slate-500 font-medium">Loading recent inquiries...</div>
+            <div className="py-8 text-center text-text-secondary font-medium">Loading recent inquiries...</div>
           ) : leads.length === 0 ? (
-            <div className="py-8 text-center text-slate-500">No recent lead inquiries found.</div>
+            <div className="py-8 text-center text-text-secondary">No recent lead inquiries found.</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                <thead className="bg-[#14141E] text-gold font-semibold border-b border-white/10">
                   <tr>
-                    <th className="py-3 px-4">Client</th>
-                    <th className="py-3 px-4">Postcode & Intent</th>
-                    <th className="py-3 px-4">Budget</th>
-                    <th className="py-3 px-4">Submitted</th>
+                    <th className="py-3 px-4 sm:px-6">Client</th>
+                    <th className="py-3 px-4 sm:px-6">Postcode & Intent</th>
+                    <th className="py-3 px-4 sm:px-6">Budget</th>
+                    <th className="py-3 px-4 sm:px-6">Submitted</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-white/5">
                   {leads.slice(0, 5).map((lead) => (
-                    <tr key={lead.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3 px-4 font-semibold text-slate-900">{lead.client_name || 'Client'}</td>
-                      <td className="py-3 px-4">
-                        <span className="font-mono text-xs px-2 py-0.5 bg-slate-100 rounded border border-slate-200 font-bold uppercase mr-2">
+                    <tr key={lead.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="py-3 px-4 sm:px-6 font-semibold text-white">{lead.client_name || 'Client'}</td>
+                      <td className="py-3 px-4 sm:px-6">
+                        <span className="font-mono text-xs px-2 py-0.5 bg-white/5 rounded border border-white/10 font-bold uppercase mr-2 text-gold">
                           {lead.postcode}
                         </span>
-                        <span className="capitalize text-slate-600">{lead.intent}</span>
+                        <span className="capitalize text-text-secondary">{lead.intent}</span>
                       </td>
-                      <td className="py-3 px-4 font-semibold text-navy">
+                      <td className="py-3 px-4 sm:px-6 font-semibold text-gold">
                         £{Number(lead.budget).toLocaleString()}
                         {(lead.intent === 'renting' || lead.intent === 'letting') && ' PCM'}
                       </td>
-                      <td className="py-3 px-4 text-xs text-slate-400">
+                      <td className="py-3 px-4 sm:px-6 text-xs text-text-muted">
                         {new Date(lead.created_at).toLocaleDateString()}
                       </td>
                     </tr>

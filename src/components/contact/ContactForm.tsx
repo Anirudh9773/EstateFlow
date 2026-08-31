@@ -160,15 +160,15 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
 
   if (isSubmitted) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+      <div className="bg-[#1A1A24] border border-white/10 text-white rounded-2xl shadow-xl p-8 md:p-12">
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-6">
-            <CheckCircle className="w-8 h-8 text-emerald-600" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gold/10 border border-gold/20 rounded-full mb-6">
+            <CheckCircle className="w-8 h-8 text-gold" />
           </div>
-          <h3 className="text-2xl font-bold text-slate-900 mb-3">
+          <h3 className="font-heading text-2xl font-bold text-white mb-3">
             Thanks {formData.fullName.split(' ')[0]}!
           </h3>
-          <p className="text-slate-600 text-lg">
+          <p className="text-text-secondary text-base">
             We&apos;ve received your message and will get back to you within 24 hours.
           </p>
         </div>
@@ -177,17 +177,17 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-6 lg:p-8">
+    <div className="bg-[#1A1A24] border border-white/10 text-white rounded-2xl shadow-xl p-5 sm:p-8">
       {/* Role Selector */}
-      <div className="mb-4 sm:mb-5">
-        <p className="text-xs md:text-sm font-medium text-slate-700 mb-2">Who are you contacting us as?</p>
-        <div className="inline-flex bg-slate-100 rounded-lg p-1 w-full sm:w-auto">
+      <div className="mb-6">
+        <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2.5">Who are you contacting us as?</p>
+        <div className="inline-flex bg-[#14141E] border border-white/10 rounded-xl p-1 w-full sm:w-auto">
           <Button
             type="button"
             variant={userRole === 'client' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => handleRoleChange('client')}
-            className={`gap-2 flex-1 sm:flex-initial ${userRole === 'client' ? 'bg-white text-slate-900 shadow-sm hover:bg-white' : ''}`}
+            className={`gap-2 flex-1 sm:flex-initial rounded-lg cursor-pointer transition-all ${userRole === 'client' ? 'bg-gold text-[#0d0d14] font-bold shadow-md hover:bg-gold/90' : 'text-[#B8B5AE] hover:text-white hover:bg-white/5'}`}
           >
             <User className="w-4 h-4" />
             <span className="text-xs sm:text-sm">I&apos;m a Client</span>
@@ -197,7 +197,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
             variant={userRole === 'agent' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => handleRoleChange('agent')}
-            className={`gap-2 flex-1 sm:flex-initial ${userRole === 'agent' ? 'bg-white text-slate-900 shadow-sm hover:bg-white' : ''}`}
+            className={`gap-2 flex-1 sm:flex-initial rounded-lg cursor-pointer transition-all ${userRole === 'agent' ? 'bg-gold text-[#0d0d14] font-bold shadow-md hover:bg-gold/90' : 'text-[#B8B5AE] hover:text-white hover:bg-white/5'}`}
           >
             <Building2 className="w-4 h-4" />
             <span className="text-xs sm:text-sm">I&apos;m an Agent</span>
@@ -206,132 +206,132 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         {/* Row 1: Name and Email */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="fullName" className="text-xs font-semibold text-slate-600">
-              Full Name <span className="text-red-500">*</span>
+            <Label htmlFor="fullName" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+              Full Name <span className="text-red-400">*</span>
             </Label>
             <Input
               type="text"
               id="fullName"
               value={formData.fullName}
               onChange={(e) => handleChange('fullName', e.target.value)}
-              className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.fullName ? 'border-red-500' : ''}`}
+              className={`h-11 mt-1.5 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold rounded-xl ${errors.fullName ? 'border-red-400' : ''}`}
               placeholder={userRole === 'client' ? 'John Smith' : 'Jane Doe'}
               aria-invalid={!!errors.fullName}
             />
             {errors.fullName && (
-              <p className="mt-0.5 text-xs text-red-600">{errors.fullName}</p>
+              <p className="mt-1 text-xs text-red-400">{errors.fullName}</p>
             )}
           </div>
 
           <div>
-            <Label htmlFor="email" className="text-xs font-semibold text-slate-600">
-              Email Address <span className="text-red-500">*</span>
+            <Label htmlFor="email" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+              Email Address <span className="text-red-400">*</span>
             </Label>
             <Input
               type="email"
               id="email"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.email ? 'border-red-500' : ''}`}
+              className={`h-11 mt-1.5 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold rounded-xl ${errors.email ? 'border-red-400' : ''}`}
               placeholder={userRole === 'client' ? 'john@example.com' : 'jane@agency.co.uk'}
               aria-invalid={!!errors.email}
             />
             {errors.email && (
-              <p className="mt-0.5 text-xs text-red-600">{errors.email}</p>
+              <p className="mt-1 text-xs text-red-400">{errors.email}</p>
             )}
           </div>
         </div>
 
         {/* Row 2: Phone and Postcode (Client) OR Phone and Agency Name (Agent) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="phone" className="text-xs font-semibold text-slate-600">
-              Phone Number {userRole === 'agent' && <span className="text-red-500">*</span>}
+            <Label htmlFor="phone" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+              Phone Number {userRole === 'agent' && <span className="text-red-400">*</span>}
             </Label>
             <Input
               type="tel"
               id="phone"
               value={formData.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
-              className="h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+              className="h-11 mt-1.5 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold rounded-xl"
               placeholder="07123 456789"
             />
           </div>
 
           {userRole === 'agent' ? (
             <div>
-              <Label htmlFor="agencyName" className="text-xs font-semibold text-slate-600">
-                Agency Name <span className="text-red-500">*</span>
+              <Label htmlFor="agencyName" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                Agency Name <span className="text-red-400">*</span>
               </Label>
               <Input
                 type="text"
                 id="agencyName"
                 value={formData.agencyName}
                 onChange={(e) => handleChange('agencyName', e.target.value)}
-                className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.agencyName ? 'border-red-500' : ''}`}
+                className={`h-11 mt-1.5 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold rounded-xl ${errors.agencyName ? 'border-red-400' : ''}`}
                 placeholder="Your Estate Agency Ltd."
                 aria-invalid={!!errors.agencyName}
               />
               {errors.agencyName && (
-                <p className="mt-0.5 text-xs text-red-600">{errors.agencyName}</p>
+                <p className="mt-1 text-xs text-red-400">{errors.agencyName}</p>
               )}
             </div>
           ) : (
             <div>
-              <Label htmlFor="postcode" className="text-xs font-semibold text-slate-600">
-                Postcode <span className="text-red-500">*</span>
+              <Label htmlFor="postcode" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                Postcode <span className="text-red-400">*</span>
               </Label>
               <Input
                 type="text"
                 id="postcode"
                 value={formData.postcode}
                 onChange={(e) => handleChange('postcode', e.target.value)}
-                className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.postcode ? 'border-red-500' : ''}`}
+                className={`h-11 mt-1.5 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold rounded-xl ${errors.postcode ? 'border-red-400' : ''}`}
                 placeholder="SW1A 1AA"
                 aria-invalid={!!errors.postcode}
               />
               {errors.postcode && (
-                <p className="mt-0.5 text-xs text-red-600">{errors.postcode}</p>
+                <p className="mt-1 text-xs text-red-400">{errors.postcode}</p>
               )}
             </div>
           )}
         </div>
 
         {/* Row 3: Subject (Client, full-width) OR Postcode and Subject (Agent, grid-cols-2) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {userRole === 'agent' && (
             <div>
-              <Label htmlFor="postcode" className="text-xs font-semibold text-slate-600">
-                Coverage Postcode Area <span className="text-red-500">*</span>
+              <Label htmlFor="postcode" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                Coverage Postcode Area <span className="text-red-400">*</span>
               </Label>
               <Input
                 type="text"
                 id="postcode"
                 value={formData.postcode}
                 onChange={(e) => handleChange('postcode', e.target.value)}
-                className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.postcode ? 'border-red-500' : ''}`}
+                className={`h-11 mt-1.5 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold rounded-xl ${errors.postcode ? 'border-red-400' : ''}`}
                 placeholder="SW1, SW2, SW3"
                 aria-invalid={!!errors.postcode}
               />
               {errors.postcode && (
-                <p className="mt-0.5 text-xs text-red-600">{errors.postcode}</p>
+                <p className="mt-1 text-xs text-red-400">{errors.postcode}</p>
               )}
             </div>
           )}
 
           <div className={userRole === 'agent' ? "" : "sm:col-span-2"}>
-            <Label htmlFor="subject" className="text-xs font-semibold text-slate-600">
-              Subject <span className="text-red-500">*</span>
+            <Label htmlFor="subject" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+              Subject <span className="text-red-400">*</span>
             </Label>
             <Select value={formData.subject} onValueChange={(value) => handleChange('subject', value || '')}>
-              <SelectTrigger className={`h-10 mt-1 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 w-full ${errors.subject ? 'border-red-500' : ''}`}>
+              <SelectTrigger className={`h-11 mt-1.5 bg-[#1E1E28] border-white/15 text-white focus:border-gold rounded-xl w-full ${errors.subject ? 'border-red-400' : ''}`}>
                 <SelectValue placeholder="Select a subject..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-[#1E1E28] border-white/15 text-white">
                 {subjects.map((subject) => (
                   <SelectItem key={subject} value={subject}>
                     {subject}
@@ -340,22 +340,22 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
               </SelectContent>
             </Select>
             {errors.subject && (
-              <p className="mt-0.5 text-xs text-red-600">{errors.subject}</p>
+              <p className="mt-1 text-xs text-red-400">{errors.subject}</p>
             )}
           </div>
         </div>
 
         {/* Row 4: Message */}
         <div>
-          <Label htmlFor="message" className="text-xs font-semibold text-slate-600">
-            Message <span className="text-red-500">*</span>
+          <Label htmlFor="message" className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+            Message <span className="text-red-400">*</span>
           </Label>
           <Textarea
             id="message"
-            rows={3}
+            rows={4}
             value={formData.message}
             onChange={(e) => handleChange('message', e.target.value)}
-            className={`mt-1 resize-none border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 ${errors.message ? 'border-red-500' : ''}`}
+            className={`mt-1.5 resize-none bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold rounded-xl ${errors.message ? 'border-red-400' : ''}`}
             placeholder={
               userRole === 'client'
                 ? 'Tell us about your property or what you need help with...'
@@ -364,7 +364,7 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
             aria-invalid={!!errors.message}
           />
           {errors.message && (
-            <p className="mt-0.5 text-xs text-red-600">{errors.message}</p>
+            <p className="mt-1 text-xs text-red-400">{errors.message}</p>
           )}
         </div>
 
@@ -372,15 +372,11 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
         <Button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full h-11 gap-2 cursor-pointer ${
-            userRole === 'client'
-              ? 'bg-amber-500 hover:bg-amber-600'
-              : 'bg-emerald-600 hover:bg-emerald-700'
-          } text-white`}
+          className="w-full h-12 gap-2 bg-gold hover:bg-gold/90 text-[#0d0d14] font-bold rounded-xl shadow-lg cursor-pointer transition-colors"
         >
           {isSubmitting ? (
             <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-[#0d0d14] border-t-transparent rounded-full animate-spin" />
               Sending...
             </>
           ) : (

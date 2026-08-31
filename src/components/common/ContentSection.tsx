@@ -14,9 +14,9 @@ export default function ContentSection({
   className = '',
 }: ContentSectionProps) {
   const bgColors = {
-    white: 'bg-white',
-    gray: 'bg-slate-50',
-    navy: 'bg-slate-900 text-white',
+    white: 'bg-background text-foreground',
+    gray: 'bg-surface text-foreground',
+    navy: 'bg-[#1A1A24] text-white',
   };
 
   const maxWidths = {

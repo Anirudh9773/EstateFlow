@@ -43,9 +43,9 @@ export default function SimpleForgotPasswordForm() {
 
   if (isSuccess) {
     return (
-      <Alert className="border-green-200 bg-green-50">
-        <CheckCircle className="h-4 w-4 text-green-600" />
-        <AlertDescription className="text-green-800">
+      <Alert className="border-emerald-500/40 bg-emerald-950/40 text-emerald-200">
+        <CheckCircle className="h-4 w-4 text-emerald-400" />
+        <AlertDescription className="text-xs text-emerald-200">
           Check your inbox for the reset link. If you don't see it within a few minutes, check your spam folder.
         </AlertDescription>
       </Alert>
@@ -53,39 +53,29 @@ export default function SimpleForgotPasswordForm() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-navy/10 rounded-full mb-4">
-          <Mail className="h-8 w-8 text-navy" />
-        </div>
-        <h1 className="text-2xl font-bold tracking-tight text-navy mb-2">Forgot your password?</h1>
-        <p className="text-muted-foreground text-sm">
-          Enter your email and we'll send you a reset link
-        </p>
-      </div>
-
+    <div className="space-y-4">
       {error && (
-        <Alert variant="destructive" className="border-red-200 bg-red-50 text-red-900">
-          <AlertDescription>{error}</AlertDescription>
+        <Alert variant="destructive" className="bg-red-950/50 border-red-500/50 text-red-200">
+          <AlertDescription className="text-xs">{error}</AlertDescription>
         </Alert>
       )}
 
       <form onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-navy">Email Address</label>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Email Address</label>
           <Input
             type="email"
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"
           />
         </div>
 
         <Button 
           type="submit" 
-          className="w-full bg-navy text-gold hover:bg-navy/90 font-medium" 
+          className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 font-bold h-11 rounded-xl cursor-pointer" 
           disabled={loading}
         >
           {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

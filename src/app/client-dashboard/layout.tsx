@@ -50,12 +50,10 @@ export default function ClientDashboardLayout({
   const clientName = user?.user_metadata?.full_name || 'Client'
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
-      {/* Sidebar Navigation */}
-
+    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
       {/* Sidebar Navigation */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col justify-between transition-transform duration-300 ease-in-out md:static md:translate-x-0
+        fixed inset-y-0 left-0 z-50 w-64 bg-[#14141E] border-r border-white/10 text-white flex flex-col justify-between transition-transform duration-300 ease-in-out md:sticky md:top-16 md:h-[calc(100dvh-4rem)] md:translate-x-0 md:z-30 overflow-y-auto shrink-0
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="p-6">
@@ -69,7 +67,7 @@ export default function ClientDashboardLayout({
             </Link>
             <button 
               onClick={() => setMobileMenuOpen(false)}
-              className="md:hidden text-slate-400 hover:text-white"
+              className="md:hidden text-text-muted hover:text-white cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -77,7 +75,7 @@ export default function ClientDashboardLayout({
 
           {/* Quick Submit Property CTA */}
           <Link href="/submit-property" className="block mb-6">
-            <Button className="w-full bg-gold text-navy hover:bg-gold/90 hover:text-navy font-semibold shadow-sm flex items-center justify-center gap-2">
+            <Button className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 font-bold shadow-sm flex items-center justify-center gap-2 rounded-xl cursor-pointer">
               <Plus className="w-4 h-4" />
               Submit Property
             </Button>
@@ -96,11 +94,11 @@ export default function ClientDashboardLayout({
                   className={`
                     flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors
                     ${isActive 
-                      ? 'bg-navy text-gold font-semibold shadow-sm border-l-4 border-gold' 
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'}
+                      ? 'bg-[#1E1E2C] text-gold font-semibold shadow-sm border-l-4 border-gold' 
+                      : 'text-[#B8B5AE] hover:bg-white/5 hover:text-white'}
                   `}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-gold' : 'text-slate-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-gold' : 'text-text-muted'}`} />
                   {item.name}
                 </Link>
               )

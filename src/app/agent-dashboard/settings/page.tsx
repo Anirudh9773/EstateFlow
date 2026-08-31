@@ -191,48 +191,48 @@ export default function AgentSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 font-heading">Settings & Profile</h1>
-        <p className="text-sm text-slate-500 mt-1">Manage your account information, phone number, and rating integrations</p>
+        <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white">Settings & Profile</h1>
+        <p className="text-sm text-text-secondary mt-1">Manage your account information, phone number, and rating integrations</p>
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
-        <Card className="border border-slate-200 shadow-sm">
-          <CardHeader>
-            <CardTitle>Profile Details</CardTitle>
-            <CardDescription>Personal and agency information visible to property owners</CardDescription>
+        <Card className="bg-[#1A1A24] border border-white/10 text-white rounded-2xl shadow-xl overflow-hidden">
+          <CardHeader className="bg-[#14141E] border-b border-white/10 p-5 sm:p-6">
+            <CardTitle className="font-heading text-lg font-bold text-white">Profile Details</CardTitle>
+            <CardDescription className="text-xs text-text-secondary">Personal and agency information visible to property owners</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-5 sm:p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Full Name *</label>
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Full Name *</label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+                  className="w-full px-3.5 py-2.5 bg-[#1E1E28] border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-gold"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Agency Name</label>
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Agency Name</label>
                 <input
                   type="text"
                   value={agencyName}
                   onChange={(e) => setAgencyName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+                  className="w-full px-3.5 py-2.5 bg-[#1E1E28] border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-gold"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Email (Read Only)</label>
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Email (Read Only)</label>
                 <input
                   type="email"
                   value={user?.email || ''}
                   disabled
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+                  className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-text-muted cursor-not-allowed"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Phone Number</label>
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Phone Number</label>
                 <input
                   type="tel"
                   value={phone}
@@ -243,71 +243,71 @@ export default function AgentSettingsPage() {
                     }
                   }}
                   placeholder="+44 7700 900000"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+                  className="w-full px-3.5 py-2.5 bg-[#1E1E28] border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-gold placeholder:text-text-muted"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Biography</label>
+              <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Biography</label>
               <textarea
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Introduce yourself and your experience..."
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+                className="w-full px-3.5 py-2.5 bg-[#1E1E28] border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-gold placeholder:text-text-muted"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Ratings Integration */}
-        <Card className="border border-slate-200 shadow-sm">
-          <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <Card className="bg-[#1A1A24] border border-white/10 text-white rounded-2xl shadow-xl overflow-hidden">
+          <CardHeader className="bg-[#14141E] border-b border-white/10 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <CardTitle>Ratings Integration</CardTitle>
-              <CardDescription>Configure external profiles to sync customer ratings</CardDescription>
+              <CardTitle className="font-heading text-lg font-bold text-white">Ratings Integration</CardTitle>
+              <CardDescription className="text-xs text-text-secondary">Configure external profiles to sync customer ratings</CardDescription>
             </div>
             <Button
               type="button"
               onClick={handleSync}
               disabled={syncing}
               variant="outline"
-              className="border-navy text-navy hover:bg-navy hover:text-gold"
+              className="border-gold/40 text-gold hover:bg-gold hover:text-[#0d0d14] rounded-xl font-semibold cursor-pointer transition-colors"
             >
               {syncing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
               Sync Ratings Now
             </Button>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-5 sm:p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Trustpilot Username</label>
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Trustpilot Username</label>
                 <input
                   type="text"
                   value={trustpilotUsername}
                   onChange={(e) => setTrustpilotUsername(e.target.value)}
                   placeholder="e.g. savills"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+                  className="w-full px-3.5 py-2.5 bg-[#1E1E28] border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-gold placeholder:text-text-muted"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">allAgents Slug</label>
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">allAgents Slug</label>
                 <input
                   type="text"
                   value={allagentsUsername}
                   onChange={(e) => setAllagentsUsername(e.target.value)}
                   placeholder="e.g. savills-london"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+                  className="w-full px-3.5 py-2.5 bg-[#1E1E28] border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-gold placeholder:text-text-muted"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Google Place ID</label>
+                <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Google Place ID</label>
                 <input
                   type="text"
                   value={googlePlaceId}
                   onChange={(e) => setGooglePlaceId(e.target.value)}
                   placeholder="e.g. ChIJ..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+                  className="w-full px-3.5 py-2.5 bg-[#1E1E28] border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-gold placeholder:text-text-muted"
                 />
               </div>
             </div>
@@ -315,17 +315,17 @@ export default function AgentSettingsPage() {
         </Card>
 
         {/* Manual Ratings Fallbacks */}
-        <Card className="border border-slate-200 shadow-sm">
-          <CardHeader>
-            <CardTitle>Manual Ratings Fallbacks</CardTitle>
-            <CardDescription>Enter ratings manually if auto-sync is not configured</CardDescription>
+        <Card className="bg-[#1A1A24] border border-white/10 text-white rounded-2xl shadow-xl overflow-hidden">
+          <CardHeader className="bg-[#14141E] border-b border-white/10 p-5 sm:p-6">
+            <CardTitle className="font-heading text-lg font-bold text-white">Manual Ratings Fallbacks</CardTitle>
+            <CardDescription className="text-xs text-text-secondary">Enter ratings manually if auto-sync is not configured</CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
-              <p className="text-xs font-bold text-slate-800">Trustpilot</p>
-              <div className="grid grid-cols-2 gap-2">
+          <CardContent className="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-4 bg-[#14141E] border border-white/10 rounded-xl space-y-3">
+              <p className="text-xs font-bold text-gold uppercase tracking-wider">Trustpilot</p>
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="text-[11px] text-slate-500 block">Score (0-5)</label>
+                  <label className="text-[11px] text-text-secondary block mb-1">Score (0-5)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -333,27 +333,27 @@ export default function AgentSettingsPage() {
                     max="5"
                     value={trustpilotRating}
                     onChange={(e) => setTrustpilotRating(e.target.value)}
-                    className="w-full px-2 py-1 border border-slate-300 rounded text-xs"
+                    className="w-full px-2.5 py-1.5 bg-[#1E1E28] border border-white/15 rounded-lg text-xs text-white focus:border-gold focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-500 block">Reviews</label>
+                  <label className="text-[11px] text-text-secondary block mb-1">Reviews</label>
                   <input
                     type="number"
                     min="0"
                     value={trustpilotReviewCount}
                     onChange={(e) => setTrustpilotReviewCount(e.target.value)}
-                    className="w-full px-2 py-1 border border-slate-300 rounded text-xs"
+                    className="w-full px-2.5 py-1.5 bg-[#1E1E28] border border-white/15 rounded-lg text-xs text-white focus:border-gold focus:outline-none"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
-              <p className="text-xs font-bold text-slate-800">allAgents</p>
-              <div className="grid grid-cols-2 gap-2">
+            <div className="p-4 bg-[#14141E] border border-white/10 rounded-xl space-y-3">
+              <p className="text-xs font-bold text-gold uppercase tracking-wider">allAgents</p>
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="text-[11px] text-slate-500 block">Score (0-5)</label>
+                  <label className="text-[11px] text-text-secondary block mb-1">Score (0-5)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -361,27 +361,27 @@ export default function AgentSettingsPage() {
                     max="5"
                     value={allagentsRating}
                     onChange={(e) => setAllagentsRating(e.target.value)}
-                    className="w-full px-2 py-1 border border-slate-300 rounded text-xs"
+                    className="w-full px-2.5 py-1.5 bg-[#1E1E28] border border-white/15 rounded-lg text-xs text-white focus:border-gold focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-500 block">Reviews</label>
+                  <label className="text-[11px] text-text-secondary block mb-1">Reviews</label>
                   <input
                     type="number"
                     min="0"
                     value={allagentsReviewCount}
                     onChange={(e) => setAllagentsReviewCount(e.target.value)}
-                    className="w-full px-2 py-1 border border-slate-300 rounded text-xs"
+                    className="w-full px-2.5 py-1.5 bg-[#1E1E28] border border-white/15 rounded-lg text-xs text-white focus:border-gold focus:outline-none"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
-              <p className="text-xs font-bold text-slate-800">Google Reviews</p>
-              <div className="grid grid-cols-2 gap-2">
+            <div className="p-4 bg-[#14141E] border border-white/10 rounded-xl space-y-3">
+              <p className="text-xs font-bold text-gold uppercase tracking-wider">Google Reviews</p>
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="text-[11px] text-slate-500 block">Score (0-5)</label>
+                  <label className="text-[11px] text-text-secondary block mb-1">Score (0-5)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -389,17 +389,17 @@ export default function AgentSettingsPage() {
                     max="5"
                     value={googleRating}
                     onChange={(e) => setGoogleRating(e.target.value)}
-                    className="w-full px-2 py-1 border border-slate-300 rounded text-xs"
+                    className="w-full px-2.5 py-1.5 bg-[#1E1E28] border border-white/15 rounded-lg text-xs text-white focus:border-gold focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-500 block">Reviews</label>
+                  <label className="text-[11px] text-text-secondary block mb-1">Reviews</label>
                   <input
                     type="number"
                     min="0"
                     value={googleReviewCount}
                     onChange={(e) => setGoogleReviewCount(e.target.value)}
-                    className="w-full px-2 py-1 border border-slate-300 rounded text-xs"
+                    className="w-full px-2.5 py-1.5 bg-[#1E1E28] border border-white/15 rounded-lg text-xs text-white focus:border-gold focus:outline-none"
                   />
                 </div>
               </div>
@@ -408,7 +408,7 @@ export default function AgentSettingsPage() {
         </Card>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={saving} className="bg-navy text-gold hover:bg-navy/90 font-semibold px-8 h-11">
+          <Button type="submit" disabled={saving} className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-bold px-8 h-11 rounded-xl cursor-pointer">
             {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Save All Settings
           </Button>

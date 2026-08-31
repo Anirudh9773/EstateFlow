@@ -203,42 +203,42 @@ export default function AgentPricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
         {/* Page Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-navy)] mb-4">
+        <div className="text-center mb-10">
+          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold text-[#F5F3EE] mb-4">
             Agent Pricing Plans
           </h1>
-          <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+          <p className="text-text-secondary text-base sm:text-lg max-w-2xl mx-auto">
             Choose the perfect plan for your agency size and coverage area. 
             Flexible pricing designed to grow with your business.
           </p>
         </div>
 
         {/* Billing Toggle */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white border border-navy/20 rounded-lg p-1 flex">
+        <div className="flex justify-center mb-12">
+          <div className="bg-[#1E1E28] border border-white/15 rounded-xl p-1 flex shadow-md">
             <button
               onClick={() => setBillingCycle("monthly")}
-              className={`px-4 py-2 rounded-md transition-colors ${
+              className={`px-5 py-2.5 rounded-lg font-medium transition-all text-sm cursor-pointer ${
                 billingCycle === "monthly"
-                  ? "bg-[var(--color-navy)] text-[var(--color-gold)]"
-                  : "text-[var(--color-navy)] hover:bg-[var(--color-navy)]/10"
+                  ? "bg-gold text-[#0d0d14] font-bold shadow"
+                  : "text-text-secondary hover:text-white"
               }`}
             >
               Monthly Billing
             </button>
             <button
               onClick={() => setBillingCycle("annual")}
-              className={`px-4 py-2 rounded-md transition-colors ${
+              className={`px-5 py-2.5 rounded-lg font-medium transition-all text-sm cursor-pointer flex items-center gap-1.5 ${
                 billingCycle === "annual"
-                  ? "bg-[var(--color-navy)] text-[var(--color-gold)]"
-                  : "text-[var(--color-navy)] hover:bg-[var(--color-navy)]/10"
+                  ? "bg-gold text-[#0d0d14] font-bold shadow"
+                  : "text-text-secondary hover:text-white"
               }`}
             >
-              Annual Billing
-              <span className="ml-1 text-xs bg-[var(--color-gold)] text-[var(--color-navy)] px-2 py-0.5 rounded-full">
+              <span>Annual Billing</span>
+              <span className="text-[10px] bg-[#0d0d14]/20 font-bold px-1.5 py-0.5 rounded-full">
                 Save 20%
               </span>
             </button>
@@ -246,127 +246,125 @@ export default function AgentPricingPage() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {pricingTiers.map((tier, index) => (
-            <Card 
-              key={tier.category}
-              className={`relative border-2 transition-all duration-300 hover:shadow-xl h-full flex flex-col ${
-                selectedPlan === tier.category
-                  ? `border-[var(--color-gold)] shadow-lg scale-105` 
-                  : 'border-slate-200 hover:border-[var(--color-navy)]'
-              }`}
-              onClick={() => setSelectedPlan(tier.category)}
-            >
-              {tier.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                  <Badge className={`${tier.badgeColor} font-semibold px-3 py-1 shadow-md`}>
-                    {tier.heading || "Most Popular"}
-                  </Badge>
-                </div>
-              )}
-              
-              <CardHeader className="text-center pb-4 pt-8">
-                <div className={`w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                  tier.category === "Local Agent" ? "bg-green-100" :
-                  tier.category === "City Agent" ? "bg-blue-100" :
-                  tier.category === "State Agent" ? "bg-purple-100" :
-                  "bg-[var(--color-gold)]/20"
-                }`}>
-                  {tier.category === "Local Agent" ? <MapPin className="w-6 h-6 text-green-600" /> :
-                   tier.category === "City Agent" ? <Users className="w-6 h-6 text-blue-600" /> :
-                   tier.category === "State Agent" ? <TrendingUp className="w-6 h-6 text-purple-600" /> :
-                   <Star className="w-6 h-6 text-[var(--color-gold)]" />}
-                </div>
-                <CardTitle className="text-xl font-bold text-[var(--color-navy)]">
-                  {tier.category}
-                </CardTitle>
-                <CardDescription className="text-sm">
-                  {tier.description}
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="space-y-6 flex-1 flex flex-col">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[var(--color-navy)]">
-                    {billingCycle === "annual" 
-                      ? `£${Math.round(parseInt(tier.price.replace('£', '')) * 0.8)}`
-                      : tier.price
-                    }
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 pt-4">
+          {pricingTiers.map((tier) => {
+            const isSelected = selectedPlan === tier.category
+            return (
+              <Card 
+                key={tier.category}
+                className={`relative transition-all duration-300 h-full flex flex-col bg-[#1A1A24] cursor-pointer rounded-2xl overflow-visible ${
+                  isSelected
+                    ? `border-2 border-gold shadow-2xl shadow-gold/10 scale-105 bg-[#1E1E2C]` 
+                    : 'border border-white/10 hover:border-gold/40'
+                }`}
+                onClick={() => setSelectedPlan(tier.category)}
+              >
+                {tier.popular && (
+                  <div className="absolute -top-3.5 left-1/2 transform -translate-x-1/2 z-20">
+                    <Badge className="bg-gold text-[#0d0d14] font-bold px-3.5 py-1 shadow-md text-xs tracking-wide uppercase">
+                      {tier.heading || "Most Purchased"}
+                    </Badge>
                   </div>
-                  <div className="text-text-secondary text-sm">
-                    {tier.period}
-                    {billingCycle === "annual" && (
-                      <div className="text-green-600 font-semibold">
-                        (Save 20%)
+                )}
+                
+                <CardHeader className="text-center pb-4 pt-8">
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gold/10 border border-gold/20">
+                    {tier.category === "Local Agent" ? <MapPin className="w-6 h-6 text-gold" /> :
+                     tier.category === "City Agent" ? <Users className="w-6 h-6 text-gold" /> :
+                     tier.category === "State Agent" ? <TrendingUp className="w-6 h-6 text-gold" /> :
+                     <Star className="w-6 h-6 text-gold" />}
+                  </div>
+                  <CardTitle className="font-heading text-2xl font-bold text-white">
+                    {tier.category}
+                  </CardTitle>
+                  <CardDescription className="text-sm text-text-secondary mt-1">
+                    {tier.description}
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent className="space-y-6 flex-1 flex flex-col p-6 pt-0">
+                  <div className="text-center pb-4 border-b border-white/10">
+                    <div className="font-heading text-4xl font-bold text-white">
+                      {billingCycle === "annual" 
+                        ? `£${Math.round(parseInt(tier.price.replace('£', '')) * 0.8)}`
+                        : tier.price
+                      }
+                    </div>
+                    <div className="text-text-muted text-xs sm:text-sm mt-1 uppercase tracking-wider font-medium">
+                      {tier.period}
+                      {billingCycle === "annual" && (
+                        <span className="text-emerald-400 font-semibold ml-1">
+                          (Save 20%)
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-text-secondary bg-white/5 py-1 px-2.5 rounded-lg mt-3 inline-block">
+                      Commission: {tier.commission}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 flex-1">
+                    {tier.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-start gap-2.5">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-[#B8B5AE]">{feature}</span>
                       </div>
-                    )}
+                    ))}
+                    
+                    {tier.notIncluded.map((feature, idx) => (
+                      <div key={idx} className="flex items-start gap-2.5 opacity-40">
+                        <div className="w-4 h-4 border border-white/30 rounded-full flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-text-muted line-through">{feature}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="text-xs text-text-muted mt-2">
-                    Commission: {tier.commission}
-                  </div>
-                </div>
 
-                <div className="space-y-3 flex-1">
-                  {tier.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-text-secondary">{feature}</span>
-                    </div>
-                  ))}
-                  
-                  {tier.notIncluded.map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-2 opacity-50">
-                      <div className="w-4 h-4 border-2 border-gray-300 rounded-full flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-text-muted line-through">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <Button 
-                  render={<Link href={`/checkout?plan=${encodeURIComponent(tier.category)}&price=${encodeURIComponent(tier.price)}&cycle=${billingCycle}`} onClick={handleSelectPlan(tier.category, tier.price)} />}
-                  nativeButton={false}
-                  className={`w-full mt-auto cursor-pointer ${
-                    selectedPlan === tier.category
-                      ? "bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90" 
-                      : "bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90"
-                  }`}
-                >
-                  {selectedPlan === tier.category ? "Selected" : "Select Plan"}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  <Button 
+                    render={<Link href={`/checkout?plan=${encodeURIComponent(tier.category)}&price=${encodeURIComponent(tier.price)}&cycle=${billingCycle}`} onClick={handleSelectPlan(tier.category, tier.price)} />}
+                    nativeButton={false}
+                    className={`w-full mt-auto cursor-pointer font-semibold py-3 h-11 rounded-xl transition-all ${
+                      isSelected
+                        ? "bg-gold text-[#0d0d14] hover:bg-gold/90" 
+                        : "bg-white/10 text-white hover:bg-gold hover:text-[#0d0d14]"
+                    }`}
+                  >
+                    {isSelected ? "Selected" : "Select Plan"}
+                  </Button>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
 
         {/* Comparison Table */}
-        <div className="mb-12">
+        <div className="mb-16">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-[var(--color-navy)] mb-2">Compare All Plans</h2>
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">Compare All Plans</h2>
             <p className="text-text-secondary">
               Side-by-side comparison of all pricing tiers
             </p>
           </div>
           
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden bg-[#1A1A24] border border-white/10 rounded-2xl shadow-xl">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[var(--color-navy)] text-[var(--color-gold)]">
-                    <th className="text-left p-4 font-semibold">Feature</th>
-                    <th className="text-center p-4 font-semibold">Local Agent</th>
-                    <th className="text-center p-4 font-semibold">City Agent</th>
-                    <th className="text-center p-4 font-semibold">State Agent</th>
-                    <th className="text-center p-4 font-semibold">National Agent</th>
+                  <tr className="bg-[#14141E] text-gold border-b border-white/10">
+                    <th className="text-left p-4 sm:p-5 font-heading font-semibold text-base">Feature</th>
+                    <th className="text-center p-4 sm:p-5 font-heading font-semibold text-base">Local Agent</th>
+                    <th className="text-center p-4 sm:p-5 font-heading font-semibold text-base">City Agent</th>
+                    <th className="text-center p-4 sm:p-5 font-heading font-semibold text-base">State Agent</th>
+                    <th className="text-center p-4 sm:p-5 font-heading font-semibold text-base">National Agent</th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparisonData.map((row, index) => (
-                    <tr key={index} className="border-b border-ef-border">
-                      <td className="p-4 font-medium text-[var(--color-navy)]">{row.feature}</td>
-                      <td className="p-4 text-center text-text-secondary">{row.local}</td>
-                      <td className="p-4 text-center text-text-secondary">{row.city}</td>
-                      <td className="p-4 text-center text-text-secondary">{row.state}</td>
-                      <td className="p-4 text-center text-text-secondary">{row.national}</td>
+                    <tr key={index} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="p-4 sm:p-5 font-medium text-white">{row.feature}</td>
+                      <td className="p-4 sm:p-5 text-center text-[#B8B5AE]">{row.local}</td>
+                      <td className="p-4 sm:p-5 text-center text-[#B8B5AE]">{row.city}</td>
+                      <td className="p-4 sm:p-5 text-center text-[#B8B5AE]">{row.state}</td>
+                      <td className="p-4 sm:p-5 text-center text-[#B8B5AE]">{row.national}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -376,29 +374,35 @@ export default function AgentPricingPage() {
         </div>
 
         {/* Benefits Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="bg-[var(--color-navy)] text-white p-6">
-            <Zap className="w-8 h-8 text-[var(--color-gold)] mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-[var(--color-gold)]">Quick Setup</h3>
-            <p className="text-sm opacity-90">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          <Card className="bg-[#1A1A24] border border-white/10 text-white p-6 sm:p-8 rounded-2xl">
+            <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center mb-4">
+              <Zap className="w-6 h-6 text-gold" />
+            </div>
+            <h3 className="font-heading text-lg font-bold mb-2 text-white">Quick Setup</h3>
+            <p className="text-sm text-text-secondary leading-relaxed">
               Get started in minutes with our streamlined onboarding process. 
               No long-term contracts required.
             </p>
           </Card>
           
-          <Card className="bg-[var(--color-navy)] text-white p-6">
-            <Shield className="w-8 h-8 text-[var(--color-gold)] mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-[var(--color-gold)]">Secure Platform</h3>
-            <p className="text-sm opacity-90">
+          <Card className="bg-[#1A1A24] border border-white/10 text-white p-6 sm:p-8 rounded-2xl">
+            <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center mb-4">
+              <Shield className="w-6 h-6 text-gold" />
+            </div>
+            <h3 className="font-heading text-lg font-bold mb-2 text-white">Secure Platform</h3>
+            <p className="text-sm text-text-secondary leading-relaxed">
               Bank-level security for your data and client information. 
               GDPR compliant and fully insured.
             </p>
           </Card>
           
-          <Card className="bg-[var(--color-navy)] text-white p-6">
-            <Phone className="w-8 h-8 text-[var(--color-gold)] mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-[var(--color-gold)]">24/7 Support</h3>
-            <p className="text-sm opacity-90">
+          <Card className="bg-[#1A1A24] border border-white/10 text-white p-6 sm:p-8 rounded-2xl">
+            <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center mb-4">
+              <Phone className="w-6 h-6 text-gold" />
+            </div>
+            <h3 className="font-heading text-lg font-bold mb-2 text-white">24/7 Support</h3>
+            <p className="text-sm text-text-secondary leading-relaxed">
               Round-the-clock support for all plans. 
               Get help when you need it from our expert team.
             </p>
@@ -406,13 +410,13 @@ export default function AgentPricingPage() {
         </div>
 
         {/* FAQ Section */}
-        <section className="py-16 bg-white rounded-lg mb-12">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <section className="py-12 bg-surface rounded-2xl border border-ef-border mb-16 p-6 sm:p-10">
+          <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-[var(--color-navy)] mb-3">
+              <h2 className="font-heading text-3xl font-bold text-white mb-3">
                 Frequently Asked Questions
               </h2>
-              <p className="text-[var(--color-text-secondary)] text-lg">
+              <p className="text-text-secondary text-base sm:text-lg">
                 Everything you need to know about growing your business with EstateFlow
               </p>
             </div>
@@ -423,23 +427,23 @@ export default function AgentPricingPage() {
                 return (
                   <Card 
                     key={index} 
-                    className="border border-[var(--color-ef-border)] bg-white overflow-hidden transition-all duration-200"
+                    className="border border-white/10 bg-[#1A1A24] overflow-hidden transition-all duration-200 rounded-xl"
                   >
                     <button
                       onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                      className="w-full flex items-center justify-between p-4 sm:p-6 text-left font-semibold text-[var(--color-navy)] hover:bg-slate-50 transition-colors cursor-pointer"
+                      className="w-full flex items-center justify-between p-5 sm:p-6 text-left font-medium text-white hover:bg-white/5 transition-colors cursor-pointer"
                     >
                       <span className="text-base sm:text-lg">{faq.question}</span>
-                      <span className="ml-4 shrink-0 text-[var(--color-gold)] text-xl font-bold transition-transform duration-200">
+                      <span className="ml-4 shrink-0 text-gold text-xl font-bold transition-transform duration-200">
                         {isOpen ? '−' : '+'}
                       </span>
                     </button>
                     <div 
                       className={`transition-all duration-300 ease-in-out ${
-                        isOpen ? 'max-h-[300px] border-t border-slate-100' : 'max-h-0 overflow-hidden'
+                        isOpen ? 'max-h-[300px] border-t border-white/10' : 'max-h-0 overflow-hidden'
                       }`}
                     >
-                      <p className="p-4 sm:p-6 text-[var(--color-text-secondary)] leading-relaxed text-sm sm:text-base bg-slate-50/30">
+                      <p className="p-5 sm:p-6 text-[#B8B5AE] leading-relaxed text-sm sm:text-base bg-white/[0.02]">
                         {faq.answer}
                       </p>
                     </div>
@@ -451,9 +455,9 @@ export default function AgentPricingPage() {
         </section>
 
         {/* CTA Section */}
-        <div className="text-center p-8 bg-[var(--color-navy)] text-white rounded-lg">
-          <h2 className="text-2xl font-bold mb-4 text-[var(--color-gold)]">Ready to Grow Your Agency?</h2>
-          <p className="mb-6 opacity-90 max-w-2xl mx-auto">
+        <div className="text-center p-8 sm:p-12 bg-[#14141E] border border-gold/30 text-white rounded-2xl">
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold mb-4 text-gold">Ready to Grow Your Agency?</h2>
+          <p className="mb-8 text-text-secondary max-w-2xl mx-auto text-base sm:text-lg">
             Join thousands of successful agents who trust EstateFlow to grow their business 
             and connect with qualified leads.
           </p>
@@ -461,7 +465,7 @@ export default function AgentPricingPage() {
             <Link href={`/checkout?plan=City%20Agent&price=%C2%A379&cycle=${billingCycle}`}>
               <Button 
                 onClick={handleSelectPlan("City Agent", "£79")}
-                className="bg-[var(--color-gold)] text-[var(--color-navy)] hover:bg-[var(--color-gold)]/90 px-6 py-3 cursor-pointer"
+                className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold px-8 py-3.5 rounded-xl cursor-pointer"
               >
                 Get Started Now
               </Button>
@@ -469,13 +473,13 @@ export default function AgentPricingPage() {
             <Link href="/contact">
               <Button 
                 variant="outline" 
-                className="border-[var(--color-gold)] text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 px-6 py-3 cursor-pointer"
+                className="border-gold/40 text-gold hover:bg-gold/10 font-semibold px-8 py-3.5 rounded-xl cursor-pointer"
               >
                 Schedule Demo
               </Button>
             </Link>
           </div>
-          <p className="mt-4 text-sm opacity-75">
+          <p className="mt-6 text-xs sm:text-sm text-text-muted">
             Flexible monthly plans · Cancel anytime · No setup fees
           </p>
         </div>

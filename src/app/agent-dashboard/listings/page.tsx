@@ -66,73 +66,70 @@ export default function AgentListingsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-heading">Property Listings</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage and track performance across your property portfolio</p>
+          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white">Property Listings</h1>
+          <p className="text-sm text-text-secondary mt-1">Manage and track performance across your property portfolio</p>
         </div>
         <Link href="/agent-dashboard/leads">
-          <Button className="bg-navy text-gold hover:bg-navy/90 font-semibold flex items-center gap-2">
+          <Button className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold flex items-center gap-2 rounded-xl cursor-pointer">
             <Users className="w-4 h-4" />
             Browse Leads
           </Button>
         </Link>
       </div>
 
-      <Card className="border border-slate-200/80 shadow-sm bg-slate-50/50">
-        <CardHeader className="pb-4 bg-white border-b border-slate-200/80 rounded-t-xl">
-          <div className="relative max-w-sm">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <Input 
-              type="text"
-              placeholder="Search listings by location or type..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 text-sm border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 bg-white"
-            />
-          </div>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredListings.map((listing) => {
-              const statusAccent = listing.status === 'active' 
-                ? 'border-t-emerald-500' 
-                : listing.status === 'under_offer' 
-                ? 'border-t-amber-500' 
-                : 'border-t-blue-500'
+      <div className="space-y-6">
+        <div className="relative max-w-md">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+          <Input 
+            type="text"
+            placeholder="Search listings by location or type..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 text-sm bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"
+          />
+        </div>
 
-              return (
-                <Card 
-                  key={listing.id} 
-                  className={`bg-white border-2 border-slate-200/90 shadow-sm hover:shadow-lg hover:border-navy/30 transition-all duration-200 overflow-hidden border-t-4 ${statusAccent}`}
-                >
-                  <CardHeader className="pb-2 bg-slate-50/40 border-b border-slate-100">
-                    <div className="flex items-center justify-between">
-                      <Badge className={`${getStatusColor(listing.status)} capitalize border font-semibold shadow-2xs`}>
-                        {listing.status.replace('_', ' ')}
-                      </Badge>
-                      <span className="text-xs text-slate-400 font-medium">{listing.listed}</span>
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-base mt-2">{listing.type}</h3>
-                  </CardHeader>
-                  <CardContent className="pt-3 space-y-3">
-                    <p className="text-xs text-slate-500 flex items-start gap-1.5 leading-relaxed">
-                      <MapPin className="w-3.5 h-3.5 shrink-0 text-slate-400 mt-0.5" />
-                      {listing.address}
-                    </p>
-                    <div className="flex items-baseline justify-between pt-1">
-                      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Asking Price</span>
-                      <p className="text-xl font-extrabold text-navy">{listing.price}</p>
-                    </div>
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-semibold bg-slate-50/60 -mx-6 -mb-6 p-3 px-6">
-                      <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5 text-slate-400" /> {listing.views} views</span>
-                      <span className="text-navy">{listing.inquiries} inquiries</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-        </CardContent>
-      </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredListings.map((listing) => {
+            const statusAccent = listing.status === 'active' 
+              ? 'border-t-emerald-500' 
+              : listing.status === 'under_offer' 
+              ? 'border-t-gold' 
+              : 'border-t-blue-500'
+
+            return (
+              <Card 
+                key={listing.id} 
+                className={`bg-[#1A1A24] border border-white/10 text-white shadow-xl hover:border-gold/40 transition-all duration-200 overflow-hidden rounded-2xl border-t-4 ${statusAccent}`}
+              >
+                <CardHeader className="pb-3 bg-[#14141E] border-b border-white/10 p-5">
+                  <div className="flex items-center justify-between">
+                    <Badge className="bg-gold/15 text-gold border border-gold/30 capitalize font-bold text-xs">
+                      {listing.status.replace('_', ' ')}
+                    </Badge>
+                    <span className="text-xs text-text-muted font-medium">{listing.listed}</span>
+                  </div>
+                  <h3 className="font-heading font-bold text-white text-lg mt-2">{listing.type}</h3>
+                </CardHeader>
+                <CardContent className="p-5 space-y-4">
+                  <p className="text-xs text-[#B8B5AE] flex items-start gap-1.5 leading-relaxed">
+                    <MapPin className="w-3.5 h-3.5 shrink-0 text-gold mt-0.5" />
+                    {listing.address}
+                  </p>
+                  <div className="flex items-baseline justify-between pt-1">
+                    <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Asking Price</span>
+                    <p className="font-heading text-xl font-bold text-gold">{listing.price}</p>
+                  </div>
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-text-secondary font-medium bg-white/[0.02] -mx-5 -mb-5 p-3 px-5">
+                    <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-text-muted" /> {listing.views} views</span>
+                    <span className="text-gold font-semibold">{listing.inquiries} inquiries</span>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }

@@ -163,34 +163,34 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Show logo on mobile only since LeftPanel is hidden */}
       <div className="flex lg:hidden justify-center mb-2">
         <Logo showSubtitle={false} className="h-8 w-8" />
       </div>
 
       <div>
-        <h1 className="text-xl font-bold tracking-tight">Welcome back</h1>
-        <p className="text-muted-foreground text-xs mt-0.5">
+        <h1 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-white">Welcome back</h1>
+        <p className="text-text-secondary text-sm mt-1">
           Sign in to your account
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-3">
+      <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">Email Address</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Email Address</label>
           <Input
             type="email"
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            className="bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">Password</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Password</label>
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
@@ -198,12 +198,12 @@ export default function SignInPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+              className="bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold pr-10"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white cursor-pointer"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -216,13 +216,13 @@ export default function SignInPage() {
               id="remember-me"
               checked={rememberMe}
               onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-              className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy"
+              className="border border-white/20 data-[state=checked]:bg-gold data-[state=checked]:text-[#0d0d14]"
             />
-            <label htmlFor="remember-me" className="text-xs">
+            <label htmlFor="remember-me" className="text-xs text-text-secondary cursor-pointer">
               Remember me
             </label>
           </div>
-          <Link href="/forgot-password" className="text-xs text-blue-600 hover:underline">
+          <Link href="/forgot-password" className="text-xs text-gold hover:underline font-medium">
             Forgot password?
           </Link>
         </div>
@@ -230,14 +230,14 @@ export default function SignInPage() {
         <Button 
           type="submit" 
           size="lg"
-          className="w-full bg-navy text-gold hover:bg-navy/90" 
+          className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 font-bold h-11 rounded-xl cursor-pointer" 
           disabled={loading || oauthLoading}
         >
           {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           Sign In
         </Button>
 
-        <Separator />
+        <Separator className="bg-white/10" />
         
         {/* OAuth Options */}
         <OAuthButtonsGroup 
@@ -248,13 +248,13 @@ export default function SignInPage() {
         />
       </form>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-xs text-text-secondary pt-2">
         Don't have an account?{" "}
-        <Link href="/sign-up/client" className="text-blue-600 hover:underline font-medium">
+        <Link href="/sign-up/client" className="text-gold hover:underline font-semibold">
           Sign up as Client
         </Link>
         {" or "}
-        <Link href="/sign-up/agent" className="text-blue-600 hover:underline font-medium">
+        <Link href="/sign-up/agent" className="text-gold hover:underline font-semibold">
           Sign up as Agent
         </Link>
       </p>

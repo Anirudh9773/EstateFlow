@@ -4,14 +4,24 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { SITE_TAGLINE, ROUTES, HIDDEN_LAYOUT_ROUTES } from '@/lib/constants'
 import { Logo } from '@/components/logo'
+import { useUser } from '@/lib/auth/useUser'
 
 export default function Footer() {
   const pathname = usePathname()
+  const { user } = useUser()
+  const userType = user?.user_metadata?.user_type || 'client'
 
   // Hide footer on specific pages like submit-property and auth pages
   if (HIDDEN_LAYOUT_ROUTES.some(route => pathname.startsWith(route))) {
     return null
   }
+
+  // Hide the client matching CTA banner on dashboard routes, checkout, and for agent accounts
+  const isDashboardRoute = pathname.startsWith('/agent-dashboard') || 
+                          pathname.startsWith('/client-dashboard') || 
+                          pathname.startsWith('/admin-dashboard') ||
+                          pathname.startsWith('/checkout')
+  const hideCtaBanner = isDashboardRoute || userType === 'agent'
 
   const platformLinks = [
     { label: 'How it works', href: '/#how-it-works' },
@@ -36,24 +46,26 @@ export default function Footer() {
 
   return (
     <>
-      {/* Bottom CTA Banner */}
-      <section className="bg-[#111118] py-16 border-t border-gold/10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#F5F3EE] font-heading">
-            Get Matched With a Top Agent Today
-          </h2>
-          <p className="mt-4 text-[#B8B5AE] text-base sm:text-lg max-w-xl mx-auto">
-            Private viewings and exclusive listings available on request
-          </p>
-          <div className="mt-8">
-            <Link href="/submit-property">
-              <button className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold px-10 py-3 rounded-lg transition-all duration-200 hover:scale-105 cursor-pointer">
-                Get Started
-              </button>
-            </Link>
+      {/* Bottom CTA Banner (Only on public client pages, hidden on dashboards and for agents) */}
+      {!hideCtaBanner && (
+        <section className="bg-[#111118] py-16 border-t border-gold/10">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#F5F3EE] font-heading">
+              Get Matched With a Top Agent Today
+            </h2>
+            <p className="mt-4 text-[#B8B5AE] text-base sm:text-lg max-w-xl mx-auto">
+              Private viewings and exclusive listings available on request
+            </p>
+            <div className="mt-8">
+              <Link href="/submit-property">
+                <button className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold px-10 py-3 rounded-lg transition-all duration-200 hover:scale-105 cursor-pointer">
+                  Get Started
+                </button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <footer className="bg-[#0a0a10] pt-12 sm:pt-16 pb-8 border-t border-gold/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">

@@ -42,40 +42,40 @@ function CheckoutContent() {
     : priceParam
 
   return (
-    <div className="min-h-screen bg-surface py-12 sm:py-16 md:py-20">
+    <div className="min-h-screen bg-background text-foreground py-12 sm:py-16 md:py-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         
         {/* Top Navigation */}
         <div className="mb-8 flex items-center justify-between">
           <Link 
             href={isClientPlan ? "/pricing" : "/agent-pricing"} 
-            className="inline-flex items-center text-sm font-semibold text-slate-600 hover:text-[var(--color-navy)] transition-colors gap-2"
+            className="inline-flex items-center text-sm font-semibold text-text-secondary hover:text-gold transition-colors gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             {isClientPlan ? "Back to Pricing" : "Back to Agent Pricing Plans"}
           </Link>
           
-          <Badge className="bg-amber-100 text-amber-800 border border-amber-300 font-semibold px-3 py-1 text-xs">
+          <Badge className="bg-gold/15 text-gold border border-gold/30 font-semibold px-3 py-1 text-xs">
             ⚡ Payment Gateway Integration
           </Badge>
         </div>
 
         {/* Hero Header */}
         <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-[var(--color-navy)] text-[var(--color-gold)] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl border border-[var(--color-gold)]/30">
+          <div className="w-16 h-16 bg-gold/10 text-gold rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl border border-gold/30">
             <CreditCard className="w-8 h-8" />
           </div>
 
           <SectionLabel>Online Checkout</SectionLabel>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[var(--color-navy)] mt-2">
+          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#F5F3EE] mt-3">
             Payment Processing Coming Soon
           </h1>
 
           <GoldDivider className="mx-auto mt-4 mb-4" />
 
-          <p className="text-[var(--color-text-secondary)] text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Thank you for selecting the <strong className="text-[var(--color-navy)]">{planParam}</strong> plan! We are currently integrating our secure payment gateway to deliver a seamless automated experience.
+          <p className="text-[#B8B5AE] text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+            Thank you for selecting the <strong className="text-gold font-semibold">{planParam}</strong> plan! We are currently integrating our secure payment gateway to deliver a seamless automated experience.
           </p>
         </div>
 
@@ -83,20 +83,20 @@ function CheckoutContent() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
           
           {/* Left Column: Plan Summary */}
-          <Card className="md:col-span-1 border-2 border-[var(--color-gold)]/40 bg-white shadow-lg flex flex-col justify-between">
-            <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
+          <Card className="md:col-span-1 border border-gold/40 bg-[#1A1A24] text-white shadow-xl flex flex-col justify-between rounded-2xl overflow-hidden">
+            <CardHeader className="bg-[#14141E] border-b border-white/10 pb-4">
               <div className="flex items-center justify-between mb-2">
-                <Badge className="bg-[var(--color-gold)] text-[var(--color-navy)] font-bold text-xs">
+                <Badge className="bg-gold text-[#0d0d14] font-bold text-xs">
                   Selected Plan
                 </Badge>
-                <span className="text-xs text-slate-500 capitalize font-medium">
+                <span className="text-xs text-text-muted capitalize font-medium">
                   {isClientPlan ? 'One-Time' : `${cycleParam} Billing`}
                 </span>
               </div>
-              <CardTitle className="text-xl font-bold text-[var(--color-navy)]">
+              <CardTitle className="font-heading text-xl font-bold text-white">
                 {planParam}
               </CardTitle>
-              <CardDescription className="text-xs">
+              <CardDescription className="text-xs text-text-secondary">
                 {planParam.toLowerCase().includes('basic') 
                   ? 'Perfect for single property listings & agent matching'
                   : planParam.toLowerCase().includes('professional')
@@ -112,12 +112,12 @@ function CheckoutContent() {
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="pt-6 space-y-4">
-              <div className="text-center py-2 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="text-3xl font-extrabold text-[var(--color-navy)]">
+            <CardContent className="pt-6 space-y-4 p-6">
+              <div className="text-center py-3 bg-white/5 rounded-xl border border-white/10">
+                <div className="font-heading text-3xl font-extrabold text-white">
                   {displayPrice}
                 </div>
-                <div className="text-xs text-[var(--color-text-secondary)] font-medium">
+                <div className="text-xs text-text-muted font-medium mt-0.5">
                   {isClientPlan 
                     ? 'one-time payment' 
                     : `per month ${isAnnual ? '(billed annually - 20% OFF)' : ''}`
@@ -125,42 +125,42 @@ function CheckoutContent() {
                 </div>
               </div>
 
-              <div className="space-y-2 text-xs text-slate-600">
+              <div className="space-y-2.5 text-xs text-[#B8B5AE]">
                 {isClientPlan ? (
                   <>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>Submit property listings & reach verified agents</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>Priority matching & market analytics</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>Full access to client dashboard</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>7-day agent response guarantee</span>
                     </div>
                   </>
                 ) : (
                   <>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>Full access to matched client leads</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>Verified agent badge & profile listing</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>Performance reporting dashboard</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>No long-term contract commitment</span>
                     </div>
                   </>
@@ -168,42 +168,42 @@ function CheckoutContent() {
               </div>
             </CardContent>
 
-            <div className="p-4 bg-amber-50/60 border-t border-amber-100 rounded-b-xl text-center">
-              <p className="text-xs text-amber-800 font-medium">
+            <div className="p-4 bg-gold/10 border-t border-gold/20 text-center">
+              <p className="text-xs text-gold font-medium">
                 No immediate payment required today.
               </p>
             </div>
           </Card>
 
           {/* Right Column: Status & Next Steps */}
-          <Card className="md:col-span-2 border border-[var(--color-ef-border)] bg-white shadow-md">
+          <Card className="md:col-span-2 border border-white/10 bg-[#1A1A24] text-white shadow-xl rounded-2xl">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-gold/10 text-gold border border-gold/20 flex items-center justify-center">
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold text-[var(--color-navy)]">
+                  <CardTitle className="font-heading text-lg font-bold text-white">
                     What happens next?
                   </CardTitle>
-                  <CardDescription className="text-xs">
+                  <CardDescription className="text-xs text-text-secondary">
                     How your account and selected plan are handled during our preview launch
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 p-6 pt-0">
               
               {/* Feature Notice Box */}
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+              <div className="p-4 sm:p-5 rounded-xl bg-[#14141E] border border-white/10 space-y-3">
                 <div className="flex items-start gap-3">
-                  <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-900">
+                    <h4 className="text-sm font-semibold text-white">
                       Complimentary Access During Gateway Upgrade
                     </h4>
-                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                    <p className="text-xs text-text-secondary mt-1.5 leading-relaxed">
                       {isClientPlan
                         ? 'While our card payment system is being finalized, all property submission and agent matching features are fully active! You can submit your property and connect with agents immediately.'
                         : 'While our card payment system is being finalized, all agent account features and dashboard access are available to registered agents. You can start using EstateFlow immediately!'
@@ -218,7 +218,7 @@ function CheckoutContent() {
                 {user ? (
                   userType === 'agent' ? (
                     <Link href="/agent-dashboard" className="block">
-                      <Button className="w-full bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-12 text-base font-semibold gap-2 shadow-md cursor-pointer">
+                      <Button className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 h-12 text-base font-semibold gap-2 shadow-md cursor-pointer rounded-xl">
                         <Building2 className="w-5 h-5" />
                         Go to Agent Dashboard
                         <ArrowRight className="w-4 h-4 ml-auto" />
@@ -227,12 +227,12 @@ function CheckoutContent() {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Link href="/submit-property" className="block">
-                        <Button className="w-full bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer">
+                        <Button className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer rounded-xl">
                           Submit Your Property
                         </Button>
                       </Link>
                       <Link href="/client-dashboard" className="block">
-                        <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 h-11 text-sm font-semibold cursor-pointer">
+                        <Button variant="outline" className="w-full border-white/15 text-text-secondary hover:text-white hover:bg-white/10 h-11 text-sm font-semibold cursor-pointer rounded-xl">
                           Client Dashboard
                         </Button>
                       </Link>
@@ -243,12 +243,12 @@ function CheckoutContent() {
                     {isClientPlan ? (
                       <>
                         <Link href="/submit-property" className="block">
-                          <Button className="w-full bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer">
+                          <Button className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer rounded-xl">
                             Submit Your Property
                           </Button>
                         </Link>
                         <Link href="/sign-in" className="block">
-                          <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 h-11 text-sm font-semibold cursor-pointer">
+                          <Button variant="outline" className="w-full border-white/15 text-text-secondary hover:text-white hover:bg-white/10 h-11 text-sm font-semibold cursor-pointer rounded-xl">
                             Sign In / Register
                           </Button>
                         </Link>
@@ -256,13 +256,13 @@ function CheckoutContent() {
                     ) : (
                       <>
                         <Link href="/sign-up/agent" className="block">
-                          <Button className="w-full bg-[var(--color-navy)] text-[var(--color-gold)] hover:bg-[var(--color-navy)]/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer">
+                          <Button className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 h-11 text-sm font-semibold gap-2 shadow-md cursor-pointer rounded-xl">
                             <Building2 className="w-4 h-4" />
                             Create Agent Account
                           </Button>
                         </Link>
                         <Link href="/sign-in" className="block">
-                          <Button variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 h-11 text-sm font-semibold cursor-pointer">
+                          <Button variant="outline" className="w-full border-white/15 text-text-secondary hover:text-white hover:bg-white/10 h-11 text-sm font-semibold cursor-pointer rounded-xl">
                             Already Registered? Sign In
                           </Button>
                         </Link>
@@ -272,20 +272,20 @@ function CheckoutContent() {
                 )}
 
                 <Link href="/contact" className="block text-center pt-2">
-                  <span className="text-xs text-slate-500 hover:text-[var(--color-navy)] underline transition-colors">
+                  <span className="text-xs text-text-muted hover:text-gold underline transition-colors">
                     Need a custom invoice or bank transfer details? Contact our team
                   </span>
                 </Link>
               </div>
 
               {/* Direct Support Info */}
-              <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+              <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-text-muted gap-2">
                 <span className="flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-slate-400" />
+                  <Mail className="w-3.5 h-3.5 text-gold" />
                   {SITE_EMAIL}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-slate-400" />
+                  <Lock className="w-3.5 h-3.5 text-gold" />
                   256-bit SSL Encrypted Connection
                 </span>
               </div>
@@ -296,21 +296,21 @@ function CheckoutContent() {
         </div>
 
         {/* FAQs */}
-        <Card className="border border-[var(--color-ef-border)] bg-white">
+        <Card className="border border-white/10 bg-[#1A1A24] text-white rounded-2xl">
           <CardHeader>
-            <div className="flex items-center gap-2 text-[var(--color-navy)] font-semibold text-sm">
-              <HelpCircle className="w-4 h-4 text-[var(--color-gold)]" />
+            <div className="flex items-center gap-2 text-white font-semibold text-sm">
+              <HelpCircle className="w-4 h-4 text-gold" />
               <span>Checkout FAQs</span>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 text-xs text-slate-600">
+          <CardContent className="space-y-4 text-xs text-text-secondary p-6 pt-0">
             <div>
-              <p className="font-semibold text-slate-800">When will automated card payments be enabled?</p>
-              <p className="mt-1">We are rolling out full automated billing shortly. Registered agents will receive an email notification when payment setup is required.</p>
+              <p className="font-semibold text-white text-sm">When will automated card payments be enabled?</p>
+              <p className="mt-1 leading-relaxed">We are rolling out full automated billing shortly. Registered agents will receive an email notification when payment setup is required.</p>
             </div>
-            <div className="pt-3 border-t border-slate-100">
-              <p className="font-semibold text-slate-800">Will I lose access if payment is delayed?</p>
-              <p className="mt-1">No, during our initial launch phase, accounts will remain fully active while our payment gateway integration completes.</p>
+            <div className="pt-3 border-t border-white/10">
+              <p className="font-semibold text-white text-sm">Will I lose access if payment is delayed?</p>
+              <p className="mt-1 leading-relaxed">No, during our initial launch phase, accounts will remain fully active while our payment gateway integration completes.</p>
             </div>
           </CardContent>
         </Card>
@@ -323,10 +323,10 @@ function CheckoutContent() {
 export default function CheckoutPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-surface flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-[var(--color-navy)] border-t-[var(--color-gold)] rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-sm text-slate-600">Loading Checkout Information...</p>
+          <div className="w-8 h-8 border-4 border-white/10 border-t-gold rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-sm text-text-secondary">Loading Checkout Information...</p>
         </div>
       </div>
     }>

@@ -40,36 +40,36 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
   const displayedAgents = getDisplayedAgents()
 
   return (
-    <div className="min-h-screen bg-surface">
-      <div className="container mx-auto px-4 sm:px-6 py-8 max-w-7xl">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="container mx-auto px-4 sm:px-6 py-12 max-w-7xl">
         {/* Page Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-navy mb-4">
+        <div className="text-center mb-10">
+          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold text-[#F5F3EE] mb-4">
             Find Your Perfect Agent
           </h1>
-          <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+          <p className="text-text-secondary text-base sm:text-lg max-w-2xl mx-auto">
             Browse our curated selection of verified agents across different service areas. 
             From local specialists to national experts, find the right professional for your property needs.
           </p>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
-          <Card className="bg-navy text-white text-center p-3 sm:p-4">
-            <div className="text-xl sm:text-2xl font-bold text-gold">{agents.length}</div>
-            <div className="text-xs sm:text-sm opacity-90">Expert Agents</div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-10">
+          <Card className="bg-[#1A1A24] border-white/10 text-white text-center p-4 sm:p-5 shadow-none">
+            <div className="font-heading text-2xl sm:text-3xl font-bold text-gold">{agents.length}</div>
+            <div className="text-xs sm:text-sm text-text-secondary mt-1">Expert Agents</div>
           </Card>
-          <Card className="bg-navy text-white text-center p-3 sm:p-4">
-            <div className="text-xl sm:text-2xl font-bold text-gold">4.5+</div>
-            <div className="text-xs sm:text-sm opacity-90">Average Rating</div>
+          <Card className="bg-[#1A1A24] border-white/10 text-white text-center p-4 sm:p-5 shadow-none">
+            <div className="font-heading text-2xl sm:text-3xl font-bold text-gold">4.5+</div>
+            <div className="text-xs sm:text-sm text-text-secondary mt-1">Average Rating</div>
           </Card>
-          <Card className="bg-navy text-white text-center p-3 sm:p-4">
-            <div className="text-xl sm:text-2xl font-bold text-gold">2,000+</div>
-            <div className="text-xs sm:text-sm opacity-90">Properties Sold</div>
+          <Card className="bg-[#1A1A24] border-white/10 text-white text-center p-4 sm:p-5 shadow-none">
+            <div className="font-heading text-2xl sm:text-3xl font-bold text-gold">2,000+</div>
+            <div className="text-xs sm:text-sm text-text-secondary mt-1">Properties Sold</div>
           </Card>
-          <Card className="bg-navy text-white text-center p-3 sm:p-4">
-            <div className="text-xl sm:text-2xl font-bold text-gold">24/7</div>
-            <div className="text-xs sm:text-sm opacity-90">Support Available</div>
+          <Card className="bg-[#1A1A24] border-white/10 text-white text-center p-4 sm:p-5 shadow-none">
+            <div className="font-heading text-2xl sm:text-3xl font-bold text-gold">24/7</div>
+            <div className="text-xs sm:text-sm text-text-secondary mt-1">Support Available</div>
           </Card>
         </div>
 
@@ -78,25 +78,25 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
           <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 bg-transparent border-0 shadow-none p-0 w-full group-data-horizontal/tabs:h-auto">
             <TabsTrigger 
               value="all" 
-              className="text-slate-700 hover:bg-navy hover:text-gold hover:border-navy data-active:bg-navy data-active:text-gold data-active:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg cursor-pointer"
+              className="bg-[#1E1E28] border border-white/15 text-text-secondary hover:text-white hover:border-gold/40 data-active:bg-gold data-active:text-[#0d0d14] data-active:font-bold transition-all duration-200 py-3 sm:py-3.5 px-3 sm:px-6 text-sm sm:text-base font-medium rounded-xl cursor-pointer"
             >
               All ({agents.length})
             </TabsTrigger>
             <TabsTrigger 
               value="local" 
-              className="text-slate-700 hover:bg-navy hover:text-gold hover:border-navy data-active:bg-navy data-active:text-gold data-active:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg cursor-pointer"
+              className="bg-[#1E1E28] border border-white/15 text-text-secondary hover:text-white hover:border-gold/40 data-active:bg-gold data-active:text-[#0d0d14] data-active:font-bold transition-all duration-200 py-3 sm:py-3.5 px-3 sm:px-6 text-sm sm:text-base font-medium rounded-xl cursor-pointer"
             >
               Local ({localAgents.length})
             </TabsTrigger>
             <TabsTrigger 
               value="regional" 
-              className="text-slate-700 hover:bg-navy hover:text-gold hover:border-navy data-active:bg-navy data-active:text-gold data-active:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg cursor-pointer"
+              className="bg-[#1E1E28] border border-white/15 text-text-secondary hover:text-white hover:border-gold/40 data-active:bg-gold data-active:text-[#0d0d14] data-active:font-bold transition-all duration-200 py-3 sm:py-3.5 px-3 sm:px-6 text-sm sm:text-base font-medium rounded-xl cursor-pointer"
             >
               Regional ({regionalAgents.length})
             </TabsTrigger>
             <TabsTrigger 
               value="nationwide" 
-              className="text-slate-700 hover:bg-navy hover:text-gold hover:border-navy data-active:bg-navy data-active:text-gold data-active:shadow-lg transition-all duration-200 py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base font-bold border-2 border-navy/20 rounded-lg cursor-pointer"
+              className="bg-[#1E1E28] border border-white/15 text-text-secondary hover:text-white hover:border-gold/40 data-active:bg-gold data-active:text-[#0d0d14] data-active:font-bold transition-all duration-200 py-3 sm:py-3.5 px-3 sm:px-6 text-sm sm:text-base font-medium rounded-xl cursor-pointer"
             >
               Nationwide ({nationwideAgents.length})
             </TabsTrigger>
@@ -105,7 +105,7 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
           {/* All Agents Tab */}
           <TabsContent value="all" className="space-y-6">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-navy mb-2">All Agents</h2>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">All Agents</h2>
               <p className="text-text-secondary">
                 Browse all {agents.length} verified agents across all service areas
               </p>
@@ -120,7 +120,7 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
           {/* Local Agents Tab */}
           <TabsContent value="local" className="space-y-6">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-navy mb-2">Local Agents</h2>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">Local Agents</h2>
               <p className="text-text-secondary">
                 {localAgents.length} specialized agents serving specific postcodes and neighborhoods
               </p>
@@ -135,7 +135,7 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
           {/* Regional Agents Tab */}
           <TabsContent value="regional" className="space-y-6">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-navy mb-2">Regional Agents</h2>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">Regional Agents</h2>
               <p className="text-text-secondary">
                 {regionalAgents.length} agents covering cities, counties and regional areas
               </p>
@@ -150,7 +150,7 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
           {/* Nationwide Agents Tab */}
           <TabsContent value="nationwide" className="space-y-6">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-navy mb-2">Nationwide Agents</h2>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">Nationwide Agents</h2>
               <p className="text-text-secondary">
                 {nationwideAgents.length} agents with extensive UK-wide property expertise
               </p>
@@ -164,47 +164,46 @@ export default function BrowseAgentsClient({ agents }: BrowseAgentsClientProps) 
         </Tabs>
 
         {/* CTA Section */}
-        <div className="text-center mt-12 p-6 sm:p-8 bg-navy text-white rounded-lg">
+        <div className="text-center mt-12 p-6 sm:p-10 bg-[#14141E] border border-gold/30 text-white rounded-2xl">
           {user && userType === 'agent' ? (
             <>
-              <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gold">Grow Your Business with EstateFlow</h2>
-              <p className="mb-4 sm:mb-6 opacity-90 max-w-2xl mx-auto text-sm sm:text-base">
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold mb-3 text-gold">Grow Your Business with EstateFlow</h2>
+              <p className="mb-6 text-text-secondary max-w-2xl mx-auto text-sm sm:text-base">
                 Manage your profile, view client property submissions matched to your service area, and track your active leads.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <Link 
                   href="/agent-dashboard"
-                  className="px-6 py-3 bg-gold text-navy font-semibold rounded-lg hover:bg-gold/90 transition-colors text-sm sm:text-base cursor-pointer inline-block"
+                  className="px-8 py-3.5 bg-gold text-[#0d0d14] font-semibold rounded-xl hover:bg-gold/90 transition-colors text-sm sm:text-base cursor-pointer inline-block"
                 >
                   Agent Dashboard
                 </Link>
                 <Link 
-                  href="/agent-pricing"
-                  className="px-6 py-3 border border-gold text-gold font-semibold rounded-lg hover:bg-gold/10 transition-colors text-sm sm:text-base inline-block"
+                  href="/agent-dashboard/listings"
+                  className="px-8 py-3.5 border border-gold/40 text-gold font-semibold rounded-xl hover:bg-gold/10 transition-colors text-sm sm:text-base cursor-pointer inline-block"
                 >
-                  View Pricing Plans
+                  Manage Listings
                 </Link>
               </div>
             </>
           ) : (
             <>
-              <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gold">Ready to Find Your Perfect Agent?</h2>
-              <p className="mb-4 sm:mb-6 opacity-90 max-w-2xl mx-auto text-sm sm:text-base">
-                Get personalized recommendations based on your property needs and location. 
-                Our AI-powered matching system connects you with the best agents for your requirements.
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold mb-3 text-gold">Are You a Real Estate Agent?</h2>
+              <p className="mb-6 text-text-secondary max-w-2xl mx-auto text-sm sm:text-base">
+                Join our network of verified agents and get connected with high-intent property owners in your area.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <Link 
-                  href="/submit-property"
-                  className="px-6 py-3 bg-gold text-navy font-semibold rounded-lg hover:bg-gold/90 transition-colors text-sm sm:text-base cursor-pointer inline-block"
+                  href="/join"
+                  className="px-8 py-3.5 bg-gold text-[#0d0d14] font-semibold rounded-xl hover:bg-gold/90 transition-colors text-sm sm:text-base cursor-pointer inline-block"
                 >
-                  Get Matched
+                  Join as an Agent
                 </Link>
                 <Link 
-                  href="/find-an-agent"
-                  className="px-6 py-3 border border-gold text-gold font-semibold rounded-lg hover:bg-gold/10 transition-colors text-sm sm:text-base inline-block"
+                  href="/agent-pricing"
+                  className="px-8 py-3.5 border border-gold/40 text-gold font-semibold rounded-xl hover:bg-gold/10 transition-colors text-sm sm:text-base cursor-pointer inline-block"
                 >
-                  Advanced Search
+                  View Pricing Plans
                 </Link>
               </div>
             </>

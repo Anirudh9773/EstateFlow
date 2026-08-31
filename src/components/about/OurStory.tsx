@@ -5,7 +5,7 @@ export default function OurStory() {
     <ContentSection variant="white" maxWidth="lg">
       <SectionHeader title="Our Story" />
       
-      <div className="prose prose-lg max-w-none text-slate-700">
+      <div className="prose prose-invert prose-lg max-w-none text-[#B8B5AE]">
         <p className="text-lg leading-relaxed mb-6">
           EstateFlow was founded in 2021 by a team of property professionals and technologists 
           who saw a fundamental problem in the UK property market: the disconnect between 

@@ -66,14 +66,14 @@ function AreaOfOperationSelect({ value, onChange }: AreaOfOperationSelectProps) 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full h-10 px-3 border border-slate-300 rounded-md bg-white text-sm hover:border-slate-400 focus:border-navy focus:ring-2 focus:ring-navy/20 focus:outline-none transition-colors"
+        className="flex items-center justify-between w-full h-10 px-3 border border-white/15 rounded-md bg-[#1E1E28] text-sm text-white hover:border-gold/40 focus:border-gold focus:outline-none transition-colors"
       >
-        <span className="text-slate-500 truncate">
+        <span className="text-text-muted truncate">
           {selectedCodes.length === 0
             ? "Select areas..."
             : `${selectedCodes.length} area${selectedCodes.length > 1 ? "s" : ""} selected`}
         </span>
-        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-4 h-4 text-text-muted transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {/* Selected badges */}
@@ -84,13 +84,13 @@ function AreaOfOperationSelect({ value, onChange }: AreaOfOperationSelectProps) 
             return (
               <span
                 key={code}
-                className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md text-xs font-medium"
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-gold/15 text-gold border border-gold/30 rounded-md text-xs font-medium"
               >
                 {code} — {area?.name || code}
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); removeArea(code) }}
-                  className="text-emerald-500 hover:text-emerald-700 transition-colors"
+                  className="text-gold hover:text-white transition-colors"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -102,17 +102,17 @@ function AreaOfOperationSelect({ value, onChange }: AreaOfOperationSelectProps) 
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg max-h-56 overflow-hidden">
+        <div className="absolute z-50 mt-1 w-full bg-[#1A1A24] border border-white/15 rounded-lg shadow-xl max-h-56 overflow-hidden">
           {/* Search input */}
-          <div className="p-2 border-b border-slate-100 sticky top-0 bg-white">
+          <div className="p-2 border-b border-white/10 sticky top-0 bg-[#1A1A24]">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
               <input
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search postcode areas..."
-                className="w-full h-8 pl-8 pr-3 text-xs border border-slate-200 rounded-md focus:border-navy focus:ring-1 focus:ring-navy/20 focus:outline-none"
+                className="w-full h-8 pl-8 pr-3 text-xs bg-[#14141E] border border-white/15 text-white rounded-md focus:border-gold focus:outline-none"
                 autoFocus
               />
             </div>
@@ -120,7 +120,7 @@ function AreaOfOperationSelect({ value, onChange }: AreaOfOperationSelectProps) 
           {/* Options list */}
           <div className="overflow-y-auto max-h-44">
             {filteredAreas.length === 0 ? (
-              <div className="px-3 py-4 text-xs text-slate-400 text-center">No areas found</div>
+              <div className="px-3 py-4 text-xs text-text-muted text-center">No areas found</div>
             ) : (
               filteredAreas.map(area => {
                 const isSelected = selectedCodes.includes(area.code)
@@ -131,20 +131,20 @@ function AreaOfOperationSelect({ value, onChange }: AreaOfOperationSelectProps) 
                     onClick={() => toggleArea(area.code)}
                     className={`flex items-center gap-2.5 w-full px-3 py-2 text-left text-xs transition-colors ${
                       isSelected
-                        ? "bg-emerald-50 text-emerald-700 font-medium"
-                        : "hover:bg-slate-50 text-slate-700"
+                        ? "bg-gold/15 text-gold font-medium"
+                        : "hover:bg-white/5 text-[#B8B5AE]"
                     }`}
                   >
-                    <span className={`flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-                      isSelected ? "bg-emerald-600 border-emerald-600" : "border-slate-300"
+                    <span className={`flex-shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                      isSelected ? "bg-gold border-gold" : "border-white/30"
                     }`}>
                       {isSelected && (
-                        <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <svg className="w-2.5 h-2.5 text-[#0d0d14]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       )}
                     </span>
-                    <span className="font-mono font-bold text-[11px] w-7">{area.code}</span>
+                    <span className="font-mono font-bold text-[11px] w-7 text-white">{area.code}</span>
                     <span className="truncate">{area.name}</span>
                   </button>
                 )
@@ -206,9 +206,7 @@ export default function SimpleAgentSignUpForm() {
         setOauthLoading(false)
         return
       }
-      // If successful, user will be redirected
     } catch (error: unknown) {
-      // NEXT_REDIRECT is expected and means redirect is working
       if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
         console.log('Redirect initiated successfully')
         return
@@ -254,18 +252,18 @@ export default function SimpleAgentSignUpForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {/* Show logo on mobile only since LeftPanel is hidden */}
       <div className="flex lg:hidden justify-center mb-4">
         <Logo showSubtitle={false} className="h-8 w-8" />
       </div>
 
       {serverError && (
-        <Alert variant="destructive" className="py-2">
+        <Alert variant="destructive" className="py-2 bg-red-950/50 border-red-500/50 text-red-200">
           <AlertDescription className="text-xs">
             {serverError.toLowerCase().includes('already registered') || serverError.toLowerCase().includes('already exists') ? (
               <span>
-                An account with this email already exists. <Link href={`/sign-in?email=${encodeURIComponent(watch('email') || '')}`} className="underline font-semibold text-navy hover:text-navy/80">Sign in instead</Link>.
+                An account with this email already exists. <Link href={`/sign-in?email=${encodeURIComponent(watch('email') || '')}`} className="underline font-semibold text-gold hover:text-gold/80">Sign in instead</Link>.
               </span>
             ) : (
               serverError
@@ -277,28 +275,28 @@ export default function SimpleAgentSignUpForm() {
       {/* Grid for Name and Email */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">Full Name</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Full Name</label>
           <Input
             type="text"
             placeholder="John Doe"
-            className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"
             {...register("fullName")}
           />
           {errors.fullName && (
-            <p className="text-xs text-red-600">{errors.fullName.message}</p>
+            <p className="text-xs text-red-400">{errors.fullName.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">Email Address</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Email Address</label>
           <Input
             type="email"
             placeholder="you@example.com"
-            className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-xs text-red-600">{errors.email.message}</p>
+            <p className="text-xs text-red-400">{errors.email.message}</p>
           )}
         </div>
       </div>
@@ -306,11 +304,11 @@ export default function SimpleAgentSignUpForm() {
       {/* Grid for Phone and Agency Name */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">Phone Number</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Phone Number</label>
           <Input
             type="tel"
             placeholder="+44 7700 900000"
-            className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"
             {...register("phone")}
             onChange={(e) => {
               const val = e.target.value
@@ -323,20 +321,20 @@ export default function SimpleAgentSignUpForm() {
             }}
           />
           {errors.phone && (
-            <p className="text-xs text-red-600">{errors.phone.message}</p>
+            <p className="text-xs text-red-400">{errors.phone.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">Agency / Company Name</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Agency / Company Name</label>
           <Input
             type="text"
             placeholder="Your Agency Name"
-            className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"
             {...register("agencyName")}
           />
           {errors.agencyName && (
-            <p className="text-xs text-red-600">{errors.agencyName.message}</p>
+            <p className="text-xs text-red-400">{errors.agencyName.message}</p>
           )}
         </div>
       </div>
@@ -344,28 +342,28 @@ export default function SimpleAgentSignUpForm() {
       {/* Grid for License and Experience */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">License Number</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">License Number</label>
           <Input
             type="text"
             placeholder="Your License Number"
-            className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+            className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"
             {...register("licenseNumber")}
           />
           {errors.licenseNumber && (
-            <p className="text-xs text-red-600">{errors.licenseNumber.message}</p>
+            <p className="text-xs text-red-400">{errors.licenseNumber.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">Years of Experience</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Years of Experience</label>
           <Select 
             value={experience} 
             onValueChange={(value) => setValue("experience", value || "", { shouldValidate: true })}
           >
-            <SelectTrigger className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20">
+            <SelectTrigger className="h-10 bg-[#1E1E28] border-white/15 text-white focus:border-gold">
               <SelectValue placeholder="Select experience" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-[#1E1E28] border-white/15 text-white">
               <SelectItem value="0-2">0-2 years</SelectItem>
               <SelectItem value="3-5">3-5 years</SelectItem>
               <SelectItem value="5-10">5-10 years</SelectItem>
@@ -373,101 +371,101 @@ export default function SimpleAgentSignUpForm() {
             </SelectContent>
           </Select>
           {errors.experience && (
-            <p className="text-xs text-red-600">{errors.experience.message}</p>
+            <p className="text-xs text-red-400">{errors.experience.message}</p>
           )}
         </div>
       </div>
 
       {/* Area of Operation multi-select */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-slate-600">Area of Operation</label>
+        <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Area of Operation</label>
         <AreaOfOperationSelect
           value={watch("areaOfOperation") || ""}
           onChange={(val) => setValue("areaOfOperation", val, { shouldValidate: true })}
         />
         {errors.areaOfOperation && (
-          <p className="text-xs text-red-600">{errors.areaOfOperation.message}</p>
+          <p className="text-xs text-red-400">{errors.areaOfOperation.message}</p>
         )}
       </div>
 
       {/* Grid for Password and Confirm Password */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">Password</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Password</label>
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
-              className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+              className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold pr-10"
               {...register("password")}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white cursor-pointer"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs text-red-600">{errors.password.message}</p>
+            <p className="text-xs text-red-400">{errors.password.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-600">Confirm Password</label>
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Confirm Password</label>
           <div className="relative">
             <Input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="••••••••"
-              className="h-10 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20"
+              className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold pr-10"
               {...register("confirmPassword")}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white cursor-pointer"
             >
               {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-xs text-red-600">{errors.confirmPassword.message}</p>
+            <p className="text-xs text-red-400">{errors.confirmPassword.message}</p>
           )}
         </div>
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-1 pt-1">
         <div className="flex items-start gap-2">
           <Checkbox
             id="terms-agent"
             checked={termsAccepted}
             onCheckedChange={(checked) => setValue("terms", checked === true, { shouldValidate: true })}
-            className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy mt-0.5"
+            className="border border-white/20 data-[state=checked]:bg-gold data-[state=checked]:text-[#0d0d14] mt-0.5"
           />
-          <label htmlFor="terms-agent" className="text-xs leading-tight">
+          <label htmlFor="terms-agent" className="text-xs text-text-secondary leading-tight cursor-pointer">
             I agree to the{" "}
-            <Link href="/terms" className="text-emerald-600 hover:underline font-medium">
+            <Link href="/terms" className="text-gold hover:underline font-semibold">
               Terms & Conditions
             </Link>
           </label>
         </div>
         {errors.terms && (
-          <p className="text-xs text-red-600">{errors.terms.message}</p>
+          <p className="text-xs text-red-400">{errors.terms.message}</p>
         )}
       </div>
 
       <Button 
         type="submit" 
         size="lg"
-        className="w-full bg-emerald-600 text-white hover:bg-emerald-700 font-medium" 
+        className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 font-bold h-11 rounded-xl cursor-pointer" 
         disabled={loading || oauthLoading}
       >
         {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
         Register as Agent
       </Button>
 
-      <Separator />
+      <Separator className="bg-white/10" />
       
       {/* OAuth Options */}
       <OAuthButtonsGroup 

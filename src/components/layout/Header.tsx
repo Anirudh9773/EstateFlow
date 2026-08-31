@@ -83,18 +83,22 @@ export default function Header() {
   const showLoading = loading || (!!user && is2faVerified === null);
 
   const platformLinks = useMemo(() => {
-    const base = [
-      { label: 'How It Works', href: '/#how-it-works' },
-      { label: 'Find an Agent', href: '/find-an-agent' },
-    ];
-    if (!user || userType === 'client') {
-      base.push(
-        { label: 'Submit a Property', href: '/submit-property' },
-        { label: 'Pricing', href: '/pricing' }
-      );
+    if (userType === 'agent') {
+      return [
+        { label: 'Agent Dashboard', href: '/agent-dashboard' },
+        { label: 'Property Listings', href: '/agent-dashboard/listings' },
+        { label: 'Leads & Inquiries', href: '/agent-dashboard/leads' },
+        { label: 'Agent Pricing', href: '/agent-pricing' },
+        { label: 'How It Works', href: '/#how-it-works' },
+      ];
     }
-    return base;
-  }, [user, userType]);
+    return [
+      { label: 'Find an Agent', href: '/find-an-agent' },
+      { label: 'Submit a Property', href: '/submit-property' },
+      { label: 'How It Works', href: '/#how-it-works' },
+      { label: 'Pricing', href: '/pricing' },
+    ];
+  }, [userType]);
 
   const agentLinks = useMemo(() => {
     if (!user) {
@@ -195,7 +199,7 @@ export default function Header() {
             </span>
             <button
               onClick={() => setShowTrustBar(false)}
-              className="absolute right-4 text-text-muted hover:text-[#F5F3EE] transition-colors text-lg leading-none"
+              className="absolute right-4 text-text-muted hover:text-[#F5F3EE] transition-colors text-lg leading-none cursor-pointer"
               aria-label="Dismiss announcement"
             >
               ×
@@ -215,7 +219,7 @@ export default function Header() {
         <nav className="container mx-auto px-4" aria-label="Main navigation">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
+            <Link href="/" className="flex items-center gap-2 group shrink-0 select-none">
               <Logo showSubtitle={true} className="h-7 w-7 transition-transform group-hover:scale-105" />
             </Link>
 

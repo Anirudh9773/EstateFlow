@@ -26,12 +26,12 @@ export default function AuthLayout({
       <AuthLeftPanel />
       
       {/* Right Panel - Form Area */}
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-10 bg-white dark:bg-slate-950 min-h-screen relative">
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-10 bg-surface min-h-screen relative">
         {/* Back to Home Link */}
         <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-10">
           <Link 
             href="/" 
-            className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-navy dark:hover:text-gold transition-colors gap-1"
+            className="inline-flex items-center text-xs font-semibold text-text-secondary hover:text-gold transition-colors gap-1.5"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Home

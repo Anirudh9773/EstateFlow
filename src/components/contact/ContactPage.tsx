@@ -11,10 +11,10 @@ export default function ContactPage() {
   const [userRole, setUserRole] = useState<'client' | 'agent'>('client');
 
   return (
-    <main className="min-h-screen bg-[#F5F3EE]">
+    <main className="min-h-screen bg-background text-foreground">
       <ContactHero />
       
-      <section className="py-6 sm:py-12 md:py-16 lg:py-24">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
             {/* Contact Form - Takes 2 columns */}

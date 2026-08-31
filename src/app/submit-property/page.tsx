@@ -140,29 +140,27 @@ export default function SubmitPropertyPage() {
   // Success screen after property submission
   if (submissionSuccess) {
     return (
-      <div className={cn("min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)]", dmSans.variable)} style={{ fontFamily: "var(--font-dm-sans)" }}>
-        <div className="fixed inset-0" style={{ background: "radial-gradient(ellipse at center, #1a3a2a 0%, #0F172A 100%)" }} />
-        
+      <div className={cn("min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)] bg-background text-foreground", dmSans.variable)} style={{ fontFamily: "var(--font-dm-sans)" }}>
         <div className="relative min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)] flex items-center justify-center pt-10 pb-4 px-4 sm:p-6 md:p-8 z-10">
-          <Card className="max-w-2xl w-full overflow-visible relative">
+          <Card className="max-w-2xl w-full bg-[#1A1A24] border border-white/10 text-white overflow-visible relative rounded-2xl shadow-2xl">
             {/* Success badge */}
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-              <span className="border border-green-600 text-green-700 text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full bg-white shadow-sm">
+              <span className="border border-gold/40 text-gold text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-full bg-[#14141E] shadow-md">
                 ✓ Property Submitted!
               </span>
             </div>
 
-            <div className="h-1.5 bg-green-600 rounded-t-xl" />
+            <div className="h-1.5 bg-gold rounded-t-xl" />
 
             <div className="p-8 md:p-12">
               <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
+                <div className="w-16 h-16 bg-gold/10 border border-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-gold" />
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-[#1a2e1a]">
+                <h1 className="font-heading text-2xl md:text-3xl font-bold text-white">
                   Your Property Has Been Submitted!
                 </h1>
-                <p className="text-base text-gray-500 mt-2">
+                <p className="text-base text-text-secondary mt-2">
                   {matchedAgents.length > 0
                     ? `We found ${matchedAgents.length} agent${matchedAgents.length > 1 ? 's' : ''} covering the ${submittedPostcode.toUpperCase()} area`
                     : "We're searching for the best agents for your property"
@@ -173,48 +171,48 @@ export default function SubmitPropertyPage() {
               {/* Matched agents list */}
               {matchedAgents.length > 0 ? (
                 <div className="space-y-3 mb-6">
-                  <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wide">
+                  <h2 className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
                     Matched Agents in Your Area
                   </h2>
                   <div className="grid gap-3">
                     {matchedAgents.map((agent) => (
                       <div
                         key={agent.id}
-                        className="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-xl"
+                        className="flex items-center gap-4 p-4 bg-[#14141E] border border-white/10 rounded-xl"
                       >
-                        <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                        <div className="w-10 h-10 bg-gold text-[#0d0d14] rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
                           {(agent.full_name || 'A').charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-slate-900 truncate">{agent.full_name || 'Agent'}</p>
+                          <p className="text-sm font-semibold text-white truncate">{agent.full_name || 'Agent'}</p>
                           {agent.agency_name && (
-                            <p className="text-xs text-slate-500 truncate flex items-center gap-1">
+                            <p className="text-xs text-text-secondary truncate flex items-center gap-1">
                               <Building className="w-3 h-3" />
                               {agent.agency_name}
                             </p>
                           )}
                           {agent.area_of_operation && (
-                            <p className="text-xs text-green-600 font-medium mt-0.5">
+                            <p className="text-xs text-gold font-medium mt-0.5">
                               Areas: {agent.area_of_operation.split(',').join(', ')}
                             </p>
                           )}
                         </div>
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
                       </div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-6 mb-6 bg-slate-50 rounded-xl border border-slate-200">
-                  <Building2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                  <p className="text-sm text-slate-500">No agents currently covering the {submittedPostcode.toUpperCase()} area.</p>
-                  <p className="text-xs text-slate-400 mt-1">We'll notify agents when they register for your area.</p>
+                <div className="text-center py-6 mb-6 bg-[#14141E] rounded-xl border border-white/10">
+                  <Building2 className="w-8 h-8 text-text-muted mx-auto mb-2" />
+                  <p className="text-sm text-text-secondary">No agents currently covering the {submittedPostcode.toUpperCase()} area.</p>
+                  <p className="text-xs text-text-muted mt-1">We'll notify agents when they register for your area.</p>
                 </div>
               )}
 
               <Button
                 onClick={() => window.location.href = '/client-dashboard'}
-                className="w-full h-12 bg-green-700 hover:bg-green-800 text-white text-base font-semibold"
+                className="w-full h-12 bg-gold hover:bg-gold/90 text-[#0d0d14] text-base font-bold rounded-xl cursor-pointer"
               >
                 Go to Dashboard <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -226,41 +224,32 @@ export default function SubmitPropertyPage() {
   }
 
   return (
-    <div className={cn("min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)]", dmSans.variable)} style={{ fontFamily: "var(--font-dm-sans)" }}>
-      {/* Background overlay */}
-      <div className="fixed inset-0 bg-[#0F172A]/80" />
-      <div 
-        className="fixed inset-0"
-        style={{
-          background: "radial-gradient(ellipse at center, #1a3a2a 0%, #0F172A 100%)"
-        }}
-      />
-      
+    <div className={cn("min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)] bg-background text-foreground", dmSans.variable)} style={{ fontFamily: "var(--font-dm-sans)" }}>
       {/* Main content */}
-      <div className="relative min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)] flex items-center justify-center pt-10 pb-4 px-4 sm:p-6 md:p-8 z-10">
-        <Card className="max-w-2xl w-full overflow-visible relative">
+      <div className="relative min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100vh-4rem)] flex items-center justify-center pt-10 pb-8 px-4 sm:p-6 md:p-8 z-10">
+        <Card className="max-w-2xl w-full bg-[#1A1A24] border border-white/10 text-white overflow-visible relative rounded-2xl shadow-2xl">
           {/* Step badge - positioned above progress bar */}
           <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-            <span className="border border-green-700 text-green-700 text-xs sm:text-sm font-medium px-4 py-1.5 rounded-full bg-white shadow-sm">
+            <span className="border border-gold/40 text-gold text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-full bg-[#14141E] shadow-md">
               {currentStep === TOTAL_STEPS ? "Last Step!" : `Step ${currentStep} / ${TOTAL_STEPS}`}
             </span>
           </div>
 
           {/* Progress bar */}
-          <div className="h-1.5 bg-gray-200 relative rounded-t-xl overflow-hidden">
+          <div className="h-1.5 bg-white/10 relative rounded-t-xl overflow-hidden">
             <div 
-              className="h-full bg-green-700 transition-all duration-500 ease-in-out"
+              className="h-full bg-gold transition-all duration-500 ease-in-out"
               style={{ width: `${getProgress()}%` }}
             />
           </div>
 
           {/* Card content */}
-          <div className="p-8 md:p-12">
+          <div className="p-6 sm:p-8 md:p-12">
             <div 
               key={currentStep}
               className="animate-in fade-in slide-in-from-bottom-2 duration-300"
             >
-              <h1 className="text-3xl md:text-4xl font-bold text-[#1a2e1a] text-center">
+              <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center">
                 {currentStep === 1 && "Find The Best Real Estate Agent For You"}
                 {currentStep === 2 && (formData.intent === "renting" ? "What's your desired postcode?" : formData.intent === "selling" ? "What's your property postcode?" : "Property Location Details")}
                 {currentStep === 3 && (formData.intent === "renting" ? "Property Type & Bedrooms" : formData.intent === "selling" ? "Property Details" : "Property Specifications")}
@@ -269,7 +258,7 @@ export default function SubmitPropertyPage() {
               </h1>
               
               {currentStep !== 1 && (
-                <p className="text-base text-gray-500 text-center mt-2">
+                <p className="text-sm sm:text-base text-[#B8B5AE] text-center mt-2">
                   Our recommendations are free. No strings attached.
                 </p>
               )}
@@ -279,7 +268,7 @@ export default function SubmitPropertyPage() {
           </div>
 
           {/* Bottom navigation */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 px-8 md:px-12">
+          <div className="flex justify-between items-center mt-4 pt-6 border-t border-white/10 px-6 sm:px-8 md:px-12 pb-6 sm:pb-8">
             {/* Show Cancel button on step 1, Back button on steps 2-5 */}
             {currentStep === 1 ? (
               <Button
@@ -289,7 +278,7 @@ export default function SubmitPropertyPage() {
                 onClick={() => {
                   window.location.href = '/client-dashboard'
                 }}
-                className="w-36 flex items-center justify-center gap-2 border-slate-300 text-slate-700 hover:bg-slate-50"
+                className="w-36 flex items-center justify-center gap-2 border-white/15 text-text-secondary hover:text-white hover:bg-white/10 rounded-xl cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Cancel
@@ -300,7 +289,7 @@ export default function SubmitPropertyPage() {
                 variant="outline"
                 size="lg"
                 onClick={prevStep}
-                className="w-36 flex items-center justify-center gap-2 border-slate-300 text-slate-700 hover:bg-slate-50"
+                className="w-36 flex items-center justify-center gap-2 border-white/15 text-text-secondary hover:text-white hover:bg-white/10 rounded-xl cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Back
@@ -322,7 +311,7 @@ export default function SubmitPropertyPage() {
                   (currentStep === 4 && formData.intent === "letting" && formData.saleTimeline.length === 0) ||
                   (currentStep === 4 && formData.intent === "letting-selling" && formData.saleTimeline.length === 0)
                 }
-                className="bg-green-700 hover:bg-green-800 text-white w-36 flex items-center justify-center"
+                className="bg-gold hover:bg-gold/90 text-[#0d0d14] font-bold w-36 flex items-center justify-center rounded-xl cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Next
               </Button>
@@ -368,51 +357,51 @@ function Step1({ formData, update, nextStep }: Pick<StepProps, 'formData' | 'upd
     { 
       label: "Renting", 
       value: "renting", 
-      icon: <Key className="w-10 h-10" />
+      icon: <Key className="w-8 h-8 sm:w-10 sm:h-10" />
     },
     { 
       label: "Letting", 
       value: "letting", 
-      icon: <Building className="w-10 h-10" />
+      icon: <Building className="w-8 h-8 sm:w-10 sm:h-10" />
     },
     { 
       label: "Selling", 
       value: "selling", 
-      icon: <Home className="w-10 h-10" />
+      icon: <Home className="w-8 h-8 sm:w-10 sm:h-10" />
     },
     { 
       label: "Letting & Selling", 
       value: "letting-selling", 
-      icon: <Building2 className="w-10 h-10" />
+      icon: <Building2 className="w-8 h-8 sm:w-10 sm:h-10" />
     }
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {options.map(({ label, value, icon }) => (
           <Card
             key={value}
             onClick={() => { update("intent", value); nextStep() }}
             className={cn(
-              "cursor-pointer flex flex-col items-center justify-center py-8 px-4 transition-all",
+              "cursor-pointer flex flex-col items-center justify-center py-6 sm:py-8 px-4 transition-all rounded-xl",
               formData.intent === value
-                ? "border-2 border-green-700 shadow-md bg-green-50/10"
-                : "border border-gray-200 hover:border-green-500 hover:bg-slate-50/50"
+                ? "border-2 border-gold shadow-lg bg-gold/10 text-gold"
+                : "bg-[#14141E] border border-white/10 hover:border-gold/40 hover:bg-white/5 text-white"
             )}
           >
-            <div className={cn("w-12 h-12 mb-4 flex items-center justify-center transition-colors", formData.intent === value ? "text-green-700" : "text-gray-400")}>
+            <div className={cn("w-12 h-12 mb-3 flex items-center justify-center transition-colors", formData.intent === value ? "text-gold" : "text-text-muted")}>
               {icon}
             </div>
-            <span className="font-semibold text-[#1a2e1a] text-center">{label}</span>
+            <span className="font-heading font-semibold text-white text-center text-sm sm:text-base">{label}</span>
           </Card>
         ))}
       </div>
 
-      <div className="space-y-2 mt-8">
+      <div className="space-y-2.5 mt-8 pt-4 border-t border-white/10">
         {trustItems.map((item, index) => (
-          <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-            <CheckCircle className="w-5 h-5 text-green-600 shrink-0" />
+          <div key={index} className="flex items-center gap-2.5 text-xs sm:text-sm text-[#B8B5AE]">
+            <CheckCircle className="w-4 h-4 text-gold shrink-0" />
             {item}
           </div>
         ))}
@@ -427,8 +416,8 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
 
   if (formData.intent === "renting") {
     return (
-      <div className="space-y-6">
-        <div className="text-sm text-gray-500 mt-6">
+      <div className="space-y-6 mt-6">
+        <div className="text-sm text-text-secondary">
           Please enter your desired postcode:
         </div>
         <Input
@@ -436,20 +425,20 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
           value={formData.desiredPostcode}
           onChange={e => update("desiredPostcode", e.target.value)}
           className={cn(
-            "h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
-            !isDesiredValid && "border-red-500 focus:border-red-500 focus:ring-red-200"
+            "h-12 text-base bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold",
+            !isDesiredValid && "border-red-400 focus:border-red-400"
           )}
           autoFocus
         />
         {!isDesiredValid && (
-          <p className="text-xs text-red-600 mt-1">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
+          <p className="text-xs text-red-400 mt-1">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
         )}
       </div>
     )
   } else if (formData.intent === "selling" || formData.intent === "letting" || formData.intent === "letting-selling") {
     return (
-      <div className="space-y-6">
-        <div className="text-sm text-gray-500 mt-6">
+      <div className="space-y-6 mt-6">
+        <div className="text-sm text-text-secondary">
           Please enter your property postcode:
         </div>
         <Input
@@ -457,21 +446,20 @@ function Step2({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
           value={formData.propertyPostcode}
           onChange={e => update("propertyPostcode", e.target.value)}
           className={cn(
-            "h-12 text-base border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
-            !isPropertyValid && "border-red-500 focus:border-red-500 focus:ring-red-200"
+            "h-12 text-base bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold",
+            !isPropertyValid && "border-red-400 focus:border-red-400"
           )}
           autoFocus
         />
         {!isPropertyValid && (
-          <p className="text-xs text-red-600 mt-1">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
+          <p className="text-xs text-red-400 mt-1">Please enter a valid UK postcode (e.g., SW1A 1AA)</p>
         )}
       </div>
     )
   } else {
-    // Fallback for empty or invalid intent
     return (
-      <div className="space-y-6">
-        <div className="text-center text-gray-500">
+      <div className="space-y-6 mt-6">
+        <div className="text-center text-text-secondary">
           Please go back and select an intent first.
         </div>
       </div>
@@ -483,108 +471,51 @@ function Step3({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
   const propertyTypes = ["Flat", "House", "Bungalow", "Studio", "Penthouse", "Maisonette"]
   const bedroomCounts = ["Studio", "1 Bedroom", "2 Bedrooms", "3 Bedrooms", "4 Bedrooms", "5+ Bedrooms"]
 
-  if (formData.intent === "renting") {
-    return (
-      <div className="space-y-8">
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Property Type</h3>
-          <div className="grid grid-cols-2 gap-3">
-            {propertyTypes.map((type) => (
-              <Button
-                key={type}
-                variant="outline"
-                onClick={() => update("propertyTypes", [type])}
-                className={cn(
-                  "h-12 text-sm font-medium transition-all",
-                  formData.propertyTypes.includes(type)
-                    ? "border-2 border-green-700 text-green-700 bg-green-50"
-                    : "border-gray-200 text-gray-700 hover:border-green-400"
-                )}
-              >
-                {type}
-              </Button>
-            ))}
-          </div>
+  return (
+    <div className="space-y-8 mt-6">
+      <div>
+        <h3 className="font-heading text-base sm:text-lg font-semibold text-white mb-3">Property Type</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {propertyTypes.map((type) => (
+            <Button
+              key={type}
+              variant="outline"
+              onClick={() => update("propertyTypes", [type])}
+              className={cn(
+                "h-11 text-sm font-medium transition-all rounded-xl cursor-pointer",
+                formData.propertyTypes.includes(type)
+                  ? "border-2 border-gold text-gold bg-gold/15 font-bold"
+                  : "bg-[#1E1E28] border-white/15 text-[#B8B5AE] hover:border-gold/40 hover:text-white"
+              )}
+            >
+              {type}
+            </Button>
+          ))}
         </div>
+      </div>
 
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Number of Bedrooms</h3>
-          <div className="grid grid-cols-2 gap-3">
-            {bedroomCounts.map((count) => (
-              <Button
-                key={count}
-                variant="outline"
-                onClick={() => update("bedroomCounts", [count])}
-                className={cn(
-                  "h-12 text-sm font-medium transition-all",
-                  formData.bedroomCounts.includes(count)
-                    ? "border-2 border-green-700 text-green-700 bg-green-50"
-                    : "border-gray-200 text-gray-700 hover:border-green-400"
-                )}
-              >
-                {count}
-              </Button>
-            ))}
-          </div>
+      <div>
+        <h3 className="font-heading text-base sm:text-lg font-semibold text-white mb-3">Number of Bedrooms</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {bedroomCounts.map((count) => (
+            <Button
+              key={count}
+              variant="outline"
+              onClick={() => update("bedroomCounts", [count])}
+              className={cn(
+                "h-11 text-sm font-medium transition-all rounded-xl cursor-pointer",
+                formData.bedroomCounts.includes(count)
+                  ? "border-2 border-gold text-gold bg-gold/15 font-bold"
+                  : "bg-[#1E1E28] border-white/15 text-[#B8B5AE] hover:border-gold/40 hover:text-white"
+              )}
+            >
+              {count}
+            </Button>
+          ))}
         </div>
       </div>
-    )
-  } else if (formData.intent === "selling" || formData.intent === "letting" || formData.intent === "letting-selling") {
-    return (
-      <div className="space-y-8">
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Property Type</h3>
-          <div className="grid grid-cols-2 gap-3">
-            {propertyTypes.map((type) => (
-              <Button
-                key={type}
-                variant="outline"
-                onClick={() => update("propertyTypes", [type])}
-                className={cn(
-                  "h-12 text-sm font-medium transition-all",
-                  formData.propertyTypes.includes(type)
-                    ? "border-2 border-green-700 text-green-700 bg-green-50"
-                    : "border-gray-200 text-gray-700 hover:border-green-400"
-                )}
-              >
-                {type}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Number of Bedrooms</h3>
-          <div className="grid grid-cols-2 gap-3">
-            {bedroomCounts.map((count) => (
-              <Button
-                key={count}
-                variant="outline"
-                onClick={() => update("bedroomCounts", [count])}
-                className={cn(
-                  "h-12 text-sm font-medium transition-all",
-                  formData.bedroomCounts.includes(count)
-                    ? "border-2 border-green-700 text-green-700 bg-green-50"
-                    : "border-gray-200 text-gray-700 hover:border-green-400"
-                )}
-              >
-                {count}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  } else {
-    // Fallback for empty or invalid intent
-    return (
-      <div className="space-y-6">
-        <div className="text-center text-gray-500">
-          Please go back and select an intent first.
-        </div>
-      </div>
-    )
-  }
+    </div>
+  )
 }
 
 function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepProps) {
@@ -601,16 +532,16 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
 
   if (formData.intent === "renting") {
     return (
-      <div className="space-y-6">
-        <div className="text-4xl font-bold text-[#1a2e1a] text-center">
+      <div className="space-y-6 mt-6">
+        <div className="font-heading text-3xl sm:text-4xl font-bold text-gold text-center">
           {formatBudget(formData.monthlyBudget)}
         </div>
 
-        <div className="flex items-center justify-between gap-4 mt-6">
+        <div className="flex items-center justify-center gap-4 mt-6">
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full"
+            className="rounded-full border-white/15 text-white hover:bg-white/10"
             onClick={() => update("monthlyBudget", Math.max(100, formData.monthlyBudget - 100))}
           >
             <Minus className="w-4 h-4" />
@@ -619,7 +550,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full"
+            className="rounded-full border-white/15 text-white hover:bg-white/10"
             onClick={() => update("monthlyBudget", Math.min(10000, formData.monthlyBudget + 100))}
           >
             <Plus className="w-4 h-4" />
@@ -633,10 +564,10 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
           step={100}
           value={formData.monthlyBudget}
           onChange={e => update("monthlyBudget", Number(e.target.value))}
-          className="w-full accent-green-700 h-2 cursor-pointer"
+          className="w-full accent-gold h-2 cursor-pointer mt-4"
         />
 
-        <div className="flex justify-between text-sm text-gray-400 mt-1">
+        <div className="flex justify-between text-xs text-text-muted mt-1">
           <span>£100 PCM</span>
           <span>£10,000 PCM</span>
         </div>
@@ -644,19 +575,19 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
     )
   } else if (formData.intent === "letting") {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 mt-6">
         <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Estimated Monthly Rent</h3>
-          <div className="text-3xl font-bold text-[#1a2e1a] text-center mb-4">
+          <h3 className="font-heading text-base font-semibold text-white mb-2 text-center">Estimated Monthly Rent</h3>
+          <div className="font-heading text-3xl font-bold text-gold text-center mb-4">
             {formatBudget(formData.monthlyBudget)}
           </div>
 
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-center gap-4">
             <Button
               nativeButton={true}
               variant="outline"
               size="icon"
-              className="rounded-full"
+              className="rounded-full border-white/15 text-white hover:bg-white/10"
               onClick={() => update("monthlyBudget", Math.max(100, formData.monthlyBudget - 100))}
             >
               <Minus className="w-4 h-4" />
@@ -666,7 +597,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
               nativeButton={true}
               variant="outline"
               size="icon"
-              className="rounded-full"
+              className="rounded-full border-white/15 text-white hover:bg-white/10"
               onClick={() => update("monthlyBudget", Math.min(10000, formData.monthlyBudget + 100))}
             >
               <Plus className="w-4 h-4" />
@@ -680,28 +611,28 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
             step={100}
             value={formData.monthlyBudget}
             onChange={e => update("monthlyBudget", Number(e.target.value))}
-            className="w-full accent-green-700 h-2 cursor-pointer mt-4"
+            className="w-full accent-gold h-2 cursor-pointer mt-4"
           />
 
-          <div className="flex justify-between text-sm text-gray-400 mt-1">
+          <div className="flex justify-between text-xs text-text-muted mt-1">
             <span>£100 PCM</span>
             <span>£10,000 PCM</span>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Preferred Letting Timeline</h3>
-          <div className="grid grid-cols-2 gap-3">
+          <h3 className="font-heading text-base font-semibold text-white mb-3">Preferred Letting Timeline</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {timelineOptions.map((option) => (
               <Button
                 key={option}
                 variant="outline"
                 onClick={() => update("saleTimeline", [option])}
                 className={cn(
-                  "h-12 text-sm font-medium transition-all",
+                  "h-11 text-xs sm:text-sm font-medium transition-all rounded-xl cursor-pointer",
                   formData.saleTimeline.includes(option)
-                    ? "border-2 border-green-700 text-green-700 bg-green-50"
-                    : "border-gray-200 text-gray-700 hover:border-green-400"
+                    ? "border-2 border-gold text-gold bg-gold/15 font-bold"
+                    : "bg-[#1E1E28] border-white/15 text-[#B8B5AE] hover:border-gold/40 hover:text-white"
                 )}
               >
                 {option}
@@ -713,18 +644,18 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
     )
   } else if (formData.intent === "selling") {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 mt-6">
         <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Estimated Sale Value</h3>
-          <div className="text-3xl font-bold text-[#1a2e1a] text-center mb-4">
+          <h3 className="font-heading text-base font-semibold text-white mb-2 text-center">Estimated Sale Value</h3>
+          <div className="font-heading text-3xl font-bold text-gold text-center mb-4">
             {formatSaleValue(formData.saleValue)}
           </div>
 
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-center gap-4">
             <Button
               variant="outline"
               size="icon"
-              className="rounded-full"
+              className="rounded-full border-white/15 text-white hover:bg-white/10"
               onClick={() => update("saleValue", Math.max(50000, formData.saleValue - 25000))}
             >
               <Minus className="w-4 h-4" />
@@ -733,7 +664,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
             <Button
               variant="outline"
               size="icon"
-              className="rounded-full"
+              className="rounded-full border-white/15 text-white hover:bg-white/10"
               onClick={() => update("saleValue", Math.min(5000000, formData.saleValue + 25000))}
             >
               <Plus className="w-4 h-4" />
@@ -747,28 +678,28 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
             step={25000}
             value={formData.saleValue}
             onChange={e => update("saleValue", Number(e.target.value))}
-            className="w-full accent-green-700 h-2 cursor-pointer mt-4"
+            className="w-full accent-gold h-2 cursor-pointer mt-4"
           />
 
-          <div className="flex justify-between text-sm text-gray-400 mt-1">
+          <div className="flex justify-between text-xs text-text-muted mt-1">
             <span>£50K</span>
             <span>£5M+</span>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Preferred Sale Timeline</h3>
-          <div className="grid grid-cols-2 gap-3">
+          <h3 className="font-heading text-base font-semibold text-white mb-3">Preferred Sale Timeline</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {timelineOptions.map((option) => (
               <Button
                 key={option}
                 variant="outline"
                 onClick={() => update("saleTimeline", [option])}
                 className={cn(
-                  "h-12 text-sm font-medium transition-all",
+                  "h-11 text-xs sm:text-sm font-medium transition-all rounded-xl cursor-pointer",
                   formData.saleTimeline.includes(option)
-                    ? "border-2 border-green-700 text-green-700 bg-green-50"
-                    : "border-gray-200 text-gray-700 hover:border-green-400"
+                    ? "border-2 border-gold text-gold bg-gold/15 font-bold"
+                    : "bg-[#1E1E28] border-white/15 text-[#B8B5AE] hover:border-gold/40 hover:text-white"
                 )}
               >
                 {option}
@@ -776,27 +707,25 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
             ))}
           </div>
         </div>
-        
-              </div>
+      </div>
     )
   } else if (formData.intent === "letting-selling") {
-    // Letting & Selling - Show both sections
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 mt-6">
         <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Letting Details</h3>
-          <div className="space-y-6">
+          <h3 className="font-heading text-base font-semibold text-white mb-3">Letting Details</h3>
+          <div className="space-y-4">
             <div>
-              <h4 className="text-base font-medium text-gray-700 mb-3">Maximum Monthly Budget</h4>
-              <div className="text-3xl font-bold text-[#1a2e1a] text-center mb-4">
+              <h4 className="text-xs text-text-secondary uppercase tracking-wider mb-2 text-center">Maximum Monthly Budget</h4>
+              <div className="font-heading text-3xl font-bold text-gold text-center mb-4">
                 {formatBudget(formData.monthlyBudget)}
               </div>
 
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center justify-center gap-4">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full"
+                  className="rounded-full border-white/15 text-white hover:bg-white/10"
                   onClick={() => update("monthlyBudget", Math.max(100, formData.monthlyBudget - 100))}
                 >
                   <Minus className="w-4 h-4" />
@@ -805,7 +734,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full"
+                  className="rounded-full border-white/15 text-white hover:bg-white/10"
                   onClick={() => update("monthlyBudget", Math.min(10000, formData.monthlyBudget + 100))}
                 >
                   <Plus className="w-4 h-4" />
@@ -819,10 +748,10 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
                 step={100}
                 value={formData.monthlyBudget}
                 onChange={e => update("monthlyBudget", Number(e.target.value))}
-                className="w-full accent-green-700 h-2 cursor-pointer mt-4"
+                className="w-full accent-gold h-2 cursor-pointer mt-4"
               />
 
-              <div className="flex justify-between text-sm text-gray-400 mt-1">
+              <div className="flex justify-between text-xs text-text-muted mt-1">
                 <span>£100 PCM</span>
                 <span>£10,000 PCM</span>
               </div>
@@ -830,20 +759,20 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
           </div>
         </div>
         
-        <div>
-          <h3 className="text-lg font-semibold text-[#1a2e1a] mb-4">Selling Details</h3>
-          <div className="space-y-6">
+        <div className="pt-4 border-t border-white/10">
+          <h3 className="font-heading text-base font-semibold text-white mb-3">Selling Details</h3>
+          <div className="space-y-4">
             <div>
-              <h4 className="text-base font-medium text-gray-700 mb-3">Estimated Sale Value</h4>
-              <div className="text-3xl font-bold text-[#1a2e1a] text-center mb-4">
+              <h4 className="text-xs text-text-secondary uppercase tracking-wider mb-2 text-center">Estimated Sale Value</h4>
+              <div className="font-heading text-3xl font-bold text-gold text-center mb-4">
                 {formatSaleValue(formData.saleValue)}
               </div>
 
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center justify-center gap-4">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full"
+                  className="rounded-full border-white/15 text-white hover:bg-white/10"
                   onClick={() => update("saleValue", Math.max(50000, formData.saleValue - 25000))}
                 >
                   <Minus className="w-4 h-4" />
@@ -852,7 +781,7 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full"
+                  className="rounded-full border-white/15 text-white hover:bg-white/10"
                   onClick={() => update("saleValue", Math.min(5000000, formData.saleValue + 25000))}
                 >
                   <Plus className="w-4 h-4" />
@@ -866,28 +795,28 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
                 step={25000}
                 value={formData.saleValue}
                 onChange={e => update("saleValue", Number(e.target.value))}
-                className="w-full accent-green-700 h-2 cursor-pointer mt-4"
+                className="w-full accent-gold h-2 cursor-pointer mt-4"
               />
 
-              <div className="flex justify-between text-sm text-gray-400 mt-1">
+              <div className="flex justify-between text-xs text-text-muted mt-1">
                 <span>£50K</span>
                 <span>£5M+</span>
               </div>
             </div>
 
             <div>
-              <h4 className="text-base font-medium text-gray-700 mb-3">Preferred Sale Timeline</h4>
-              <div className="grid grid-cols-2 gap-3">
+              <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Preferred Sale Timeline</h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {timelineOptions.map((option) => (
                   <Button
                     key={`selling-${option}`}
                     variant="outline"
                     onClick={() => update("saleTimeline", [option])}
                     className={cn(
-                      "h-12 text-sm font-medium transition-all",
+                      "h-11 text-xs sm:text-sm font-medium transition-all rounded-xl cursor-pointer",
                       formData.saleTimeline.includes(option)
-                        ? "border-2 border-green-700 text-green-700 bg-green-50"
-                        : "border-gray-200 text-gray-700 hover:border-green-400"
+                        ? "border-2 border-gold text-gold bg-gold/15 font-bold"
+                        : "bg-[#1E1E28] border-white/15 text-[#B8B5AE] hover:border-gold/40 hover:text-white"
                     )}
                   >
                     {option}
@@ -897,14 +826,12 @@ function Step4({ formData, update, toggleArrayField, nextStep, prevStep }: StepP
             </div>
           </div>
         </div>
-        
-              </div>
+      </div>
     )
   } else {
-    // Fallback for empty or invalid intent
     return (
-      <div className="space-y-6">
-        <div className="text-center text-gray-500">
+      <div className="space-y-6 mt-6">
+        <div className="text-center text-text-secondary">
           Please go back and select an intent first.
         </div>
       </div>
@@ -962,71 +889,75 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: St
   const isFormValid = isFirstNameValid && isLastNameValid && isEmailValid && isPhoneValid
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-6">
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1 w-full">
+            <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">First Name</label>
             <Input
-              placeholder="First Name"
+              placeholder="John"
               value={formData.firstName}
               onChange={e => update("firstName", e.target.value)}
               onBlur={() => handleBlur("firstName")}
               className={cn(
-                "h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
-                touched.firstName && !isFirstNameValid && "border-red-500 focus:border-red-500 focus:ring-red-200 focus-visible:border-red-500"
+                "h-12 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold",
+                touched.firstName && !isFirstNameValid && "border-red-400 focus:border-red-400"
               )}
               autoFocus
             />
             {touched.firstName && !isFirstNameValid && (
-              <span className="text-xs text-red-500">First name is required</span>
+              <span className="text-xs text-red-400">First name is required</span>
             )}
           </div>
           
           <div className="flex flex-col gap-1 w-full">
+            <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Last Name</label>
             <Input
-              placeholder="Last Name"
+              placeholder="Doe"
               value={formData.lastName}
               onChange={e => update("lastName", e.target.value)}
               onBlur={() => handleBlur("lastName")}
               className={cn(
-                "h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
-                touched.lastName && !isLastNameValid && "border-red-500 focus:border-red-500 focus:ring-red-200 focus-visible:border-red-500"
+                "h-12 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold",
+                touched.lastName && !isLastNameValid && "border-red-400 focus:border-red-400"
               )}
             />
             {touched.lastName && !isLastNameValid && (
-              <span className="text-xs text-red-500">Last name is required</span>
+              <span className="text-xs text-red-400">Last name is required</span>
             )}
           </div>
         </div>
 
         <div className="flex flex-col gap-1 w-full">
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Email Address</label>
           <Input
             type="email"
-            placeholder="Email"
+            placeholder="you@example.com"
             value={formData.email}
             onChange={e => update("email", e.target.value)}
             onBlur={() => handleBlur("email")}
             className={cn(
-              "h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
-              touched.email && !isEmailValid && "border-red-500 focus:border-red-500 focus:ring-red-200 focus-visible:border-red-500"
+              "h-12 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold",
+              touched.email && !isEmailValid && "border-red-400 focus:border-red-400"
             )}
           />
           {touched.email && !isEmailValid && (
-            <span className="text-xs text-red-500">Please enter a valid email address</span>
+            <span className="text-xs text-red-400">Please enter a valid email address</span>
           )}
         </div>
 
         <div className="flex flex-col gap-1 w-full">
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Phone Number</label>
           <div className="flex gap-2">
             <Select value={formData.countryCode} onValueChange={(value) => update("countryCode", value)}>
-              <SelectTrigger className="w-28 h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy">
+              <SelectTrigger className="w-28 h-12 bg-[#1E1E28] border-white/15 text-white focus:border-gold">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="+91">+91</SelectItem>
-                <SelectItem value="+1">+1</SelectItem>
-                <SelectItem value="+44">+44</SelectItem>
-                <SelectItem value="+971">+971</SelectItem>
+              <SelectContent className="bg-[#1E1E28] border-white/15 text-white">
+                <SelectItem value="+91">+91 (IN)</SelectItem>
+                <SelectItem value="+1">+1 (US)</SelectItem>
+                <SelectItem value="+44">+44 (UK)</SelectItem>
+                <SelectItem value="+971">+971 (AE)</SelectItem>
               </SelectContent>
             </Select>
             <Input
@@ -1042,13 +973,13 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: St
               }}
               onBlur={() => handleBlur("phone")}
               className={cn(
-                "flex-1 h-12 border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 focus-visible:ring-0 focus-visible:border-navy",
-                touched.phone && !isPhoneValid && "border-red-500 focus:border-red-500 focus:ring-red-200 focus-visible:border-red-500"
+                "flex-1 h-12 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold",
+                touched.phone && !isPhoneValid && "border-red-400 focus:border-red-400"
               )}
             />
           </div>
           {touched.phone && !isPhoneValid && (
-            <span className="text-xs text-red-500">{phoneErrorMessage}</span>
+            <span className="text-xs text-red-400">{phoneErrorMessage}</span>
           )}
         </div>
       </div>
@@ -1056,7 +987,7 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: St
       <Button
         onClick={handleSubmit}
         disabled={!isFormValid || isPending}
-        className="w-full h-12 bg-green-700 hover:bg-green-800 text-white text-base font-semibold mt-4"
+        className="w-full h-12 bg-gold hover:bg-gold/90 text-[#0d0d14] text-base font-bold rounded-xl cursor-pointer mt-4"
       >
         {isPending ? (
           <>
@@ -1070,10 +1001,10 @@ function Step5({ formData, update, handleSubmit, isPending, setCurrentStep }: St
         )}
       </Button>
       
-      <div className="text-xs text-gray-400 mt-3 leading-relaxed">
+      <div className="text-xs text-text-muted mt-3 leading-relaxed text-center">
         By clicking Submit, I acknowledge and agree to EstateFlow's{" "}
-        <Link href="/terms" className="text-green-600 underline hover:text-green-700">Terms of Use</Link> and{" "}
-        <Link href="/privacy" className="text-green-600 underline hover:text-green-700">Privacy Policy</Link>. EstateFlow and participating agents may contact me.
+        <Link href="/terms" className="text-gold underline hover:text-white font-semibold">Terms of Use</Link> and{" "}
+        <Link href="/privacy" className="text-gold underline hover:text-white font-semibold">Privacy Policy</Link>.
       </div>
     </div>
   )
