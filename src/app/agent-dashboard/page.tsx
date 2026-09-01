@@ -10,63 +10,43 @@ import {
   Home, 
   MessageSquare, 
   Clock, 
-  Plus, 
   ArrowRight, 
   Building2, 
   TrendingUp, 
   Eye, 
   CheckCircle,
-  MapPin
+  MapPin,
+  UserCheck,
+  Loader2,
 } from 'lucide-react'
 import { getAgentProperties } from '@/lib/auth/actions'
+import { getAgentEngagements } from '@/lib/engagement/actions'
 import { useUser } from '@/lib/auth/useUser'
-
-const stats = [
-  {
-    title: 'Active Leads',
-    value: '12',
-    change: '+3 this week',
-    icon: Users,
-    color: 'text-blue-600'
-  },
-  {
-    title: 'Properties Listed',
-    value: '8',
-    change: '+2 this month',
-    icon: Home,
-    color: 'text-emerald-600'
-  },
-  {
-    title: 'Response Rate',
-    value: '94%',
-    change: '+2% this month',
-    icon: MessageSquare,
-    color: 'text-purple-600'
-  },
-  {
-    title: 'Avg. Response Time',
-    value: '1.8h',
-    change: '-15min this week',
-    icon: Clock,
-    color: 'text-orange-600'
-  }
-]
+import { EngagementStatusBadge } from '@/components/engagements/EngagementStatusBadge'
+import type { AgentEngagementView } from '@/types/engagement'
 
 export default function AgentOverviewPage() {
   const { user } = useUser()
   const [leads, setLeads] = useState<any[]>([])
+  const [engagements, setEngagements] = useState<AgentEngagementView[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadOverview() {
       setLoading(true)
       try {
-        const result = await getAgentProperties()
-        if (result?.success && result.data) {
-          setLeads(result.data)
+        const [leadsResult, engResult] = await Promise.all([
+          getAgentProperties(),
+          getAgentEngagements(),
+        ])
+        if (leadsResult?.success && leadsResult.data) {
+          setLeads(leadsResult.data)
+        }
+        if (engResult?.success && engResult.data) {
+          setEngagements(engResult.data)
         }
       } catch (err) {
-        console.error('Error loading agent overview leads:', err)
+        console.error('Error loading agent overview:', err)
       } finally {
         setLoading(false)
       }
@@ -75,6 +55,46 @@ export default function AgentOverviewPage() {
   }, [])
 
   const agentName = user?.user_metadata?.full_name || 'Agent'
+
+  // Real stats from engagements
+  const pendingCount = engagements.filter(e => e.status === 'pending').length
+  const activeCount = engagements.filter(e => e.status === 'accepted').length
+  const completedCount = engagements.filter(e => e.status === 'completed').length
+  const totalEngagements = engagements.length
+
+  const stats = [
+    {
+      title: 'Pending Requests',
+      value: String(pendingCount),
+      icon: Clock,
+      color: 'text-amber-400',
+      bgColor: 'bg-amber-500/10 border-amber-500/20',
+    },
+    {
+      title: 'Active Engagements',
+      value: String(activeCount),
+      icon: UserCheck,
+      color: 'text-emerald-400',
+      bgColor: 'bg-emerald-500/10 border-emerald-500/20',
+    },
+    {
+      title: 'Completed',
+      value: String(completedCount),
+      icon: CheckCircle,
+      color: 'text-blue-400',
+      bgColor: 'bg-blue-500/10 border-blue-500/20',
+    },
+    {
+      title: 'Area Leads',
+      value: String(leads.length),
+      icon: Users,
+      color: 'text-purple-400',
+      bgColor: 'bg-purple-500/10 border-purple-500/20',
+    },
+  ]
+
+  // Recent activity — latest engagements
+  const recentEngagements = engagements.slice(0, 5)
 
   return (
     <div className="space-y-6">
@@ -85,7 +105,7 @@ export default function AgentOverviewPage() {
             Welcome back, <span className="text-gold">{agentName}</span> 👋
           </h1>
           <p className="text-slate-300 text-sm mt-1">
-            Here is what is happening across your property listings and lead inquiries today.
+            Here is what is happening across your property engagements and lead inquiries.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -97,7 +117,7 @@ export default function AgentOverviewPage() {
           <Link href="/agent-dashboard/leads">
             <Button className="bg-gold text-navy hover:bg-amber-400 hover:text-navy font-semibold flex items-center gap-2 transition-colors">
               <Users className="w-4 h-4" />
-              Browse Leads
+              View Engagements
             </Button>
           </Link>
         </div>
@@ -112,13 +132,12 @@ export default function AgentOverviewPage() {
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">{stat.title}</span>
-                  <div className="p-2.5 rounded-xl bg-gold/10 text-gold border border-gold/20">
+                  <div className={`p-2.5 rounded-xl ${stat.bgColor} ${stat.color} border`}>
                     <Icon className="w-5 h-5" />
                   </div>
                 </div>
                 <div className="mt-3">
                   <span className="font-heading text-3xl font-bold text-white">{stat.value}</span>
-                  <p className="text-xs text-emerald-400 font-medium mt-1">{stat.change}</p>
                 </div>
               </CardContent>
             </Card>
@@ -126,56 +145,45 @@ export default function AgentOverviewPage() {
         })}
       </div>
 
-      {/* Recent Leads Table */}
+      {/* Recent Engagement Activity */}
       <Card className="bg-[#1A1A24] border border-white/10 rounded-2xl shadow-xl overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-white/10">
           <div>
-            <CardTitle className="font-heading text-lg font-bold text-white">Recent Lead Inquiries</CardTitle>
-            <CardDescription className="text-xs text-text-secondary">Latest client submissions matched to your service area</CardDescription>
+            <CardTitle className="font-heading text-lg font-bold text-white">Recent Activity</CardTitle>
+            <CardDescription className="text-xs text-text-secondary">Latest engagement activity across your properties</CardDescription>
           </div>
           <Link href="/agent-dashboard/leads">
             <Button variant="ghost" size="sm" className="text-gold hover:text-white text-xs font-semibold gap-1.5 cursor-pointer">
-              View All Leads <ArrowRight className="w-3.5 h-3.5" />
+              View All <ArrowRight className="w-3.5 h-3.5" />
             </Button>
           </Link>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-5">
           {loading ? (
-            <div className="py-8 text-center text-text-secondary font-medium">Loading recent inquiries...</div>
-          ) : leads.length === 0 ? (
-            <div className="py-8 text-center text-text-secondary">No recent lead inquiries found.</div>
+            <div className="py-8 flex justify-center">
+              <Loader2 className="w-7 h-7 text-gold animate-spin" />
+            </div>
+          ) : recentEngagements.length === 0 ? (
+            <div className="py-8 text-center text-text-secondary text-sm">No recent engagement activity.</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-[#14141E] text-gold font-semibold border-b border-white/10">
-                  <tr>
-                    <th className="py-3 px-4 sm:px-6">Client</th>
-                    <th className="py-3 px-4 sm:px-6">Postcode & Intent</th>
-                    <th className="py-3 px-4 sm:px-6">Budget</th>
-                    <th className="py-3 px-4 sm:px-6">Submitted</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {leads.slice(0, 5).map((lead) => (
-                    <tr key={lead.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-3 px-4 sm:px-6 font-semibold text-white">{lead.client_name || 'Client'}</td>
-                      <td className="py-3 px-4 sm:px-6">
-                        <span className="font-mono text-xs px-2 py-0.5 bg-white/5 rounded border border-white/10 font-bold uppercase mr-2 text-gold">
-                          {lead.postcode}
-                        </span>
-                        <span className="capitalize text-text-secondary">{lead.intent}</span>
-                      </td>
-                      <td className="py-3 px-4 sm:px-6 font-semibold text-gold">
-                        £{Number(lead.budget).toLocaleString()}
-                        {(lead.intent === 'renting' || lead.intent === 'letting') && ' PCM'}
-                      </td>
-                      <td className="py-3 px-4 sm:px-6 text-xs text-text-muted">
-                        {new Date(lead.created_at).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-3">
+              {recentEngagements.map((eng) => (
+                <div key={eng.id} className="flex items-center justify-between p-3 bg-[#14141E] border border-white/10 rounded-xl">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <EngagementStatusBadge status={eng.status} />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{eng.client_name || 'Client'}</p>
+                      <p className="text-xs text-text-muted">
+                        {eng.property_postcode || '—'} • {eng.property_intent || '—'}
+                        {eng.property_budget ? ` • £${Number(eng.property_budget).toLocaleString()}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-text-muted shrink-0 ml-2">
+                    {new Date(eng.updated_at || eng.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              ))}
             </div>
           )}
         </CardContent>

@@ -478,6 +478,36 @@ Never nest a `<Link>` component inside text children of a `<Button>`. Always wra
 </Button>
 ```
 
+## Agent–Client Property Engagement Patterns (Ticket 26 v3)
+
+### 1. Engagement Status Badges (`EngagementStatusBadge`)
+The system uses 7 unified status states with strict color token semantics:
+* **Pending**: `bg-amber-500/15 text-amber-400 border-amber-500/30` — Awaiting agent response / pool broadcast.
+* **Active (Accepted)**: `bg-emerald-500/15 text-emerald-400 border-emerald-500/30` — Assigned working relationship.
+* **Declined**: `bg-red-500/15 text-red-400 border-red-500/30` — Agent declined invitation.
+* **Withdrawn**: `bg-slate-500/15 text-slate-400 border-slate-500/30` — Client pulled request prior to acceptance.
+* **Expired**: `bg-slate-500/15 text-slate-400 border-slate-500/30` — Mode B sibling auto-closed when another agent won the pool.
+* **Cancelled**: `bg-red-500/15 text-red-400 border-red-500/30` — Post-acceptance cancellation by either party.
+* **Completed**: `bg-blue-500/15 text-blue-400 border-blue-500/30` — Successfully closed real estate transaction.
+
+### 2. Client Dashboard Property Engagement Lifecycle Cards
+Embedded directly within each property item on `/client-dashboard/properties`:
+* **Active Agent Assigned**: Displays agent avatar, full name, agency badge, and a subtle `"This isn't working out — end engagement"` action.
+* **Awaiting Response (Pending)**: Shows mode context (Direct vs. Open Pool count) with a `"Withdraw Request"` button.
+* **Engagement Cancelled**: Clear warning styling explaining the previous engagement ended, displaying the neutral reason, and presenting a prominent Restart CTA.
+* **No Agent Assigned**: Actionable CTA buttons for `"Choose an Agent"` (Mode A) and `"Get Matched (First to Respond)"` (Mode B).
+
+### 3. Agent Dashboard Leads & Engagement Management (`/agent-dashboard/leads`)
+3-Tab segmented interface:
+* **Pending Requests Tab**: Incoming client requests with Accept/Decline action buttons, Mode indicators, and postcode badges.
+* **Active Engagements Tab**: Current active client properties with `"Mark Complete"` and `"End Engagement"` controls.
+* **Past Engagements Tab**: Full historical audit trail of declined, cancelled, and completed engagements with mapped neutral reason labels.
+
+### 4. Cancellation Modal Pattern (`CancelEngagementModal`)
+* **Confirm Step**: Requires intentional user confirmation (prevents accidental one-tap cancellations).
+* **Non-blocking Reason Capture**: Dropdown with role-specific presets + optional free-text box.
+* **Neutral Category Mapping**: Ensures client verbatim text is kept admin-only; agents receive a softened, professional notification category.
+
 ## Responsive Breakpoints
 - Mobile: Default styles
 - sm: `640px`

@@ -20,11 +20,23 @@ import {
   AlertCircle,
   Building2,
   Calendar,
-  X
+  X,
+  UserCheck,
+  Users,
+  Clock,
+  RefreshCw,
+  XCircle,
+  CheckCircle2,
 } from 'lucide-react'
 import { getClientProperties, updateProperty, deleteProperty } from '@/lib/auth/actions'
+import { getClientEngagements, withdrawEngagement, cancelEngagement, createEngagement } from '@/lib/engagement/actions'
 import { toast } from 'sonner'
 import { validatePostcode, validatePhone, validatePriceBounds } from '@/lib/validations/property'
+import { EngagementStatusBadge } from '@/components/engagements/EngagementStatusBadge'
+import { CancelEngagementModal } from '@/components/engagements/CancelEngagementModal'
+import { AgentPickerModal } from '@/components/engagements/AgentPickerModal'
+import type { ClientEngagementView } from '@/types/engagement'
+import { ENGAGEMENT_MODES_ENABLED } from '@/lib/constants'
 
 export interface ClientProperty {
   id: string
@@ -53,6 +65,7 @@ export interface ClientProperty {
 
 export default function ClientPropertiesPage() {
   const [properties, setProperties] = useState<ClientProperty[]>([])
+  const [engagements, setEngagements] = useState<ClientEngagementView[]>([])
   const [loading, setLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
 
@@ -60,26 +73,148 @@ export default function ClientPropertiesPage() {
   const [editingProperty, setEditingProperty] = useState<ClientProperty | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const fetchProperties = async () => {
+  // Engagement states
+  const [cancellingEngagementId, setCancellingEngagementId] = useState<string | null>(null)
+  const [cancellingAgentName, setCancellingAgentName] = useState<string>('')
+  const [cancelLoading, setCancelLoading] = useState(false)
+  const [agentPickerPropertyId, setAgentPickerPropertyId] = useState<string | null>(null)
+  const [agentPickerPostcode, setAgentPickerPostcode] = useState('')
+  const [engagementLoading, setEngagementLoading] = useState(false)
+
+  const fetchData = async () => {
     setLoading(true)
     try {
-      const result = await getClientProperties()
-      if (result.success && result.data) {
-        setProperties(result.data)
+      const [propsResult, engResult] = await Promise.all([
+        getClientProperties(),
+        getClientEngagements(),
+      ])
+      if (propsResult.success && propsResult.data) {
+        setProperties(propsResult.data)
       } else {
-        toast.error(result.error || 'Failed to load properties')
+        toast.error(propsResult.error || 'Failed to load properties')
+      }
+      if (engResult.success && engResult.data) {
+        setEngagements(engResult.data)
       }
     } catch (err) {
-      console.error('Error fetching properties:', err)
-      toast.error('An error occurred while loading your properties')
+      console.error('Error fetching data:', err)
+      toast.error('An error occurred while loading data')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchProperties()
+    fetchData()
   }, [])
+
+  // ─── Engagement helpers ──────────────────────────────────────────
+
+  /** Get the "current" engagement for a property (active or most recent pending) */
+  function getCurrentEngagement(propertyId: string): ClientEngagementView | null {
+    // Priority: accepted > pending > most recent other
+    const forProperty = engagements.filter(e => e.property_id === propertyId)
+    const accepted = forProperty.find(e => e.status === 'accepted')
+    if (accepted) return accepted
+    const pending = forProperty.filter(e => e.status === 'pending')
+    if (pending.length > 0) return pending[0]
+    return null
+  }
+
+  /** Count pending pool agents for a property */
+  function getPendingPoolCount(propertyId: string): number {
+    return engagements.filter(e => e.property_id === propertyId && e.status === 'pending' && e.engagement_mode === 'open_pool').length
+  }
+
+  /** Was there a previous cancelled/declined engagement? */
+  function getLastCancelledEngagement(propertyId: string): ClientEngagementView | null {
+    return engagements.find(
+      e => e.property_id === propertyId && (e.status === 'cancelled' || e.status === 'declined')
+    ) || null
+  }
+
+  // ─── Engagement actions ──────────────────────────────────────────
+
+  const handleWithdraw = async (engagementId: string) => {
+    setEngagementLoading(true)
+    try {
+      const result = await withdrawEngagement(engagementId)
+      if (result.success) {
+        toast.success('Request withdrawn successfully')
+        fetchData()
+      } else {
+        toast.error(result.error || 'Failed to withdraw')
+      }
+    } catch (err) {
+      toast.error('An error occurred')
+    } finally {
+      setEngagementLoading(false)
+    }
+  }
+
+  const handleCancelConfirm = async (presetReason: string, freeText?: string) => {
+    if (!cancellingEngagementId) return
+    setCancelLoading(true)
+    try {
+      const result = await cancelEngagement(cancellingEngagementId, presetReason, freeText)
+      if (result.success) {
+        toast.success('Engagement ended successfully')
+        setCancellingEngagementId(null)
+        fetchData()
+      } else {
+        toast.error(result.error || 'Failed to cancel')
+      }
+    } catch (err) {
+      toast.error('An error occurred')
+    } finally {
+      setCancelLoading(false)
+    }
+  }
+
+  const handleAgentSelect = async (agentUserId: string, agentName: string) => {
+    if (!agentPickerPropertyId) return
+    setEngagementLoading(true)
+    try {
+      const result = await createEngagement({
+        propertyId: agentPickerPropertyId,
+        mode: 'direct',
+        agentId: agentUserId,
+      })
+      if (result.success) {
+        toast.success(`Request sent to ${agentName}`)
+        setAgentPickerPropertyId(null)
+        fetchData()
+      } else {
+        toast.error(result.error || 'Failed to create engagement')
+      }
+    } catch (err) {
+      toast.error('An error occurred')
+    } finally {
+      setEngagementLoading(false)
+    }
+  }
+
+  const handleOpenPool = async (propertyId: string) => {
+    setEngagementLoading(true)
+    try {
+      const result = await createEngagement({
+        propertyId,
+        mode: 'open_pool',
+      })
+      if (result.success) {
+        toast.success(`Sent to ${result.created} matched agents!`)
+        fetchData()
+      } else {
+        toast.error(result.error || 'Failed to create pool')
+      }
+    } catch (err) {
+      toast.error('An error occurred')
+    } finally {
+      setEngagementLoading(false)
+    }
+  }
+
+  // ─── Existing edit/delete handlers ───────────────────────────────
 
   const handleEditClick = (property: ClientProperty) => {
     setEditingProperty({
@@ -94,7 +229,6 @@ export default function ClientPropertiesPage() {
     e.preventDefault()
     if (!editingProperty) return
 
-    // Clear previous inline errors
     let hasError = false
     const updates = { ...editingProperty, _postcodeError: '', _phoneError: '', _budgetError: '' }
 
@@ -141,7 +275,7 @@ export default function ClientPropertiesPage() {
         if (result.success) {
           toast.success('Property updated successfully')
           setEditingProperty(null)
-          fetchProperties()
+          fetchData()
         } else {
           toast.error(result.error || 'Failed to update property')
         }
@@ -160,7 +294,7 @@ export default function ClientPropertiesPage() {
         if (result.success) {
           toast.success('Property deleted successfully')
           setDeletingId(null)
-          fetchProperties()
+          fetchData()
         } else {
           toast.error(result.error || 'Failed to delete property')
         }
@@ -178,12 +312,160 @@ export default function ClientPropertiesPage() {
     return `£${amount.toLocaleString()}`
   }
 
+  // ─── Engagement status section for each property card ────────────
+
+  function renderEngagementSection(property: ClientProperty) {
+    const current = getCurrentEngagement(property.id)
+    const lastCancelled = getLastCancelledEngagement(property.id)
+
+    // Case 1: Active (accepted) engagement
+    if (current && current.status === 'accepted') {
+      return (
+        <div className="mt-4 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Active Agent</span>
+            </div>
+            <EngagementStatusBadge status="accepted" />
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gold/10 text-gold border border-gold/20 rounded-lg">
+              <User className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">{current.agent_name || 'Agent'}</p>
+              {current.agent_agency && (
+                <p className="text-xs text-text-secondary">{current.agent_agency}</p>
+              )}
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setCancellingEngagementId(current.id)
+              setCancellingAgentName(current.agent_name || 'Agent')
+            }}
+            className="h-7 text-xs gap-1.5 border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg cursor-pointer transition-colors"
+          >
+            <XCircle className="w-3 h-3" />
+            This isn&#39;t working out — end engagement
+          </Button>
+        </div>
+      )
+    }
+
+    // Case 2: Pending engagement(s)
+    if (current && current.status === 'pending') {
+      const isPool = current.engagement_mode === 'open_pool'
+      const poolCount = isPool ? getPendingPoolCount(property.id) : 1
+      return (
+        <div className="mt-4 p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-amber-400" />
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                {isPool ? 'Open Pool' : 'Awaiting Response'}
+              </span>
+            </div>
+            <EngagementStatusBadge status="pending" />
+          </div>
+          <p className="text-sm text-text-secondary">
+            {isPool
+              ? `${poolCount} agent${poolCount !== 1 ? 's' : ''} notified — waiting for the first response.`
+              : `Awaiting response from ${current.agent_name || 'agent'}.`
+            }
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleWithdraw(current.id)}
+            disabled={engagementLoading}
+            className="h-7 text-xs gap-1.5 border-amber-500/30 text-amber-400 hover:bg-amber-500/10 rounded-lg cursor-pointer transition-colors"
+          >
+            <X className="w-3 h-3" />
+            Withdraw Request
+          </Button>
+        </div>
+      )
+    }
+
+    // Case 3: Previous engagement was cancelled — show context + restart CTA
+    if (lastCancelled) {
+      const cancelledByOther = lastCancelled.cancelled_by !== 'client'
+      return (
+        <div className="mt-4 p-4 bg-slate-500/5 border border-white/10 rounded-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-text-secondary" />
+              <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">
+                {cancelledByOther ? 'Agent No Longer Engaged' : 'Engagement Ended'}
+              </span>
+            </div>
+            <EngagementStatusBadge status="cancelled" />
+          </div>
+          {lastCancelled.cancellation_category && (
+            <p className="text-xs text-text-muted">
+              Reason: {lastCancelled.cancellation_category}
+            </p>
+          )}
+          {renderFindAgentCTA(property)}
+        </div>
+      )
+    }
+
+    // Case 4: No engagement at all — show CTA
+    return (
+      <div className="mt-4 p-4 bg-[#14141E] border border-white/10 rounded-xl space-y-3">
+        <div className="flex items-center gap-2">
+          <Users className="w-4 h-4 text-text-muted" />
+          <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">No Agent Assigned</span>
+        </div>
+        <p className="text-xs text-text-muted">Find an agent to help with this property.</p>
+        {renderFindAgentCTA(property)}
+      </div>
+    )
+  }
+
+  /** CTA buttons for finding an agent (direct pick or open pool) */
+  function renderFindAgentCTA(property: ClientProperty) {
+    return (
+      <div className="flex flex-wrap gap-2 pt-1">
+        <Button
+          size="sm"
+          onClick={() => {
+            setAgentPickerPropertyId(property.id)
+            setAgentPickerPostcode(property.postcode || '')
+          }}
+          disabled={engagementLoading}
+          className="h-8 text-xs gap-1.5 bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold rounded-lg cursor-pointer"
+        >
+          <UserCheck className="w-3.5 h-3.5" />
+          Choose an Agent
+        </Button>
+        {ENGAGEMENT_MODES_ENABLED === 'both' && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleOpenPool(property.id)}
+            disabled={engagementLoading}
+            className="h-8 text-xs gap-1.5 border-gold/40 text-gold hover:bg-gold/10 font-semibold rounded-lg cursor-pointer"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            Get Matched (First to Respond)
+          </Button>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white">My Submitted Properties</h1>
-          <p className="text-sm text-text-secondary mt-1">Manage and update your active property requests</p>
+          <p className="text-sm text-text-secondary mt-1">Manage your property requests and agent engagements</p>
         </div>
         <Link href="/submit-property">
           <Button className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-bold flex items-center gap-2 rounded-xl cursor-pointer">
@@ -236,6 +518,9 @@ export default function ClientPropertiesPage() {
                   </div>
                 </div>
 
+                {/* Engagement Section */}
+                {renderEngagementSection(property)}
+
                 <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
                   <Button 
                     variant="outline" 
@@ -259,6 +544,25 @@ export default function ClientPropertiesPage() {
           ))}
         </div>
       )}
+
+      {/* Cancel Engagement Modal */}
+      <CancelEngagementModal
+        isOpen={!!cancellingEngagementId}
+        onClose={() => setCancellingEngagementId(null)}
+        onConfirm={handleCancelConfirm}
+        cancelledBy="client"
+        otherPartyName={cancellingAgentName}
+        loading={cancelLoading}
+      />
+
+      {/* Agent Picker Modal */}
+      <AgentPickerModal
+        isOpen={!!agentPickerPropertyId}
+        onClose={() => setAgentPickerPropertyId(null)}
+        onSelect={handleAgentSelect}
+        postcode={agentPickerPostcode}
+        loading={engagementLoading}
+      />
 
       {/* Edit Property Modal */}
       {editingProperty && (

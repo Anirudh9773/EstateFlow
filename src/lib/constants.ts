@@ -39,3 +39,16 @@ export const HIDDEN_LAYOUT_ROUTES = [
   '/verify-2fa',
   '/reset-password',
 ] as const
+
+// ─── Engagement Configuration ──────────────────────────────────────
+// Set to 'direct_only' to hide Mode B (open pool) at launch.
+export const ENGAGEMENT_MODES_ENABLED: 'both' | 'direct_only' = 'both'
+
+// Max agents in Mode B open pool (if fewer match, send to all that do)
+export const OPEN_POOL_SIZE = 5
+
+// Timeout before a pending engagement auto-expires (in days)
+export const PENDING_TIMEOUT_DAYS = {
+  direct: 7,       // Mode A: 7 days for a specific agent to respond
+  open_pool: 2,    // Mode B: 48 hours — speed is the point of this mode
+} as const

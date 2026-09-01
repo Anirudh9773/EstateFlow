@@ -56,7 +56,19 @@ This project uses Next.js 16.2.1 with significant breaking changes from previous
 - **ALWAYS use `pnpm`** - This project uses pnpm, not npm or yarn
 - Commands: `pnpm install`, `pnpm dev`, `pnpm build`
 
-### Recent Major Updates (April 2026, June 2026, July 2026 & August 2026)
+### Recent Major Updates (April 2026 – September 2026)
+
+#### Agent–Client Property Engagement Workflow (Ticket 26 v3 — September 2026)
+- **Dual-Mode Engagement Engine**: Implemented Mode A (*Direct Request* to specific agent) and Mode B (*Open Pool* broadcast to up to 5 matched agents with 48h timeout; first to accept wins, siblings auto-expire).
+- **Concurrency Guard**: Partial PostgreSQL unique index `one_accepted_engagement_per_property` on `property_engagements (property_id) WHERE status = 'accepted'` preventing double bookings.
+- **Symmetric Post-Acceptance Cancellation**: Both clients and agents can cleanly end accepted engagements with a confirmation modal and role-tailored preset/free-text reason capture.
+- **Non-Verbatim Reason Mapping**: Protects agent-client communications by mapping raw cancel reasons to neutral, professional category labels shown to the other party (raw text preserved admin-only).
+- **Cancel-Restart Tracking**: Added `getCancellationCount()` utility to track cycle counts per property for future soft nudges.
+- **Client & Agent Dashboard Integration**:
+  - Client property cards dynamically reflect all 7 engagement states (`pending`, `accepted`, `declined`, `withdrawn`, `expired`, `cancelled`, `completed`) with direct Withdraw, End Engagement, and re-engagement CTAs.
+  - Agent leads page overhauled into a 3-tab workflow (*Pending Requests*, *Active Engagements*, *Past Engagements*) with instant Accept/Decline and Mark Complete actions.
+  - Dashboard overview metric cards and activity feeds wired to live engagement statistics.
+- **Database & Architecture**: Created migration `008_create_property_engagements.sql` (enums, RLS policies, automatic `updated_at` trigger) and modular server actions in `src/lib/engagement/actions.ts`.
 
 #### Comprehensive Website Audit & 17 Quality/Route Fixes (August 2026)
 - **Zero 404 Route Integrity**: Fixed broken link in `AboutCTA.tsx` where "Join EstateFlow" pointed to non-existent `/agents/join` (changed to `/join`).
@@ -204,6 +216,11 @@ estateflow/
 │   │   ├── agents/                   # Agent components
 │   │   │   └── AgentCard.tsx         # Agent display card
 │   │   │
+│   │   ├── engagements/              # Agent-Client engagement components
+│   │   │   ├── EngagementStatusBadge.tsx # Status badge (7 states)
+│   │   │   ├── CancelEngagementModal.tsx # Cancellation confirm & reason picker
+│   │   │   └── AgentPickerModal.tsx  # Modal for selecting specific agent
+│   │   │
 │   │   ├── common/                   # Shared components (9 files)
 │   │   │   ├── SectionHeader.tsx     # Reusable section header
 │   │   │   ├── FeatureGrid.tsx       # Feature grid layout
@@ -235,9 +252,11 @@ estateflow/
 │   │   │   ├── actions.ts            # Server actions (signUp, signIn, signOut, verify2faOtp)
 │   │   │   ├── useUser.ts            # Client hook for user state
 │   │   │   └── twoFactor.ts          # 2FA token decoding & verification helper functions
+│   │   ├── engagement/
+│   │   │   └── actions.ts            # Engagement actions (create, accept, decline, withdraw, cancel, complete)
 │   │   ├── utils/                    # Utility functions
 │   │   │   └── cn.ts                 # Class name utility
-│   │   ├── constants.ts              # Route constants
+│   │   ├── constants.ts              # Route constants & engagement configs
 │   │   └── getInitials.ts            # Get user initials
 │   │
 │   ├── data/                         # Static data
@@ -247,6 +266,8 @@ estateflow/
 │   │
 │   ├── types/                        # TypeScript definitions
 │   │   ├── agent.ts                  # Agent interface
+│   │   ├── engagement.ts             # Property engagement types & reason presets
+│   │   ├── profile.ts                # Client, Agent & Staff profiles
 │   │   └── testimonial.ts            # Testimonial interface
 │   │
 │   ├── hooks/                        # Custom React hooks
