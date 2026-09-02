@@ -390,8 +390,14 @@ export default function AgentLeadsPage() {
                         <span className="capitalize text-text-secondary">{lead.intent}</span>
                       </td>
                       <td className="py-3 px-4 sm:px-6 font-semibold text-gold">
-                        £{Number(lead.budget).toLocaleString()}
-                        {(lead.intent === 'renting' || lead.intent === 'letting') && ' PCM'}
+                        {lead.intent?.toLowerCase().includes('inquiry') || lead.intent?.toLowerCase().includes('callback') || !lead.budget || Number(lead.budget) <= 0 ? (
+                          <span className="text-text-muted text-xs font-normal">N/A (Direct Inquiry)</span>
+                        ) : (
+                          <>
+                            £{Number(lead.budget).toLocaleString()}
+                            {(lead.intent === 'renting' || lead.intent === 'letting') && ' PCM'}
+                          </>
+                        )}
                       </td>
                       <td className="py-3 px-4 sm:px-6 text-xs text-text-muted">
                         {new Date(lead.created_at).toLocaleDateString()}
@@ -436,7 +442,17 @@ export default function AgentLeadsPage() {
               <p><span className="font-semibold text-white">Phone:</span> {selectedLead.client_phone}</p>
               <p><span className="font-semibold text-white">Postcode:</span> <span className="text-gold font-mono font-bold">{selectedLead.postcode}</span></p>
               <p><span className="font-semibold text-white">Property Spec:</span> {selectedLead.bedroom_count} • {selectedLead.property_type}</p>
-              <p><span className="font-semibold text-white">Budget:</span> <span className="text-gold font-bold">£{Number(selectedLead.budget).toLocaleString()}</span></p>
+              <p>
+                <span className="font-semibold text-white">Budget / Value:</span>{' '}
+                {selectedLead.intent?.toLowerCase().includes('inquiry') || selectedLead.intent?.toLowerCase().includes('callback') || !selectedLead.budget || Number(selectedLead.budget) <= 0 ? (
+                  <span className="text-text-muted font-normal">N/A (Direct Inquiry)</span>
+                ) : (
+                  <span className="text-gold font-bold">
+                    £{Number(selectedLead.budget).toLocaleString()}
+                    {(selectedLead.intent === 'renting' || selectedLead.intent === 'letting') && ' PCM'}
+                  </span>
+                )}
+              </p>
             </div>
             <div className="pt-2 flex justify-end">
               <Button onClick={() => setSelectedLead(null)} className="bg-gold text-[#0d0d14] hover:bg-gold/90 font-semibold px-6 rounded-xl cursor-pointer">Close</Button>

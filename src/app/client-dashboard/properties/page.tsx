@@ -306,6 +306,9 @@ export default function ClientPropertiesPage() {
   }
 
   const formatBudget = (intent: string, amount: number) => {
+    if (!amount || amount <= 0 || intent?.toLowerCase().includes('inquiry') || intent?.toLowerCase().includes('callback')) {
+      return 'N/A'
+    }
     if (intent === 'renting' || intent === 'letting') {
       return `£${amount.toLocaleString()} PCM`
     }

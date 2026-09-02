@@ -175,7 +175,7 @@ export default function AgentOverviewPage() {
                       <p className="text-sm font-semibold text-white truncate">{eng.client_name || 'Client'}</p>
                       <p className="text-xs text-text-muted">
                         {eng.property_postcode || '—'} • {eng.property_intent || '—'}
-                        {eng.property_budget ? ` • £${Number(eng.property_budget).toLocaleString()}` : ''}
+                        {eng.property_budget && Number(eng.property_budget) > 0 ? ` • £${Number(eng.property_budget).toLocaleString()}` : ''}
                       </p>
                     </div>
                   </div>

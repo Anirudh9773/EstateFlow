@@ -177,8 +177,14 @@ export default function ClientOverviewPage() {
                     </div>
                     <p className="text-sm font-semibold text-white">{prop.bedroom_count} • {prop.property_type}</p>
                     <p className="text-xs font-bold text-gold">
-                      Budget: £{Number(prop.budget).toLocaleString()}
-                      {(prop.intent === 'renting' || prop.intent === 'letting') && ' PCM'}
+                      {!prop.budget || Number(prop.budget) <= 0 || prop.intent?.toLowerCase().includes('inquiry') || prop.intent?.toLowerCase().includes('callback') ? (
+                        <span className="text-text-muted font-normal">Direct Inquiry</span>
+                      ) : (
+                        <>
+                          Budget: £{Number(prop.budget).toLocaleString()}
+                          {(prop.intent === 'renting' || prop.intent === 'letting') && ' PCM'}
+                        </>
+                      )}
                     </p>
                     {eng && (
                       <div className="flex items-center gap-2 pt-1">

@@ -44,6 +44,9 @@ export function validatePhone(phone: string): boolean {
 }
 
 export function validatePriceBounds(intent: string, price: number): { isValid: boolean; error?: string } {
+  if (price === undefined || price === null || isNaN(price) || price <= 0) {
+    return { isValid: false, error: 'Price or budget cannot be zero or empty' };
+  }
   if (intent === 'renting' || intent === 'letting') {
     if (price < 100 || price > 10000) {
       return { isValid: false, error: 'Monthly rent must be between £100 and £10,000 PCM' };
