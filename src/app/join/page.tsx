@@ -238,13 +238,16 @@ export default function JoinPage() {
                   <Input
                     id="phone"
                     type="tel"
+                    maxLength={20}
                     value={formData.phone}
-                    onChange={(e) => updateFormData("phone", e.target.value)}
-                    onKeyDown={(e) => {
-                      // Block letters from being typed in the phone field
-                      if (/[a-zA-Z]/.test(e.key) && e.key.length === 1) {
-                        e.preventDefault()
-                      }
+                    onChange={(e) => {
+                      const val = e.target.value
+                      // Only allow digits, +, spaces, hyphens, parens
+                      if (!/^[0-9+\s\-()]*$/.test(val)) return
+                      // Enforce max 15 digits (ITU-T E.164)
+                      const digitCount = val.replace(/\D/g, '').length
+                      if (digitCount > 15) return
+                      updateFormData("phone", val)
                     }}
                     placeholder="+44 20 1234 5678"
                     className={errors.phone ? "border-red-400" : ""}

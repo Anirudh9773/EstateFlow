@@ -119,11 +119,15 @@ export default function ClientSettingsPage() {
               <Input
                 type="tel"
                 value={phone}
+                maxLength={20}
                 onChange={(e) => {
                   const val = e.target.value
-                  if (/^[0-9+\s-()]*$/.test(val)) {
-                    setPhone(val)
-                  }
+                  // Only allow digits, +, spaces, hyphens, parens
+                  if (!/^[0-9+\s\-()]*$/.test(val)) return
+                  // Enforce max 15 digits (ITU-T E.164)
+                  const digitCount = val.replace(/\D/g, '').length
+                  if (digitCount > 15) return
+                  setPhone(val)
                 }}
                 placeholder="+44 7700 900000"
                 className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"

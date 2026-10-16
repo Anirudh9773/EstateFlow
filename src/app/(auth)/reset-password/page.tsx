@@ -82,16 +82,16 @@ export default function ResetPasswordPage() {
   if (success) {
     return (
       <div className="space-y-6 text-center">
-        <div className="inline-flex items-center justify-center p-3 bg-green-100 rounded-full text-green-600 mb-2">
+        <div className="inline-flex items-center justify-center p-3 bg-emerald-950/40 rounded-full text-emerald-400 mb-2">
           <CheckCircle className="w-8 h-8" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-navy">Password Updated!</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-2xl font-bold tracking-tight text-white">Password Updated!</h1>
+        <p className="text-text-secondary text-sm">
           Your password has been successfully updated. You are being redirected to the sign-in page...
         </p>
         <Link
           href="/sign-in"
-          className="inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none w-full bg-navy text-gold hover:bg-navy/90 h-8 gap-1.5 px-2.5"
+          className="inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none w-full bg-gold text-[#0d0d14] hover:bg-gold/90 h-11 gap-1.5 px-2.5 font-bold rounded-xl"
         >
           Sign In Now
         </Link>
@@ -102,25 +102,25 @@ export default function ResetPasswordPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <div className="inline-flex items-center justify-center p-2 bg-navy/10 rounded-full text-navy mb-2">
+        <div className="inline-flex items-center justify-center p-2 bg-gold/10 rounded-full text-gold mb-2">
           <Lock className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-navy">Reset Your Password</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-2xl font-bold tracking-tight text-white">Reset Your Password</h1>
+        <p className="text-text-secondary text-sm">
           Please enter your new security password below.
         </p>
       </div>
 
       {error && (
-        <Alert variant="destructive" className="border-red-200 bg-red-50 text-red-900">
-          <AlertCircle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-xs font-medium">{error}</AlertDescription>
+        <Alert variant="destructive" className="border-red-500/40 bg-red-950/40 text-red-200">
+          <AlertCircle className="h-4 w-4 text-red-400" />
+          <AlertDescription className="text-xs font-medium text-red-200">{error}</AlertDescription>
         </Alert>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">New Password</label>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">New Password</label>
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
@@ -128,24 +128,24 @@ export default function ResetPasswordPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 pr-10"
+              className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold pr-10"
               disabled={loading}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white cursor-pointer"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-text-muted">
             Must be 8+ characters with uppercase, lowercase, number, and special character
           </p>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Confirm New Password</label>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Confirm New Password</label>
           <div className="relative">
             <Input
               type={showConfirmPassword ? "text" : "password"}
@@ -153,13 +153,13 @@ export default function ResetPasswordPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="border border-slate-300 focus:border-navy focus:ring-2 focus:ring-navy/20 pr-10"
+              className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold pr-10"
               disabled={loading}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white cursor-pointer"
             >
               {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -168,7 +168,7 @@ export default function ResetPasswordPage() {
 
         <Button 
           type="submit" 
-          className="w-full bg-navy text-gold hover:bg-navy/90 font-medium" 
+          className="w-full bg-gold text-[#0d0d14] hover:bg-gold/90 font-bold h-11 rounded-xl cursor-pointer" 
           disabled={loading}
         >
           {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

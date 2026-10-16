@@ -308,16 +308,24 @@ export default function SimpleAgentSignUpForm() {
           <Input
             type="tel"
             placeholder="+44 7700 900000"
+            maxLength={20}
             className="h-10 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold"
             {...register("phone")}
             onChange={(e) => {
               const val = e.target.value
-              if (/^[0-9+\s\-()]*$/.test(val)) {
-                e.target.value = val
-                register("phone").onChange(e)
-              } else {
+              // Only allow digits, +, spaces, hyphens, parens
+              if (!/^[0-9+\s\-()]*$/.test(val)) {
                 e.preventDefault()
+                return
               }
+              // Enforce max 15 digits (ITU-T E.164)
+              const digitCount = val.replace(/\D/g, '').length
+              if (digitCount > 15) {
+                e.preventDefault()
+                return
+              }
+              e.target.value = val
+              register("phone").onChange(e)
             }}
           />
           {errors.phone && (

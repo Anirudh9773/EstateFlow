@@ -256,7 +256,16 @@ export default function ContactForm({ userRole, setUserRole }: ContactFormProps)
               type="tel"
               id="phone"
               value={formData.phone}
-              onChange={(e) => handleChange('phone', e.target.value)}
+              maxLength={20}
+              onChange={(e) => {
+                const val = e.target.value
+                // Only allow digits, +, spaces, hyphens, parens
+                if (!/^[0-9+\s\-()]*$/.test(val)) return
+                // Enforce max 15 digits (ITU-T E.164)
+                const digitCount = val.replace(/\D/g, '').length
+                if (digitCount > 15) return
+                handleChange('phone', val)
+              }}
               className="h-11 mt-1.5 bg-[#1E1E28] border-white/15 text-white placeholder:text-text-muted focus:border-gold rounded-xl"
               placeholder="07123 456789"
             />

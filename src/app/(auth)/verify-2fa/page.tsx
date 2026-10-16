@@ -213,28 +213,28 @@ export default function Verify2faPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <div className="inline-flex items-center justify-center p-2 bg-navy/10 rounded-full text-navy dark:text-gold mb-2">
+        <div className="inline-flex items-center justify-center p-2 bg-gold/10 rounded-full text-gold mb-2">
           <ShieldCheck className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-navy dark:text-white">Security Verification</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-2xl font-bold tracking-tight text-white">Security Verification</h1>
+        <p className="text-text-secondary text-sm">
           Please enter the 6-digit verification code sent to your registered email address.
         </p>
       </div>
 
       {devOtp && (
-        <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950/20 text-amber-900 dark:text-amber-100 py-3">
-          <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-gold animate-pulse" />
-          <AlertDescription className="text-xs font-semibold">
-            🔧 Dev Helper: Since email sending is restricted on unverified/free domains, you can use this OTP to test: <span className="font-mono text-sm px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900 rounded border border-amber-200 dark:border-amber-800 text-amber-950 dark:text-amber-50">{devOtp}</span>
+        <Alert className="border-amber-500/30 bg-amber-950/30 text-amber-100 py-3">
+          <ShieldCheck className="h-4 w-4 text-gold animate-pulse" />
+          <AlertDescription className="text-xs font-semibold text-amber-100">
+            🔧 Dev Helper: Since email sending is restricted on unverified/free domains, you can use this OTP to test: <span className="font-mono text-sm px-1.5 py-0.5 bg-amber-900/60 rounded border border-amber-700/50 text-amber-50">{devOtp}</span>
           </AlertDescription>
         </Alert>
       )}
 
       {error && (
-        <Alert variant="destructive" className="border-red-200 bg-red-50 text-red-900">
-          <AlertCircle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-xs font-medium">{error}</AlertDescription>
+        <Alert variant="destructive" className="border-red-500/40 bg-red-950/40 text-red-200">
+          <AlertCircle className="h-4 w-4 text-red-400" />
+          <AlertDescription className="text-xs font-medium text-red-200">{error}</AlertDescription>
         </Alert>
       )}
 
@@ -257,7 +257,7 @@ export default function Verify2faPage() {
               disabled={loading}
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
-              className="w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold border-2 border-slate-300 rounded-lg focus:border-navy focus:ring-2 focus:ring-navy/20 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-slate-900 text-navy dark:text-white transition-all"
+              className="w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold border-2 border-white/15 rounded-lg focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-[#1E1E28] text-white transition-all"
             />
           ))}
         </div>
@@ -268,32 +268,32 @@ export default function Verify2faPage() {
             id="remember-device"
             checked={rememberDevice}
             onCheckedChange={(checked) => setRememberDevice(checked === true)}
-            className="border-2 border-slate-300 data-[state=checked]:bg-navy data-[state=checked]:border-navy"
+            className="border border-white/20 data-[state=checked]:bg-gold data-[state=checked]:border-gold data-[state=checked]:text-[#0d0d14]"
           />
-          <label htmlFor="remember-device" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+          <label htmlFor="remember-device" className="text-sm font-medium text-text-secondary cursor-pointer select-none">
             Trust this device for 30 days
           </label>
         </div>
 
         {/* Loading / Status State */}
         {loading && (
-          <div className="flex items-center justify-center gap-2 text-sm text-slate-600 dark:text-slate-400 py-1">
-            <Loader2 className="w-4 h-4 animate-spin text-navy" />
+          <div className="flex items-center justify-center gap-2 text-sm text-text-secondary py-1">
+            <Loader2 className="w-4 h-4 animate-spin text-gold" />
             <span>Verifying code...</span>
           </div>
         )}
 
         {/* Resend actions & Timer */}
-        <div className="flex flex-col items-center justify-center gap-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-center">
+        <div className="flex flex-col items-center justify-center gap-3 pt-3 border-t border-white/10 text-center">
           <div className="text-sm">
             {timeLeft === null ? (
-              <span className="text-muted-foreground">Loading timer...</span>
+              <span className="text-text-muted">Loading timer...</span>
             ) : timeLeft > 0 ? (
-              <span className="text-muted-foreground">
-                Code expires in: <span className="font-semibold text-navy dark:text-gold">{formatTime(timeLeft)}</span>
+              <span className="text-text-secondary">
+                Code expires in: <span className="font-semibold text-gold">{formatTime(timeLeft)}</span>
               </span>
             ) : (
-              <span className="text-red-500 font-medium">Verification code has expired.</span>
+              <span className="text-red-400 font-medium">Verification code has expired.</span>
             )}
           </div>
 
@@ -302,7 +302,7 @@ export default function Verify2faPage() {
               variant="outline"
               disabled={resending || loading}
               onClick={handleResend}
-              className="border-navy text-navy hover:bg-navy hover:text-gold w-full text-xs font-semibold"
+              className="border-gold/30 text-gold hover:bg-gold hover:text-[#0d0d14] w-full text-xs font-semibold"
             >
               {resending ? (
                 <>
@@ -325,7 +325,7 @@ export default function Verify2faPage() {
           type="button"
           onClick={handleBackToSignIn}
           disabled={loading || resending}
-          className="inline-flex items-center text-xs font-medium text-slate-500 hover:text-navy hover:underline cursor-pointer disabled:opacity-50 mx-auto"
+          className="inline-flex items-center text-xs font-medium text-text-muted hover:text-gold hover:underline cursor-pointer disabled:opacity-50 mx-auto"
         >
           <ArrowLeft className="w-3 h-3 mr-1" />
           Back to sign in

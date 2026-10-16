@@ -236,11 +236,15 @@ export default function AgentSettingsPage() {
                 <input
                   type="tel"
                   value={phone}
+                  maxLength={20}
                   onChange={(e) => {
                     const val = e.target.value
-                    if (/^[0-9+\s-()]*$/.test(val)) {
-                      setPhone(val)
-                    }
+                    // Only allow digits, +, spaces, hyphens, parens
+                    if (!/^[0-9+\s\-()]*$/.test(val)) return
+                    // Enforce max 15 digits (ITU-T E.164)
+                    const digitCount = val.replace(/\D/g, '').length
+                    if (digitCount > 15) return
+                    setPhone(val)
                   }}
                   placeholder="+44 7700 900000"
                   className="w-full px-3.5 py-2.5 bg-[#1E1E28] border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-gold placeholder:text-text-muted"
